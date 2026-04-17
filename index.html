@@ -425,6 +425,7 @@ function saveProgress() {
       streak: S.streak, lastDay: S.lastDay, stats: S.stats,
       onboarded: S.onboarded, mode: S.mode,
       dailyGoal: S.dailyGoal, reminderTime: S.reminderTime,
+      lessonsTodayCount: S.lessonsTodayCount,
     }));
   } catch(e) {}
 }
@@ -433,21 +434,22 @@ function loadProgress() {
   try {
     const p = JSON.parse(localStorage.getItem('ml_progress'));
     if (p) {
-      S.xp           = p.xp           ?? 0;
-      S.hearts       = p.hearts       ?? 5;
-      S.done         = new Set(p.done ?? []);
-      S.streak       = p.streak       ?? 0;
-      S.lastDay      = p.lastDay      ?? null;
-      S.stats        = p.stats        ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{} };
-      S.onboarded    = p.onboarded    ?? false;
-      S.mode         = p.mode         ?? 'full';
-      S.dailyGoal    = p.dailyGoal    ?? 1;
-      S.reminderTime = p.reminderTime ?? null;
+      S.xp                = p.xp                ?? 0;
+      S.hearts            = p.hearts            ?? 5;
+      S.done              = new Set(p.done       ?? []);
+      S.streak            = p.streak            ?? 0;
+      S.lastDay           = p.lastDay           ?? null;
+      S.stats             = p.stats             ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{} };
+      S.onboarded         = p.onboarded         ?? false;
+      S.mode              = p.mode              ?? 'full';
+      S.dailyGoal         = p.dailyGoal         ?? 1;
+      S.reminderTime      = p.reminderTime      ?? null;
+      S.lessonsTodayCount = p.lessonsTodayCount ?? 0;
     }
   } catch(e) {}
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
-  if (S.lastDay !== today) S.hearts = 5;
+  if (S.lastDay !== today) { S.hearts = 5; S.lessonsTodayCount = 0; }
   if (S.lastDay && S.lastDay !== today && S.lastDay !== yesterday) S.streak = 0;
 }
 
@@ -468,6 +470,8 @@ let S = {
   mode: 'full', dailyGoal: 1, reminderTime: null,
   // practice / spaced repetition
   practiceQueue: [], practiceEi: 0, practiceScore: 0,
+  // daily goal tracking
+  lessonsTodayCount: 0,
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -596,6 +600,7 @@ function nextEx() {
     S = {...S, xp:S.xp+S.lxp, done:new Set([...S.done, S.lid]), screen:'results',
       fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
       streak:newStreak, lastDay:today,
+      lessonsTodayCount: S.lessonsTodayCount + 1,
       stats:{...S.stats, xpByDay:newXpByDay}};
     saveProgress(); render();
     setTimeout(launchConfetti, 100);
@@ -875,15 +880,11 @@ function buildHome() {
   const trackDone = trackLessons.filter(l=>S.done.has(l.id)).length;
   const pct = Math.round(trackDone / trackLessons.length * 100);
 
-  // Daily goal progress
+  // Daily goal progress — accurate count
   const today = new Date().toDateString();
-  const todayXp = S.stats.xpByDay[today] || 0;
-  const todayLessons = LESSONS.filter(l => {
-    const acc = S.stats.lessonAcc[l.id];
-    return acc && S.lastDay === today;
-  }).length;
-  // rough lesson count today based on xpByDay vs per-lesson xp
-  const goalMet = todayLessons >= S.dailyGoal;
+  const todayCount = S.lastDay === today ? S.lessonsTodayCount : 0;
+  const goalMet = todayCount >= S.dailyGoal;
+  const goalPct = Math.min(100, Math.round(todayCount / S.dailyGoal * 100));
 
   // Reminder banner
   const now = new Date();
@@ -975,11 +976,22 @@ function buildHome() {
           </div>
           <div style="margin-top:16px">
             <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;font-weight:800;opacity:0.7">
-              <span>${trackDone} / ${trackLessons.length} lessons</span>
-              <span>${goalMet?'✅':'📚'} Goal: ${S.dailyGoal} lesson${S.dailyGoal>1?'s':''}/day</span>
+              <span>${trackDone} / ${trackLessons.length} lessons complete</span>
+              <span>${Math.round(trackDone/trackLessons.length*100)}%</span>
             </div>
-            <div style="height:8px;background:rgba(255,255,255,0.15);border-radius:999px">
-              <div style="height:100%;border-radius:999px;background:#F5A623;width:${pct}%;transition:width 0.5s"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.15);border-radius:999px;margin-bottom:12px">
+              <div style="height:100%;border-radius:999px;background:#F5A623;width:${Math.round(trackDone/trackLessons.length*100)}%;transition:width 0.5s"></div>
+            </div>
+            <!-- Daily goal tracker -->
+            <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.12)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+                <span style="font-size:11px;font-weight:900;opacity:0.8">TODAY'S GOAL</span>
+                <span style="font-size:11px;font-weight:900;color:${goalMet?'#6EE7B7':'rgba(255,255,255,0.6)'}">${goalMet?'✅ DONE!':'📚 '+todayCount+' / '+S.dailyGoal+' lesson'+(S.dailyGoal>1?'s':'')}</span>
+              </div>
+              <div style="height:8px;background:rgba(255,255,255,0.12);border-radius:999px;overflow:hidden">
+                <div style="height:100%;border-radius:999px;background:${goalMet?'#6EE7B7':'#F5A623'};width:${goalPct}%;transition:width 0.5s"></div>
+              </div>
+              ${goalMet ? '' : `<div style="font-size:10px;opacity:0.55;font-weight:700;margin-top:5px">${S.dailyGoal - todayCount} more lesson${S.dailyGoal-todayCount>1?'s':''} to hit your goal</div>`}
             </div>
           </div>
         </div>
