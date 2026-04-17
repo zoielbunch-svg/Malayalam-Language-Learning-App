@@ -436,17 +436,23 @@ function loadProgress() {
     if (p) {
       S.xp                = p.xp                ?? 0;
       S.hearts            = p.hearts            ?? 5;
-      S.done              = new Set(p.done       ?? []);
+      S.done              = new Set(Array.isArray(p.done) ? p.done : []);
       S.streak            = p.streak            ?? 0;
       S.lastDay           = p.lastDay           ?? null;
       S.stats             = p.stats             ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{} };
+      if (!S.stats.lessonAcc)  S.stats.lessonAcc  = {};
+      if (!S.stats.wrongItems) S.stats.wrongItems = {};
+      if (!S.stats.xpByDay)    S.stats.xpByDay    = {};
       S.onboarded         = p.onboarded         ?? false;
       S.mode              = p.mode              ?? 'full';
       S.dailyGoal         = p.dailyGoal         ?? 1;
       S.reminderTime      = p.reminderTime      ?? null;
       S.lessonsTodayCount = p.lessonsTodayCount ?? 0;
     }
-  } catch(e) {}
+  } catch(e) {
+    // Corrupt data — reset to defaults but don't crash
+    console.warn('Could not load progress:', e);
+  }
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (S.lastDay !== today) { S.hearts = 5; S.lessonsTodayCount = 0; }
