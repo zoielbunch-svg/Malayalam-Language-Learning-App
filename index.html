@@ -305,6 +305,98 @@ const MATRA_LESSONS = [
 ];
 LESSONS.push(...MATRA_LESSONS);
 
+// ── NEW CONTENT LESSONS ──────────────────────────────────────────────
+const CONTENT_LESSONS = [
+
+  // Chillu Letters
+  { id:21, title:'Chillu Letters', sub:'ൻ · ർ · ൽ · ൾ · ൺ', xp:20, emoji:'🔚', ex:[
+    {t:'INTRO', ml:'ൻ', rom:'n',  hint:'Final form of ന — a crisp final n at end of syllables', eg:'അവൻ · avan · he / that man'},
+    {t:'MC', ml:'ൻ', q:'ൻ is the final (chillu) form of which letter?', ans:'ന', opts:['ന','ണ','മ','ങ']},
+    {t:'INTRO', ml:'ർ', rom:'r',  hint:'Final form of ര — a clean final r sound', eg:'അവർ · avar · they'},
+    {t:'MC', ml:'ർ', q:'What sound does ർ make?', ans:'r', opts:['r','rr','l','n']},
+    {t:'INTRO', ml:'ൽ', rom:'l',  hint:'Final form of ല — soft final l', eg:'കൽ · kal · stone'},
+    {t:'INTRO', ml:'ൾ', rom:'ll', hint:'Final form of ള — retroflex final l, unique to Malayalam', eg:'അവൾ · avaL · she / that woman'},
+    {t:'MC', ml:'ൾ', q:'What sound does ൾ make?', ans:'ll', opts:['l','ll','r','n']},
+    {t:'INTRO', ml:'ൺ', rom:'nn', hint:'Final form of ണ — retroflex final n', eg:'ആൺ · aan · male'},
+    {t:'MATCH', pairs:[{ml:'ൻ',rom:'n'},{ml:'ർ',rom:'r'},{ml:'ൽ',rom:'l'},{ml:'ൾ',rom:'ll'}]},
+    {t:'FREE', q:'What does അവൾ (avaL) mean?', ans:'she', alts:['her','she/her','that woman'], hint:'👩 The feminine of അവൻ (he)'},
+  ]},
+
+  // Food & Drink
+  { id:22, title:'Food & Drink', sub:'ഭക്ഷണം · ചോറ് · ചായ', xp:20, emoji:'🍛', ex:[
+    {t:'VOCAB', ml:'ഭക്ഷണം', rom:'bhakshanam', eng:'food', note:'You learned ഭ in the labial stops lesson!'},
+    {t:'VOCAB', ml:'ചോറ്', rom:'choru', eng:'rice (cooked)', note:'The staple of Kerala — ചോറ് specifically means cooked rice'},
+    {t:'MC', ml:'ചോറ്', q:'What does ചോറ് mean?', ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
+    {t:'VOCAB', ml:'ചായ', rom:'chaaya', eng:'tea', note:'Kerala is famous for strong tea — കട്ടൻ ചായ (kattan chaaya) is the classic'},
+    {t:'VOCAB', ml:'വെള്ളം', rom:'vellam', eng:'water (colloquial)', note:'More common in everyday speech than ജലം'},
+    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water', opts:['water','milk','juice','tea']},
+    {t:'VOCAB', ml:'കഴിക്കുക', rom:'kazhikkuka', eng:'to eat', note:'കഴിക്കൂ = please eat — you saw this in an earlier sentence!'},
+    {t:'VOCAB', ml:'കുടിക്കുക', rom:'kudikkuka', eng:'to drink', note:'കുടിക്കൂ = please drink'},
+    {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'bhakshanam'},{ml:'ചോറ്',rom:'choru'},{ml:'ചായ',rom:'chaaya'},{ml:'വെള്ളം',rom:'vellam'}]},
+    {t:'SENT', ml:'ചോറ് കഴിക്കൂ', rom:'choru kazhikkoo', eng:'Please eat rice', words:[{ml:'ചോറ്',eng:'rice'},{ml:'കഴിക്കൂ',eng:'please eat'}]},
+    {t:'FREE', q:'How do you say "tea" in Malayalam? (romanization)', ans:'chaaya', hint:'☕ Kerala\'s favourite drink'},
+  ]},
+
+  // Colors
+  { id:23, title:'Colors', sub:'ചുവപ്പ് · നീല · പച്ച', xp:20, emoji:'🎨', ex:[
+    {t:'VOCAB', ml:'ചുവപ്പ്', rom:'chuvappu', eng:'red', note:'ചുവന്ന (chuvanna) = red (adjective form used before nouns)'},
+    {t:'MC', ml:'ചുവപ്പ്', q:'What color is ചുവപ്പ്?', ans:'red', opts:['red','blue','green','yellow']},
+    {t:'VOCAB', ml:'നീല', rom:'neela', eng:'blue', note:'കടൽ നീലം ആണ് — the sea is blue — you learned this sentence!'},
+    {t:'VOCAB', ml:'പച്ച', rom:'pacha', eng:'green', note:'പച്ചക്കറി (pachakkari) = vegetables — literally "green things"!'},
+    {t:'MC', ml:'പച്ച', q:'What color is പച്ച?', ans:'green', opts:['yellow','green','red','white']},
+    {t:'VOCAB', ml:'മഞ്ഞ', rom:'manja', eng:'yellow', note:'മഞ്ഞൾ (manjal) = turmeric — the spice that gives yellow its name'},
+    {t:'VOCAB', ml:'വെള്ള', rom:'veLLa', eng:'white', note:'Related to വെള്ളം (water) — both suggest clarity'},
+    {t:'VOCAB', ml:'കറുപ്പ്', rom:'karuppu', eng:'black', note:'കറുത്ത (karutta) = black (adjective form)'},
+    {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'chuvappu'},{ml:'നീല',rom:'neela'},{ml:'പച്ച',rom:'pacha'},{ml:'മഞ്ഞ',rom:'manja'}]},
+    {t:'FREE', q:'What does നീല (neela) mean?', ans:'blue', hint:'🌊 Color of the sea — കടൽ നീലം ആണ്'},
+  ]},
+
+  // Family
+  { id:24, title:'Family', sub:'കുടുംബം', xp:20, emoji:'👨‍👩‍👧', ex:[
+    {t:'VOCAB', ml:'കുടുംബം', rom:'kudumbam', eng:'family', note:'The heart of Malayalam culture — family terms are used as respectful address too'},
+    {t:'VOCAB', ml:'ചേട്ടൻ', rom:'chettan', eng:'older brother', note:'Also used to respectfully address any older male — very common in Kerala'},
+    {t:'MC', ml:'ചേട്ടൻ', q:'What does ചേട്ടൻ mean?', ans:'older brother', opts:['older brother','younger brother','older sister','father']},
+    {t:'VOCAB', ml:'ചേച്ചി', rom:'chechi', eng:'older sister', note:'Similarly used to address older women respectfully'},
+    {t:'VOCAB', ml:'അനിയൻ', rom:'aniyan', eng:'younger brother', note:'അനിയൻ vs ചേട്ടൻ — younger vs older male sibling'},
+    {t:'VOCAB', ml:'അനിയത്തി', rom:'aniyathi', eng:'younger sister', note:'The feminine counterpart of അനിയൻ'},
+    {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister', opts:['younger sister','older sister','mother','grandmother']},
+    {t:'VOCAB', ml:'മുത്തശ്ശി', rom:'muthashi', eng:'grandmother', note:'Warm term — also used affectionately for any elderly woman'},
+    {t:'VOCAB', ml:'മുത്തച്ഛൻ', rom:'muthachan', eng:'grandfather', note:'Warm term — also used affectionately for any elderly man'},
+    {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'chettan'},{ml:'ചേച്ചി',rom:'chechi'},{ml:'അനിയൻ',rom:'aniyan'},{ml:'അനിയത്തി',rom:'aniyathi'}]},
+    {t:'FREE', q:'What does ചേട്ടൻ (chettan) mean?', ans:'older brother', alts:['elder brother','big brother','older bro','elder bro'], hint:'👦 The elder male sibling — also a polite address'},
+  ]},
+
+  // Basic Conversation
+  { id:25, title:'Introductions', sub:'My name is… · I\'m learning', xp:25, emoji:'💬', ex:[
+    {t:'VOCAB', ml:'എന്റെ പേര്', rom:'ente peru', eng:'my name', note:'എന്റെ (ente) = my · പേര് (peru) = name'},
+    {t:'SENT', ml:'എന്റെ പേര് ... ആണ്', rom:'ente peru ... aanu', eng:'My name is ...', words:[{ml:'എന്റെ',eng:'my'},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}]},
+    {t:'VOCAB', ml:'നിങ്ങളുടെ പേര് എന്താണ്?', rom:'ningaLude peru enthaanu?', eng:'What is your name?', note:'നിങ്ങൾ (ningaL) = you (formal) · എന്ത് (enthu) = what'},
+    {t:'MC', ml:'എന്റെ', q:'What does എന്റെ (ente) mean?', ans:'my', opts:['my','your','his','their']},
+    {t:'VOCAB', ml:'മനസ്സിലായി', rom:'manassilayi', eng:'I understand / I got it', note:'Literally "it entered the mind" — a beautiful expression'},
+    {t:'VOCAB', ml:'മനസ്സിലായില്ല', rom:'manassilayilla', eng:"I don't understand", note:'Add ഇല്ല (illa = no/not) to negate — you know ഇല്ല already!'},
+    {t:'MC', ml:'മനസ്സിലായില്ല', q:'What does മനസ്സിലായില്ല mean?', ans:"I don't understand", opts:["I don't understand","I understand","I don't know","I agree"]},
+    {t:'VOCAB', ml:'ദയവായി പതുക്കെ പറയൂ', rom:'dayavayi pathukkhe parayoo', eng:'Please speak slowly', note:'The most useful phrase for any language learner! 😄'},
+    {t:'SENT', ml:'ഞാൻ മലയാളം പഠിക്കുകയാണ്', rom:'njaan malayaLam paThikkukayaanu', eng:'I am learning Malayalam', words:[{ml:'ഞാൻ',eng:'I'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പഠിക്കുകയാണ്',eng:'am learning'}]},
+    {t:'FREE', q:'What does മനസ്സിലായി (manassilayi) mean?', ans:'I understand', alts:['understood','i got it','got it','i understand'], hint:'💡 Literally "it entered my mind"'},
+  ]},
+
+  // Days of the Week
+  { id:26, title:'Days of the Week', sub:'തിങ്കൾ · ചൊവ്വ · ബുധൻ…', xp:20, emoji:'📅', ex:[
+    {t:'INTRO', ml:'തിങ്കൾ', rom:'thingaL', hint:'Monday — named after the moon (thingaL = moon)', eg:'തിങ്കൾ · thingaL · Monday'},
+    {t:'INTRO', ml:'ചൊവ്വ', rom:'chova',   hint:'Tuesday — named after Mars', eg:'ചൊവ്വ · chova · Tuesday'},
+    {t:'MC', ml:'ചൊവ്വ', q:'Which day is ചൊവ്വ?', ans:'Tuesday', opts:['Monday','Tuesday','Wednesday','Thursday']},
+    {t:'INTRO', ml:'ബുധൻ', rom:'budhan',   hint:'Wednesday — named after Mercury', eg:'ബുധൻ · budhan · Wednesday'},
+    {t:'INTRO', ml:'വ്യാഴം', rom:'vyaazham', hint:'Thursday — named after Jupiter', eg:'വ്യാഴം · vyaazham · Thursday'},
+    {t:'INTRO', ml:'വെള്ളി', rom:'veLLi',   hint:'Friday — named after Venus (also means silver!)', eg:'വെള്ളി · veLLi · Friday'},
+    {t:'MC', ml:'വെള്ളി', q:'Which day is വെള്ളി?', ans:'Friday', opts:['Wednesday','Thursday','Friday','Saturday']},
+    {t:'INTRO', ml:'ശനി', rom:'shani',     hint:'Saturday — named after Saturn', eg:'ശനി · shani · Saturday'},
+    {t:'INTRO', ml:'ഞായർ', rom:'njaayar',  hint:'Sunday — named after the sun', eg:'ഞായർ · njaayar · Sunday'},
+    {t:'MATCH', pairs:[{ml:'തിങ്കൾ',rom:'thingaL'},{ml:'ചൊവ്വ',rom:'chova'},{ml:'ബുധൻ',rom:'budhan'},{ml:'വ്യാഴം',rom:'vyaazham'}]},
+    {t:'FREE', q:'How do you say "Sunday" in Malayalam? (romanization)', ans:'njaayar', hint:'☀️ Named after the sun'},
+  ]},
+];
+LESSONS.push(...CONTENT_LESSONS);
+
 const UNITS = [
   {id:1, title:'Vowels',              sub:'13 vowel sounds',             icon:'🌊', color:'#0D5C39', lessonIds:[1,2,3]},
   {id:8, title:'Vowel Checkpoint',    sub:'Review before consonants',    icon:'🎯', color:'#6B7280', lessonIds:[16]},
@@ -316,7 +408,10 @@ const UNITS = [
   {id:6, title:'Phrases',             sub:'Greetings & essentials',      icon:'🙏', color:'#7C2D12', lessonIds:[4]},
   {id:10,title:'Full Review',         sub:'Complete alphabet + vocab',   icon:'🏆', color:'#92400E', lessonIds:[18]},
   {id:11,title:'Matras',              sub:'Vowel signs on consonants',   icon:'✍️', color:'#0E7490', lessonIds:[19,20]},
+  {id:12,title:'Chillu Letters',      sub:'Final consonant forms',       icon:'🔚', color:'#4C1D95', lessonIds:[21]},
   {id:7, title:'Numbers',             sub:'1 through 20',                icon:'🔢', color:'#B45309', lessonIds:[13,14,15]},
+  {id:13,title:'Everyday Words',      sub:'Food · Colors · Family',      icon:'🏡', color:'#0891B2', lessonIds:[22,23,24]},
+  {id:14,title:'Days & Conversation', sub:'Days of the week · Introductions', icon:'💬', color:'#7C3AED', lessonIds:[26,25]},
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -457,7 +552,7 @@ const getEx      = () => getLesson()?.ex[S.ei];
 const lessonOrder = UNITS.flatMap(u => u.lessonIds);
 
 // Language-first mode: only these units are shown
-const LF_UNIT_IDS   = [6, 7];  // Phrases, Numbers
+const LF_UNIT_IDS   = [6, 7, 13, 14];  // Phrases, Numbers, Everyday Words, Days & Conversation
 const LF_LESSON_IDS = UNITS.filter(u=>LF_UNIT_IDS.includes(u.id)).flatMap(u=>u.lessonIds);
 
 const isLocked = id => {
