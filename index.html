@@ -478,6 +478,8 @@ let S = {
   practiceQueue: [], practiceEi: 0, practiceScore: 0,
   // daily goal tracking
   lessonsTodayCount: 0,
+  // learn tab
+  learnTab: 'script',
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -807,7 +809,7 @@ function buildApp() {
   if (S.screen==='practice')         return buildPractice();
   if (S.screen==='practice-session') return buildPracticeSession();
   if (S.screen==='practice-results') return buildPracticeResults();
-  if (S.screen==='reference')        return buildReference();
+  if (S.screen==='learn')            return buildLearn();
   return buildLesson();
 }
 
@@ -1243,10 +1245,10 @@ function buildMatra(e) {
 // ─── NAV BAR ────────────────────────────────────────────────────────
 function buildNav(active) {
   const tabs = [
-    {id:'home',      icon:'🏠', label:'Home'},
-    {id:'practice',  icon:'🎯', label:'Practice'},
-    {id:'reference', icon:'📖', label:'Reference'},
-    {id:'stats',     icon:'📊', label:'Stats'},
+    {id:'home',     icon:'🏠', label:'Home'},
+    {id:'practice', icon:'🎯', label:'Practice'},
+    {id:'learn',    icon:'📚', label:'Learn'},
+    {id:'stats',    icon:'📊', label:'Stats'},
   ];
   const btns = tabs.map(t => `
     <button data-action="nav-${t.id}" style="flex:1;padding:10px 4px 8px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px">
@@ -1373,32 +1375,86 @@ function buildPractice() {
     ${buildNav('practice')}`;
 }
 
-// ─── REFERENCE CARD ─────────────────────────────────────────────────
-function buildReference() {
-  const card = (ml, rom, color) => `
-    <button data-action="speak" data-text="${esc(ml)}" style="background:#fff;border:1px solid #E7E5E4;border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;flex:1;min-width:54px">
+// ─── LEARN TAB ──────────────────────────────────────────────────────
+// Coverage maps: which lessons unlock which sections
+const SCRIPT_COVERAGE = {
+  vowels:     [1,2,3],
+  consonants: [5,6,7,8,9,10,11,12],
+  matras:     [19,20],
+  chillu:     [21],
+  numbers:    [13,14,15],
+};
+const GRAMMAR_COVERAGE = {
+  pronouns:   [],   // lesson IDs added as grammar units are built
+  toBe:       [],
+  presentTense: [],
+  pastTense:  [],
+  questions:  [],
+  future:     [],
+};
+const sectionDone = ids => ids.length === 0 ? false : ids.some(id => S.done.has(id));
+
+function buildLearn() {
+  const isScript = S.learnTab === 'script';
+  const toggle = `
+    <div style="display:flex;background:#F7F2EB;border-radius:12px;padding:3px;margin:16px 16px 0;max-width:488px;margin-left:auto;margin-right:auto">
+      <button data-action="learn-tab" data-val="script"
+        style="flex:1;padding:10px;border:none;border-radius:9px;font-size:13px;font-weight:900;cursor:pointer;background:${isScript?'#fff':'transparent'};color:${isScript?'#0D5C39':'#78716C'};box-shadow:${isScript?'0 1px 4px rgba(0,0,0,0.10)':'none'};transition:all 0.15s">
+        📜 Script
+      </button>
+      <button data-action="learn-tab" data-val="grammar"
+        style="flex:1;padding:10px;border:none;border-radius:9px;font-size:13px;font-weight:900;cursor:pointer;background:${!isScript?'#fff':'transparent'};color:${!isScript?'#0D5C39':'#78716C'};box-shadow:${!isScript?'0 1px 4px rgba(0,0,0,0.10)':'none'};transition:all 0.15s">
+        📐 Grammar
+      </button>
+    </div>`;
+
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
+      <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:24px 20px 0;color:white">
+        <div style="max-width:520px;margin:0 auto">
+          <div style="font-size:22px;font-weight:900">Learn 📚</div>
+          <div style="font-size:13px;opacity:0.65;font-weight:700;margin-top:3px">${isScript?'Tap any character to hear it 🔈':'Greyed = not yet covered in lessons — tap to preview'}</div>
+        </div>
+        ${toggle}
+      </div>
+      <div style="max-width:520px;margin:0 auto;padding:16px 16px 0">
+        ${isScript ? buildLearnScript() : buildLearnGrammar()}
+      </div>
+    </div>
+    ${buildNav('learn')}`;
+}
+
+function buildLearnScript() {
+  const card = (ml, rom, color, covered) => `
+    <button data-action="speak" data-text="${esc(ml)}"
+      style="background:#fff;border:1px solid #E7E5E4;border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;flex:1;min-width:54px;opacity:${covered?1:0.38}">
       <div class="ml" style="font-size:26px;color:${color};line-height:1.1">${ml}</div>
-      <div style="font-size:9px;font-weight:800;color:#78716C;margin-top:3px;letter-spacing:0.3px">${rom}</div>
+      <div style="font-size:9px;font-weight:800;color:#78716C;margin-top:3px">${rom}</div>
     </button>`;
 
-  const section = (title, icon, color, content) => `
-    <div style="margin-bottom:24px">
+  const section = (title, icon, color, content, covered) => `
+    <div style="margin-bottom:24px;opacity:${covered?1:0.55}">
       <div style="background:${color};border-radius:14px;padding:10px 16px;color:white;display:flex;align-items:center;gap:8px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.12)">
         <span style="font-size:18px">${icon}</span>
         <span style="font-size:14px;font-weight:900">${title}</span>
+        ${covered?'':'<span style="margin-left:auto;font-size:11px;opacity:0.7">Not yet covered</span>'}
       </div>
       ${content}
     </div>`;
 
   const row = cards => `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px">${cards}</div>`;
 
-  // ── Vowels ──
+  const vc = sectionDone(SCRIPT_COVERAGE.vowels);
+  const cc = sectionDone(SCRIPT_COVERAGE.consonants);
+  const mc = sectionDone(SCRIPT_COVERAGE.matras);
+  const lc = sectionDone(SCRIPT_COVERAGE.chillu);
+  const nc = sectionDone(SCRIPT_COVERAGE.numbers);
+
   const vowelsHTML = row([
     ['അ','a'],['ആ','aa'],['ഇ','i'],['ഈ','ii'],['ഉ','u'],['ഊ','uu'],
     ['എ','e'],['ഏ','ee'],['ഐ','ai'],['ഒ','o'],['ഓ','oo'],['ഔ','au'],
-  ].map(([ml,rom])=>card(ml,rom,'#0D5C39')).join(''));
+  ].map(([ml,rom])=>card(ml,rom,'#0D5C39',vc)).join(''));
 
-  // ── Consonants by group ──
   const cGroups = [
     {label:'Velar',     color:'#1D4ED8', letters:[['ക','ka'],['ഖ','kha'],['ഗ','ga'],['ഘ','gha'],['ങ','nga']]},
     {label:'Palatal',   color:'#1D4ED8', letters:[['ച','cha'],['ഛ','chha'],['ജ','ja'],['ഝ','jha'],['ഞ','nya']]},
@@ -1412,73 +1468,117 @@ function buildReference() {
   const consHTML = cGroups.map(g => `
     <div style="margin-bottom:10px">
       <div style="font-size:9px;font-weight:900;color:#A8A29E;letter-spacing:1.5px;margin-bottom:5px">${g.label.toUpperCase()}</div>
-      ${row(g.letters.map(([ml,rom])=>card(ml,rom,g.color)).join(''))}
+      ${row(g.letters.map(([ml,rom])=>card(ml,rom,g.color,cc)).join(''))}
     </div>`).join('');
 
-  // ── Matras ──
   const matrasHTML = `
-    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Using ക (ka) as base — tap any to hear 🔈</div>
+    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Using ക (ka) as base — tap to hear 🔈</div>
     ${row([['കാ','kaa'],['കി','ki'],['കീ','kii'],['കു','ku'],['കൂ','kuu'],
            ['കെ','ke'],['കേ','kee'],['കൈ','kai'],['കൊ','ko'],['കോ','koo'],['ക്','k·']
-    ].map(([ml,rom])=>card(ml,rom,'#0E7490')).join(''))}`;
+    ].map(([ml,rom])=>card(ml,rom,'#0E7490',mc)).join(''))}`;
 
-  // ── Chillu ──
   const chilluHTML = `
-    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Final consonant forms — appear at end of syllables</div>
+    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Final consonant forms</div>
     ${row([['ൻ','n'],['ർ','r'],['ൽ','l'],['ൾ','ll'],['ൺ','nn']
-    ].map(([ml,rom])=>card(ml,rom,'#4C1D95')).join(''))}`;
+    ].map(([ml,rom])=>card(ml,rom,'#4C1D95',lc)).join(''))}`;
 
-  // ── Numbers ──
   const numsHTML = row([
-    ['ഒന്ന്','1 · onnu'],['രണ്ട്','2 · randu'],['മൂന്ന്','3 · moonnu'],['നാല്','4 · naalu'],
-    ['അഞ്ച്','5 · anchu'],['ആറ്','6 · aaru'],['ഏഴ്','7 · eezhu'],['എട്ട്','8 · ettu'],
-    ['ഒമ്പത്','9 · ombathu'],['പത്ത്','10 · pathu'],['ഇരുപത്','20 · irupathu'],
-  ].map(([ml,rom])=>card(ml,rom,'#B45309')).join(''));
-
-  // ── Key Phrases ──
-  const phrases = [
-    ['നമസ്കാരം','namaskaram','hello / greetings'],
-    ['നന്ദി','nandi','thank you'],
-    ['ശരി','shari','okay / alright'],
-    ['ഇല്ല','illa','no / not there'],
-    ['എങ്ങനെ ഉണ്ട്?','engane undu?','how are you?'],
-    ['അമ്മ','amma','mother'],
-    ['അച്ഛൻ','achan','father'],
-    ['ഞാൻ','njaan','I / me'],
-    ['ഒരു','oru','a / an / one'],
-    ['ജലം','jalam','water'],
-    ['ആന','aana','elephant'],
-    ['മഴ','mazha','rain'],
-  ];
-  const phrasesHTML = `<div style="display:flex;flex-direction:column;gap:7px">${phrases.map(([ml,rom,eng])=>`
-    <button data-action="speak" data-text="${esc(ml)}" style="background:#fff;border:1px solid #E7E5E4;border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;width:100%">
-      <span class="ml" style="font-size:19px;color:#7C2D12;min-width:100px;text-align:left">${ml}</span>
-      <div style="flex:1;text-align:left">
-        <div style="font-size:12px;font-weight:900;color:#1C1917">${rom}</div>
-        <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:1px">${eng}</div>
-      </div>
-      <span style="color:#F5A623;flex-shrink:0">🔈</span>
-    </button>`).join('')}</div>`;
+    ['ഒന്ന്','1'],['രണ്ട്','2'],['മൂന്ന്','3'],['നാല്','4'],['അഞ്ച്','5'],
+    ['ആറ്','6'],['ഏഴ്','7'],['എട്ട്','8'],['ഒമ്പത്','9'],['പത്ത്','10'],['ഇരുപത്','20'],
+  ].map(([ml,rom])=>card(ml,rom,'#B45309',nc)).join(''));
 
   return `
-    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
-      <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:24px 20px;color:white">
-        <div style="max-width:520px;margin:0 auto">
-          <div style="font-size:22px;font-weight:900">Quick Reference 📖</div>
-          <div style="font-size:13px;opacity:0.65;font-weight:700;margin-top:3px">Full alphabet · matras · chillu · phrases · Tap any to hear 🔈</div>
-        </div>
-      </div>
-      <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
-        ${section('Vowels · സ്വരങ്ങൾ',       '🌊', '#0D5C39', vowelsHTML)}
-        ${section('Consonants · വ്യഞ്ജനങ്ങൾ', '🔤', '#1D4ED8', consHTML)}
-        ${section('Matras · Vowel Signs',      '✍️', '#0E7490', matrasHTML)}
-        ${section('Chillu Letters',            '⭐', '#4C1D95', chilluHTML)}
-        ${section('Numbers · സംഖ്യകൾ',        '🔢', '#B45309', numsHTML)}
-        ${section('Key Phrases · പ്രയോഗങ്ങൾ', '🙏', '#7C2D12', phrasesHTML)}
-      </div>
-    </div>
-    ${buildNav('reference')}`;
+    ${section('Vowels · സ്വരങ്ങൾ',       '🌊', '#0D5C39', vowelsHTML,  vc)}
+    ${section('Consonants · വ്യഞ്ജനങ്ങൾ', '🔤', '#1D4ED8', consHTML,   cc)}
+    ${section('Matras · Vowel Signs',      '✍️', '#0E7490', matrasHTML, mc)}
+    ${section('Chillu Letters',            '⭐', '#4C1D95', chilluHTML, lc)}
+    ${section('Numbers · സംഖ്യകൾ',        '🔢', '#B45309', numsHTML,   nc)}`;
 }
+
+function buildLearnGrammar() {
+  const GRAMMAR_SECTIONS = [
+    { title:"Pronouns", icon:"🙋", color:"#1D4ED8", coverage: GRAMMAR_COVERAGE.pronouns,
+      items:[
+        {label:"ഞാൻ",     rom:"njaan",    eng:"I (nominative)"},
+        {label:"നിങ്ങൾ",  rom:"ningaL",   eng:"you (formal)"},
+        {label:"നീ",      rom:"nee",      eng:"you (informal)"},
+        {label:"അവൻ",    rom:"avan",     eng:"he"},
+        {label:"അവൾ",    rom:"avaL",     eng:"she"},
+        {label:"അവർ",    rom:"avar",     eng:"they"},
+        {label:"ഞങ്ങൾ",  rom:"njangaL",  eng:"we (excl.)"},
+        {label:"നമ്മൾ",  rom:"nammaL",   eng:"we (incl.)"},
+      ]},
+    { title:'The "To Be" System', icon:"🔗", color:"#7C2D12", coverage: GRAMMAR_COVERAGE.toBe,
+      items:[
+        {label:"ആണ്",   rom:"aanu",  eng:"is/am/are (identity)  — അവൾ ടീച്ചർ ആണ്"},
+        {label:"ഉണ്ട്", rom:"undu",  eng:"exists / there is / I have — വെള്ളം ഉണ്ട്"},
+        {label:"ഇല്ല",  rom:"illa",  eng:"is not / there is no — വെള്ളം ഇല്ല"},
+      ]},
+    { title:"Cases", icon:"📐", color:"#065F46", coverage: GRAMMAR_COVERAGE.pronouns,
+      items:[
+        {label:"Nominative", rom:"subject",   eng:"ഞാൻ — I (doing the action)"},
+        {label:"Dative",     rom:"+ക്ക്",     eng:"എനിക്ക് — to me / for me (want, need, like)"},
+        {label:"Accusative", rom:"+എ",        eng:"എന്നെ — me (receiving the action)"},
+        {label:"Genitive",   rom:"+ഉടെ",      eng:"എന്റെ — my (possession)"},
+        {label:"Locative",   rom:"+ഇൽ",       eng:"വീട്ടിൽ — at home (place)"},
+        {label:"Sociative",  rom:"+ഓടെ",      eng:"എന്നോടെ — with me"},
+        {label:"Ablative",   rom:"+ഇൽ നിന്ന്",eng:"വീട്ടിൽ നിന്ന് — from home"},
+      ]},
+    { title:"Present Tense", icon:"▶️", color:"#0891B2", coverage: GRAMMAR_COVERAGE.presentTense,
+      items:[
+        {label:"കഴിക്കുന്നു", rom:"kazhikkunnu",  eng:"(I/he/she) eat/s"},
+        {label:"പോകുന്നു",   rom:"pokunnu",       eng:"(I/he/she) go/goes"},
+        {label:"വരുന്നു",    rom:"varunnu",       eng:"(I/he/she) come/s"},
+        {label:"കാണുന്നു",   rom:"kaanunnu",      eng:"(I/he/she) see/s"},
+      ]},
+    { title:"Past Tense", icon:"⏪", color:"#9A3412", coverage: GRAMMAR_COVERAGE.pastTense,
+      items:[
+        {label:"കഴിച്ചു",  rom:"kazhichu",  eng:"ate"},
+        {label:"പോയി",    rom:"poyi",      eng:"went"},
+        {label:"വന്നു",   rom:"vannu",     eng:"came"},
+        {label:"കണ്ടു",   rom:"kandu",     eng:"saw"},
+      ]},
+    { title:"Questions", icon:"❓", color:"#4C1D95", coverage: GRAMMAR_COVERAGE.questions,
+      items:[
+        {label:"എന്ത്",   rom:"enthu",    eng:"what"},
+        {label:"എവിടെ",  rom:"evide",    eng:"where"},
+        {label:"എപ്പോൾ", rom:"eppol",    eng:"when"},
+        {label:"ആര്",    rom:"aar",      eng:"who"},
+        {label:"എന്തുകൊണ്ട്",rom:"enthukond",eng:"why"},
+        {label:"എങ്ങനെ", rom:"engane",   eng:"how"},
+      ]},
+    { title:"Future & Intention", icon:"⏩", color:"#B45309", coverage: GRAMMAR_COVERAGE.future,
+      items:[
+        {label:"പോകും",       rom:"pokum",          eng:"will go"},
+        {label:"പോകണം",      rom:"pokanam",        eng:"need to go / want to go"},
+        {label:"പോകട്ടെ",    rom:"pokatte",        eng:"let (me/it) go"},
+      ]},
+  ];
+
+  return GRAMMAR_SECTIONS.map(sec => {
+    const covered = sectionDone(sec.coverage);
+    const itemsHTML = sec.items.map(item => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F7F2EB;opacity:${covered?1:0.5}">
+        <div style="min-width:110px">
+          <div class="ml" style="font-size:16px;color:#0D5C39;font-weight:700">${item.label}</div>
+          <div style="font-size:10px;color:#F5A623;font-weight:800;margin-top:1px">${item.rom}</div>
+        </div>
+        <div style="font-size:12px;color:#78716C;font-weight:700;flex:1;line-height:1.4">${item.eng}</div>
+      </div>`).join('');
+
+    return `
+      <div style="margin-bottom:20px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.07)">
+        <div style="background:${sec.color};padding:12px 16px;color:white;display:flex;align-items:center;gap:8px;opacity:${covered?1:0.6}">
+          <span style="font-size:16px">${sec.icon}</span>
+          <span style="font-size:14px;font-weight:900">${sec.title}</span>
+          ${covered?'<span style="margin-left:auto;font-size:11px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:99px">✓ covered</span>':'<span style="margin-left:auto;font-size:11px;opacity:0.7">complete lessons to unlock</span>'}
+        </div>
+        <div style="padding:0 14px">${itemsHTML}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── PRACTICE LANDING ───────────────────────────────────────────────
 
 // ─── PRACTICE LANDING ───────────────────────────────────────────────
 function buildPractice() {
@@ -1627,8 +1727,9 @@ document.addEventListener('click', e => {
   if (action==='go-home')      { S.screen='home'; render(); }
   else if (action==='nav-home')     { S.screen='home';      render(); }
   else if (action==='nav-practice') { S.screen='practice';  render(); }
-  else if (action==='nav-reference'){ S.screen='reference'; render(); }
+  else if (action==='nav-learn')    { S.screen='learn';     render(); }
   else if (action==='nav-stats')    { S.screen='stats';     render(); }
+  else if (action==='learn-tab')    { S.learnTab=el.dataset.val; render(); }
   else if (action==='ob-mode') {
     S.mode = el.dataset.val;
     S.onboardStep = 1;
