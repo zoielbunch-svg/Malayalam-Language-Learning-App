@@ -12,6 +12,17 @@
   button:active { opacity: 0.85; }
   input { font-family: 'Nunito', sans-serif; }
   .ml { font-family: 'Noto Serif Malayalam', serif; }
+  @keyframes popIn   { 0%{transform:scale(0.4);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+  @keyframes slideUp { 0%{transform:translateY(40px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+  @keyframes xpPop   { 0%{transform:scale(0.5) rotate(-8deg);opacity:0} 70%{transform:scale(1.2) rotate(3deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+  @keyframes confetti {
+    0%   { transform: translateY(-20px) rotate(0deg);   opacity:1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity:0; }
+  }
+  .anim-pop    { animation: popIn   0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .anim-up     { animation: slideUp 0.4s ease both; }
+  .anim-xp     { animation: xpPop  0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
+  .confetti-piece { position:fixed; width:10px; height:10px; border-radius:2px; animation: confetti linear forwards; pointer-events:none; z-index:999; }
 </style>
 </head>
 <body>
@@ -129,13 +140,183 @@ const LESSONS = [
   ],{t:'FREE',q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when you chop it!'}),
 ];
 
+// Numbers lessons
+const NUM_LESSONS = [
+  { id:13, title:'Numbers 1–5', sub:'ഒന്ന് · രണ്ട് · മൂന്ന്…', xp:20, emoji:'🔢', ex:[
+    {t:'INTRO',ml:'ഒന്ന്', rom:'onnu', hint:'1 — one',  eg:'ഒന്ന് · onnu · one'},
+    {t:'MC',   ml:'ഒന്ന്', q:'What number is this?',ans:'1 (one)',opts:['1 (one)','2 (two)','3 (three)','5 (five)']},
+    {t:'INTRO',ml:'രണ്ട്', rom:'randu', hint:'2 — two',  eg:'രണ്ട് · randu · two'},
+    {t:'MC',   ml:'രണ്ട്', q:'What number is this?',ans:'2 (two)',opts:['1 (one)','2 (two)','4 (four)','6 (six)']},
+    {t:'INTRO',ml:'മൂന്ന്',rom:'moonnu',hint:'3 — three',eg:'മൂന്ന് · moonnu · three'},
+    {t:'MC',   ml:'മൂന്ന്',q:'What number is this?',ans:'3 (three)',opts:['2 (two)','3 (three)','7 (seven)','9 (nine)']},
+    {t:'INTRO',ml:'നാല്', rom:'naalu', hint:'4 — four',  eg:'നാല് · naalu · four'},
+    {t:'INTRO',ml:'അഞ്ച്', rom:'anchu', hint:'5 — five',  eg:'അഞ്ച് · anchu · five'},
+    {t:'MATCH',pairs:[{ml:'ഒന്ന്',rom:'onnu'},{ml:'രണ്ട്',rom:'randu'},{ml:'മൂന്ന്',rom:'moonnu'},{ml:'നാല്',rom:'naalu'}]},
+    {t:'FREE', q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
+  ]},
+  { id:14, title:'Numbers 6–10', sub:'ആറ് · ഏഴ് · എട്ട്…', xp:20, emoji:'🔣', ex:[
+    {t:'INTRO',ml:'ആറ്', rom:'aaru',  hint:'6 — six',   eg:'ആറ് · aaru · six'},
+    {t:'MC',   ml:'ആറ്', q:'What number is this?',ans:'6 (six)',opts:['5 (five)','6 (six)','7 (seven)','8 (eight)']},
+    {t:'INTRO',ml:'ഏഴ്', rom:'eezhu', hint:'7 — seven', eg:'ഏഴ് · eezhu · seven'},
+    {t:'MC',   ml:'ഏഴ്', q:'What number is this?',ans:'7 (seven)',opts:['6 (six)','7 (seven)','8 (eight)','9 (nine)']},
+    {t:'INTRO',ml:'എട്ട്',rom:'ettu',  hint:'8 — eight', eg:'എട്ട് · ettu · eight'},
+    {t:'INTRO',ml:'ഒമ്പത്',rom:'ombathu',hint:'9 — nine',eg:'ഒമ്പത് · ombathu · nine'},
+    {t:'INTRO',ml:'പത്ത്',rom:'pathu', hint:'10 — ten',  eg:'പത്ത് · pathu · ten'},
+    {t:'MATCH',pairs:[{ml:'ആറ്',rom:'aaru'},{ml:'ഏഴ്',rom:'eezhu'},{ml:'എട്ട്',rom:'ettu'},{ml:'പത്ത്',rom:'pathu'}]},
+    {t:'FREE', q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
+  ]},
+  { id:15, title:'Numbers 11–20', sub:'പതിനൊന്ന് · ഇരുപത്…', xp:25, emoji:'🔟', ex:[
+    {t:'INTRO',ml:'പതിനൊന്ന്',rom:'pathinonnu', hint:'11 — eleven',   eg:'പതിനൊന്ന് · pathinonnu · eleven'},
+    {t:'MC',   ml:'പതിനൊന്ന്',q:'What number is this?',ans:'11 (eleven)',opts:['10 (ten)','11 (eleven)','12 (twelve)','15 (fifteen)']},
+    {t:'INTRO',ml:'പന്ത്രണ്ട്',rom:'panthrandu',hint:'12 — twelve',    eg:'പന്ത്രണ്ട് · panthrandu · twelve'},
+    {t:'INTRO',ml:'പതിനഞ്ച്', rom:'pathinanchu',hint:'15 — fifteen',  eg:'പതിനഞ്ച് · pathinanchu · fifteen'},
+    {t:'INTRO',ml:'ഇരുപത്',  rom:'irupathu',   hint:'20 — twenty',   eg:'ഇരുപത് · irupathu · twenty'},
+    {t:'MC',   ml:'ഇരുപത്',  q:'What number is this?',ans:'20 (twenty)',opts:['15 (fifteen)','18 (eighteen)','20 (twenty)','25 (twenty-five)']},
+    {t:'MATCH',pairs:[{ml:'പതിനൊന്ന്',rom:'pathinonnu'},{ml:'പന്ത്രണ്ട്',rom:'panthrandu'},{ml:'പതിനഞ്ച്',rom:'pathinanchu'},{ml:'ഇരുപത്',rom:'irupathu'}]},
+    {t:'FREE', q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
+  ]},
+];
+LESSONS.push(...NUM_LESSONS);
+
+// ── VOCAB & SENTENCE CONTEXT INJECTION ──────────────────────────────
+// Adds real words and simple sentences into each alphabet lesson
+// so learners see letters in context immediately.
+const VOCAB_ADDITIONS = {
+  1: [
+    {t:'VOCAB', ml:'അച്ഛൻ', rom:'achan', eng:'father', note:'അമ്മ + അച്ഛൻ = amma + achan = mom and dad'},
+    {t:'SENT',  ml:'ആന വലുതാണ്', rom:'aana valuthaanu', eng:'The elephant is big',
+      words:[{ml:'ആന',eng:'elephant'},{ml:'വലുതാണ്',eng:'is big'}]},
+  ],
+  2: [
+    {t:'VOCAB', ml:'ഉണ്ണി', rom:'unni', eng:'young child (term of endearment)', note:'ഉണ്ണി ഉണ്ണൂ = "the child ate"'},
+    {t:'SENT',  ml:'ഊണ് കഴിക്കൂ', rom:'uunu kazhikkoo', eng:'Please eat your meal',
+      words:[{ml:'ഊണ്',eng:'meal'},{ml:'കഴിക്കൂ',eng:'please eat'}]},
+  ],
+  3: [
+    {t:'VOCAB', ml:'ഒരു', rom:'oru', eng:'one / a / an', note:'Used before nouns — ഒരു ആന = an elephant'},
+    {t:'SENT',  ml:'ഒരു ആന ഓടി', rom:'oru aana oodi', eng:'An elephant ran',
+      words:[{ml:'ഒരു',eng:'a/an'},{ml:'ആന',eng:'elephant'},{ml:'ഓടി',eng:'ran'}]},
+  ],
+  4: [
+    {t:'VOCAB', ml:'എങ്ങനെ ഉണ്ട്?', rom:'engane undu?', eng:'How are you?', note:'Natural follow-up to നമസ്കാരം'},
+    {t:'SENT',  ml:'നമസ്കാരം, എങ്ങനെ ഉണ്ട്?', rom:'namaskaram, engane undu?', eng:'Hello, how are you?',
+      words:[{ml:'നമസ്കാരം',eng:'hello'},{ml:'എങ്ങനെ ഉണ്ട്?',eng:'how are you?'}]},
+  ],
+  5: [
+    {t:'VOCAB', ml:'കടൽ', rom:'kadal', eng:'sea / ocean', note:'You learned ക — now see it in a full word!'},
+    {t:'SENT',  ml:'കടൽ നീലം ആണ്', rom:'kadal neelam aanu', eng:'The sea is blue',
+      words:[{ml:'കടൽ',eng:'sea'},{ml:'നീലം',eng:'blue'},{ml:'ആണ്',eng:'is'}]},
+  ],
+  6: [
+    {t:'VOCAB', ml:'ജലം', rom:'jalam', eng:'water', note:'ജ + ലം — you just learned ജ!'},
+    {t:'SENT',  ml:'ജലം കുടിക്കൂ', rom:'jalam kudikkoo', eng:'Drink water (please)',
+      words:[{ml:'ജലം',eng:'water'},{ml:'കുടിക്കൂ',eng:'please drink'}]},
+  ],
+  9: [
+    {t:'VOCAB', ml:'പൂ', rom:'poo', eng:'flower', note:'Simple and sweet — just two characters'},
+    {t:'SENT',  ml:'പൂ സുന്ദരം ആണ്', rom:'poo sundaram aanu', eng:'The flower is beautiful',
+      words:[{ml:'പൂ',eng:'flower'},{ml:'സുന്ദരം',eng:'beautiful'},{ml:'ആണ്',eng:'is'}]},
+  ],
+  10: [
+    {t:'VOCAB', ml:'വഴി', rom:'vazhi', eng:'road / way / path', note:'വ + ഴി — contains the special ഴ sound!'},
+    {t:'SENT',  ml:'ഈ വഴി നല്ലതാണ്', rom:'ee vazhi nallathanu', eng:'This road is good',
+      words:[{ml:'ഈ',eng:'this'},{ml:'വഴി',eng:'road'},{ml:'നല്ലതാണ്',eng:'is good'}]},
+  ],
+  11: [
+    {t:'VOCAB', ml:'ശബ്ദം', rom:'shabdam', eng:'sound / word / voice', note:'ശ — you just learned this letter!'},
+    {t:'SENT',  ml:'ശബ്ദം നല്ലതാണ്', rom:'shabdam nallathanu', eng:'The sound is good',
+      words:[{ml:'ശബ്ദം',eng:'sound'},{ml:'നല്ലതാണ്',eng:'is good'}]},
+  ],
+};
+
+// Inject vocab after each lesson's last MATCH exercise
+for (const [idStr, exs] of Object.entries(VOCAB_ADDITIONS)) {
+  const lesson = LESSONS.find(l => l.id === parseInt(idStr));
+  if (!lesson) continue;
+  let matchIdx = -1;
+  for (let i = lesson.ex.length - 1; i >= 0; i--) {
+    if (lesson.ex[i].t === 'MATCH') { matchIdx = i; break; }
+  }
+  if (matchIdx >= 0) lesson.ex.splice(matchIdx + 1, 0, ...exs);
+  else lesson.ex.push(...exs);
+}
+
+// ── REVIEW LESSONS ───────────────────────────────────────────────────
+const REVIEW_LESSONS = [
+  { id:16, title:'Vowel Checkpoint', sub:'Review all 13 vowels', xp:25, emoji:'🎯', ex:[
+    {t:'MC', ml:'ഐ', q:'What sound does ഐ make?', ans:'ai', opts:['ai','ii','au','ee']},
+    {t:'MC', ml:'ഔ', q:'What sound does ഔ make?', ans:'au', opts:['au','oo','ai','u']},
+    {t:'MC', ml:'ഓ', q:'What sound does ഓ make?', ans:'oo', opts:['o','oo','au','ee']},
+    {t:'MATCH', pairs:[{ml:'അ',rom:'a'},{ml:'ഇ',rom:'i'},{ml:'ഉ',rom:'u'},{ml:'എ',rom:'e'}]},
+    {t:'MATCH', pairs:[{ml:'ആ',rom:'aa'},{ml:'ഈ',rom:'ii'},{ml:'ഊ',rom:'uu'},{ml:'ഏ',rom:'ee'}]},
+    {t:'FREE', q:'What does ഒരു (oru) mean?', ans:'a', alts:['an','one','a/an','one/a/an'], hint:'It comes before nouns — like "a" or "an"'},
+    {t:'FREE', q:'How do you say "The elephant is big" in Malayalam?', ans:'aana valuthaanu', alts:['aaana valuthaanu','aana valutha aanu'], hint:'ആന + വലുതാണ്'},
+  ]},
+  { id:17, title:'Consonant Checkpoint', sub:'Velar · palatal · retroflex · dental', xp:25, emoji:'🎯', ex:[
+    {t:'MC', ml:'ക', q:'What sound does ക make?', ans:'ka', opts:['ka','ga','cha','pa']},
+    {t:'MC', ml:'ണ', q:'What sound does ണ make?', ans:'nn', opts:['n','nn','ma','nga']},
+    {t:'MC', ml:'ജ', q:'What sound does ജ make?', ans:'ja', opts:['cha','ja','ga','da']},
+    {t:'MC', ml:'ദ', q:'What sound does ദ make?', ans:'dha', opts:['tha','dha','dd','ba']},
+    {t:'MATCH', pairs:[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'},{ml:'ച',rom:'cha'},{ml:'ജ',rom:'ja'}]},
+    {t:'MATCH', pairs:[{ml:'ട',rom:'tt'},{ml:'ഡ',rom:'dd'},{ml:'ത',rom:'tha'},{ml:'ദ',rom:'dha'}]},
+    {t:'FREE', q:'What does കടൽ (kadal) mean?', ans:'sea', alts:['ocean','the sea','the ocean'], hint:'🌊 Large body of salt water'},
+    {t:'FREE', q:'What does ജലം (jalam) mean?', ans:'water', hint:'💧 Essential for life'},
+  ]},
+  { id:18, title:'Full Alphabet Review', sub:'All consonants + vocab', xp:30, emoji:'🏆', ex:[
+    {t:'MC', ml:'മ', q:'What sound does മ make?', ans:'ma', opts:['ma','na','ba','va']},
+    {t:'MC', ml:'ശ', q:'What sound does ശ make?', ans:'sha', opts:['sha','sa','cha','ha']},
+    {t:'MC', ml:'ഴ', q:'What sound does ഴ make?', ans:'zh', opts:['zh','za','sha','la']},
+    {t:'MATCH', pairs:[{ml:'പ',rom:'pa'},{ml:'ബ',rom:'ba'},{ml:'മ',rom:'ma'},{ml:'വ',rom:'va'}]},
+    {t:'MATCH', pairs:[{ml:'ശ',rom:'sha'},{ml:'സ',rom:'sa'},{ml:'ഹ',rom:'ha'},{ml:'ള',rom:'ll'}]},
+    {t:'FREE', q:'What does മഴ (mazha) mean?', ans:'rain', hint:'🌧️ Falls from the sky'},
+    {t:'FREE', q:'What does ലോകം (lokam) mean?', ans:'world', hint:'🌍 The whole planet'},
+    {t:'FREE', q:'How do you say "hello" in Malayalam?', ans:'namaskaram', hint:'🙏 You learned this early on!'},
+  ]},
+];
+LESSONS.push(...REVIEW_LESSONS);
+
+// ── MATRAS (VOWEL SIGNS) ─────────────────────────────────────────────
+// Matras are vowel signs that attach to consonants.
+// We use ക (ka) as the base to show all combinations.
+const MATRA_LESSONS = [
+  { id:19, title:'Matras Part 1', sub:'കാ · കി · കീ · കു · കൂ', xp:25, emoji:'✍️', ex:[
+    {t:'MATRA', base:'ക', matra:'ാ', result:'കാ', rom:'kaa', hint:"Add ാ to get the long 'aa' sound", eg:'കാൽ · kaal · leg/foot'},
+    {t:'MC', ml:'കാ', q:'What sound does കാ make?', ans:'kaa', opts:['ka','kaa','ki','kee']},
+    {t:'MATRA', base:'ക', matra:'ി', result:'കി', rom:'ki',  hint:"Add ി to get the short 'i' sound", eg:'കിളി · kili · bird'},
+    {t:'MATRA', base:'ക', matra:'ീ', result:'കീ', rom:'kii', hint:"Add ീ to get the long 'ii' sound", eg:'കീഴ് · keezhu · below'},
+    {t:'MC', ml:'കി', q:'What sound does കി make?', ans:'ki', opts:['ka','ki','kii','ku']},
+    {t:'MATRA', base:'ക', matra:'ു', result:'കു', rom:'ku',  hint:"Add ു to get the short 'u' sound", eg:'കുട · kuda · umbrella'},
+    {t:'MATRA', base:'ക', matra:'ൂ', result:'കൂ', rom:'kuu', hint:"Add ൂ to get the long 'uu' sound", eg:'കൂട് · kuudu · nest/cage'},
+    {t:'MC', ml:'കൂ', q:'What sound does കൂ make?', ans:'kuu', opts:['ku','kuu','koo','kee']},
+    {t:'MATCH', pairs:[{ml:'കാ',rom:'kaa'},{ml:'കി',rom:'ki'},{ml:'കു',rom:'ku'},{ml:'കൂ',rom:'kuu'}]},
+    {t:'FREE', q:'If ക = ka and ാ adds "aa", what does കാ sound like?', ans:'kaa', hint:'ക + ാ = ?'},
+  ]},
+  { id:20, title:'Matras Part 2', sub:'കെ · കേ · കൊ · കോ · ക്', xp:25, emoji:'✍️', ex:[
+    {t:'MATRA', base:'ക', matra:'െ', result:'കെ', rom:'ke',  hint:"Add െ to get the short 'e' sound", eg:'കെട്ട് · kettu · bundle/tied'},
+    {t:'MATRA', base:'ക', matra:'േ', result:'കേ', rom:'kee', hint:"Add േ to get the long 'ee' sound", eg:'കേൾക്കൂ · keelkkoo · please listen'},
+    {t:'MC', ml:'കേ', q:'What sound does കേ make?', ans:'kee', opts:['ke','kee','kai','koo']},
+    {t:'MATRA', base:'ക', matra:'ൊ', result:'കൊ', rom:'ko',  hint:"Add ൊ to get the short 'o' sound", eg:'കൊടി · kodi · flag'},
+    {t:'MATRA', base:'ക', matra:'ോ', result:'കോ', rom:'koo', hint:"Add ോ to get the long 'oo' sound", eg:'കോഴി · koozhi · chicken'},
+    {t:'MC', ml:'കോ', q:'What sound does കോ make?', ans:'koo', opts:['ko','koo','ku','kee']},
+    {t:'MATRA', base:'ക', matra:'്', result:'ക്', rom:'k',   hint:"Add ് (virama) to remove the vowel — pure consonant sound", eg:'ക്ഷമ · kshama · forgiveness/patience'},
+    {t:'MATCH', pairs:[{ml:'കെ',rom:'ke'},{ml:'കേ',rom:'kee'},{ml:'കൊ',rom:'ko'},{ml:'കോ',rom:'koo'}]},
+    {t:'FREE', q:'What does ് (virama) do to a consonant?', ans:'removes the vowel', alts:['removes vowel','no vowel sound','pure consonant','kills the vowel','removes the a sound'], hint:'It cancels the inherent "a" — ക = ka but ക് = k'},
+  ]},
+];
+LESSONS.push(...MATRA_LESSONS);
+
 const UNITS = [
-  {id:1,title:'Vowels',             sub:'13 vowel sounds',            icon:'🌊',color:'#0D5C39',lessonIds:[1,2,3]},
-  {id:2,title:'Velar & Palatal',    sub:'Back-of-mouth consonants',   icon:'🔵',color:'#1D4ED8',lessonIds:[5,6]},
-  {id:3,title:'Retroflex & Dental', sub:'Tongue-position consonants', icon:'🟠',color:'#9A3412',lessonIds:[7,8]},
-  {id:4,title:'Labials & Glides',   sub:'Lips and semivowels',        icon:'🟢',color:'#065F46',lessonIds:[9,10]},
-  {id:5,title:'Sibilants & Special',sub:'Unique Malayalam sounds',    icon:'⭐',color:'#4C1D95',lessonIds:[11,12]},
-  {id:6,title:'Phrases',            sub:'Greetings & essentials',     icon:'🙏',color:'#7C2D12',lessonIds:[4]},
+  {id:1, title:'Vowels',              sub:'13 vowel sounds',             icon:'🌊', color:'#0D5C39', lessonIds:[1,2,3]},
+  {id:8, title:'Vowel Checkpoint',    sub:'Review before consonants',    icon:'🎯', color:'#6B7280', lessonIds:[16]},
+  {id:2, title:'Velar & Palatal',     sub:'Back-of-mouth consonants',    icon:'🔵', color:'#1D4ED8', lessonIds:[5,6]},
+  {id:3, title:'Retroflex & Dental',  sub:'Tongue-position consonants',  icon:'🟠', color:'#9A3412', lessonIds:[7,8]},
+  {id:9, title:'Consonant Checkpoint',sub:'Review midway',               icon:'🎯', color:'#6B7280', lessonIds:[17]},
+  {id:4, title:'Labials & Glides',    sub:'Lips and semivowels',         icon:'🟢', color:'#065F46', lessonIds:[9,10]},
+  {id:5, title:'Sibilants & Special', sub:'Unique Malayalam sounds',     icon:'⭐', color:'#4C1D95', lessonIds:[11,12]},
+  {id:6, title:'Phrases',             sub:'Greetings & essentials',      icon:'🙏', color:'#7C2D12', lessonIds:[4]},
+  {id:10,title:'Full Review',         sub:'Complete alphabet + vocab',   icon:'🏆', color:'#92400E', lessonIds:[18]},
+  {id:11,title:'Matras',              sub:'Vowel signs on consonants',   icon:'✍️', color:'#0E7490', lessonIds:[19,20]},
+  {id:7, title:'Numbers',             sub:'1 through 20',                icon:'🔢', color:'#B45309', lessonIds:[13,14,15]},
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -145,9 +326,8 @@ const UNITS = [
 function saveProgress() {
   try {
     localStorage.setItem('ml_progress', JSON.stringify({
-      xp: S.xp,
-      hearts: S.hearts,
-      done: [...S.done],
+      xp: S.xp, hearts: S.hearts, done: [...S.done],
+      streak: S.streak, lastDay: S.lastDay, stats: S.stats,
     }));
   } catch(e) {}
 }
@@ -156,11 +336,18 @@ function loadProgress() {
   try {
     const p = JSON.parse(localStorage.getItem('ml_progress'));
     if (p) {
-      S.xp     = p.xp     ?? 0;
-      S.hearts = p.hearts ?? 5;
-      S.done   = new Set(p.done ?? []);
+      S.xp      = p.xp      ?? 0;
+      S.hearts  = p.hearts  ?? 5;
+      S.done    = new Set(p.done ?? []);
+      S.streak  = p.streak  ?? 0;
+      S.lastDay = p.lastDay ?? null;
+      S.stats   = p.stats   ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{} };
     }
   } catch(e) {}
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (S.lastDay !== today) S.hearts = 5;
+  if (S.lastDay && S.lastDay !== today && S.lastDay !== yesterday) S.streak = 0;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -173,6 +360,8 @@ let S = {
   fb:null, lxp:0,
   mSel:null, mDone:[], mWrong:null, shuffled:[],
   ft:'', grading:false, mcPicked:null, speaking:false,
+  streak:0, lastDay:null,
+  stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{} },
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -195,6 +384,55 @@ function speak(text) {
     doSpeak();
   } else {
     speechSynthesis.onvoiceschanged = () => { speechSynthesis.onvoiceschanged = null; doSpeak(); };
+  }
+}
+
+function playSound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (type === 'correct') {
+      // Pleasant ascending chime — C major arpeggio
+      [[523,0],[659,0.1],[784,0.2]].forEach(([freq,delay]) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+        gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.35);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.35);
+      });
+    } else {
+      // Low dull thud for wrong
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 160;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.28);
+    }
+  } catch(e) {}
+}
+
+function launchConfetti() {
+  const colors = ['#F5A623','#0D5C39','#059669','#3B82F6','#EC4899','#F97316'];
+  for (let i = 0; i < 36; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '-12px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width  = (6 + Math.random() * 10) + 'px';
+    el.style.height = (6 + Math.random() * 10) + 'px';
+    el.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+    el.style.animationDelay   = (Math.random() * 0.6) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
   }
 }
 
@@ -221,28 +459,54 @@ function startLesson(id) {
     mSel:null, mDone:[], mWrong:null, ft:'', lxp:0, screen:'lesson',
     shuffled: firstEx?.t==='MATCH' ? [...firstEx.pairs].sort(()=>Math.random()-0.5) : []};
   render();
-  if (firstEx?.t==='INTRO') setTimeout(()=>speak(firstEx.ml), 400);
+  if (firstEx?.t==='INTRO' || firstEx?.t==='MATRA') setTimeout(()=>speak(firstEx.ml || firstEx.result), 400);
 }
 
 function nextEx() {
   const l = getLesson();
   const newEi = S.ei + 1;
   if (newEi >= l.ex.length) {
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const newStreak = S.lastDay === today ? S.streak
+      : S.lastDay === yesterday ? S.streak + 1 : 1;
+    const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp};
     S = {...S, xp:S.xp+S.lxp, done:new Set([...S.done, S.lid]), screen:'results',
-      fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null};
+      fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
+      streak:newStreak, lastDay:today,
+      stats:{...S.stats, xpByDay:newXpByDay}};
     saveProgress();
     render();
+    setTimeout(launchConfetti, 100);
   } else {
     const nextE = l.ex[newEi];
     S = {...S, ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
       shuffled: nextE?.t==='MATCH' ? [...nextE.pairs].sort(()=>Math.random()-0.5) : S.shuffled};
     render();
-    if (nextE?.t==='INTRO') setTimeout(()=>speak(nextE.ml), 400);
+    if (nextE?.t==='INTRO' || nextE?.t==='MATRA') setTimeout(()=>speak(nextE.ml || nextE.result), 400);
   }
 }
 
-function good(pts=5, msg='Correct! 🎉') { S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}}; render(); }
-function bad(msg) { S = {...S, hearts:Math.max(0,S.hearts-1), fb:{ok:false,msg}}; saveProgress(); render(); }
+function recordStat(correct) {
+  const e = getEx();
+  const lid = S.lid;
+  if (!S.stats.lessonAcc[lid]) S.stats.lessonAcc[lid] = { correct:0, total:0 };
+  S.stats.lessonAcc[lid].total++;
+  if (correct) S.stats.lessonAcc[lid].correct++;
+  if (!correct && e) {
+    const label = e.ml || e.result || (e.q||'').slice(0,30);
+    S.stats.wrongItems[label] = (S.stats.wrongItems[label] || 0) + 1;
+  }
+}
+
+function good(pts=5, msg='Correct! 🎉') { playSound('correct'); recordStat(true);  S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}}; render(); }
+function bad(msg) {
+  playSound('wrong'); recordStat(false);
+  const newHearts = Math.max(0, S.hearts - 1);
+  const noHeartsMsg = newHearts === 0 ? ' No hearts left — keep going anyway! 💪' : '';
+  S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}};
+  saveProgress(); render();
+}
 
 function handleMC(opt, ans) {
   if (S.fb) return;
@@ -306,8 +570,11 @@ function render() {
 }
 
 function buildApp() {
-  if (S.screen==='home')    return buildHome();
-  if (S.screen==='results') return buildResults();
+  if (S.screen==='home')      return buildHome();
+  if (S.screen==='results')   return buildResults();
+  if (S.screen==='stats')     return buildStats();
+  if (S.screen==='practice')  return buildPractice();
+  if (S.screen==='reference') return buildReference();
   return buildLesson();
 }
 
@@ -352,7 +619,7 @@ function buildHome() {
       </div>`;
   }
   return `
-    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:48px">
+    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
       <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:28px 20px 30px;color:white;overflow:hidden;position:relative">
         <div style="position:absolute;top:-40px;right:-20px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
         <div style="max-width:520px;margin:0 auto;position:relative">
@@ -363,8 +630,8 @@ function buildHome() {
             </div>
             <div style="display:flex;gap:10px">
               <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:10px 14px;text-align:center;border:1px solid rgba(255,255,255,0.14)">
-                <div style="display:flex;gap:2px">${heartsHTML()}</div>
-                <div style="font-size:9px;opacity:0.6;font-weight:900;margin-top:5px;letter-spacing:1px">HEARTS</div>
+                <div style="font-size:20px;font-weight:900;color:#fb923c;line-height:1">🔥${S.streak}</div>
+                <div style="font-size:9px;opacity:0.6;font-weight:900;margin-top:5px;letter-spacing:1px">STREAK</div>
               </div>
               <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:10px 14px;text-align:center;border:1px solid rgba(255,255,255,0.14)">
                 <div style="font-size:20px;font-weight:900;color:#F5A623;line-height:1">⚡${S.xp}</div>
@@ -383,31 +650,37 @@ function buildHome() {
         </div>
       </div>
       <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">${unitsHTML}</div>
-    </div>`;
+    </div>
+    ${buildNav('home')}`;
 }
 
 // ─── RESULTS ────────────────────────────────────────────────────────
 function buildResults() {
   return `
     <div style="min-height:100vh;background:linear-gradient(135deg,#0D5C39,#093d27);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center">
-      <div style="font-size:78px">🎊</div>
-      <div style="font-size:30px;font-weight:900;color:white;margin-top:8px">Lesson Complete!</div>
-      <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:6px;font-weight:700">You're making great progress! 🌴</div>
-      <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.14);border-radius:24px;padding:22px 52px;margin-top:30px">
+      <div class="anim-pop"  style="font-size:78px">🎊</div>
+      <div class="anim-up"   style="font-size:30px;font-weight:900;color:white;margin-top:8px;animation-delay:0.1s">Lesson Complete!</div>
+      <div class="anim-up"   style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:6px;font-weight:700;animation-delay:0.15s">${S.streak >= 7 ? '🔥 ' + S.streak + ' day streak — incredible!' : S.streak >= 3 ? '🔥 ' + S.streak + ' days in a row!' : "You're making great progress! 🌴"}</div>
+      <div class="anim-xp"   style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.14);border-radius:24px;padding:22px 52px;margin-top:30px">
         <div style="font-size:54px;font-weight:900;color:#F5A623;line-height:1">+${S.lxp}</div>
         <div style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1.5px">XP EARNED</div>
       </div>
-      <div style="display:flex;gap:14px;margin-top:18px">
+      <div class="anim-up" style="display:flex;gap:14px;margin-top:18px;animation-delay:0.35s">
+        <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:13px 20px;border:1px solid rgba(255,255,255,0.1);text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#fb923c">🔥${S.streak}</div>
+          <div style="font-size:9px;font-weight:900;color:rgba(255,255,255,0.5);margin-top:5px;letter-spacing:1px">DAY STREAK</div>
+        </div>
         <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:13px 20px;border:1px solid rgba(255,255,255,0.1);text-align:center">
           <div style="display:flex;gap:2px;justify-content:center">${heartsHTML()}</div>
           <div style="font-size:9px;font-weight:900;color:rgba(255,255,255,0.5);margin-top:5px;letter-spacing:1px">HEARTS</div>
+          <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.35);margin-top:2px">refills daily</div>
         </div>
         <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:13px 20px;border:1px solid rgba(255,255,255,0.1);text-align:center">
           <div style="font-size:20px;font-weight:900;color:#F5A623">⚡${S.xp}</div>
           <div style="font-size:9px;font-weight:900;color:rgba(255,255,255,0.5);margin-top:5px;letter-spacing:1px">TOTAL XP</div>
         </div>
       </div>
-      <button data-action="go-home" style="margin-top:34px;background:#F5A623;color:#093d27;border:none;border-radius:16px;padding:15px 54px;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:0.5px">CONTINUE →</button>
+      <button data-action="go-home" class="anim-up" style="margin-top:34px;background:#F5A623;color:#093d27;border:none;border-radius:16px;padding:15px 54px;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:0.5px;animation-delay:0.45s">CONTINUE →</button>
     </div>`;
 }
 
@@ -422,6 +695,8 @@ function buildLesson() {
   if (e.t==='MC')    exHTML = buildMC(e);
   if (e.t==='MATCH') exHTML = buildMatch(e);
   if (e.t==='FREE')  exHTML = buildFree(e);
+  if (e.t==='VOCAB' || e.t==='SENT')  exHTML = buildVocab(e);
+  if (e.t==='MATRA') exHTML = buildMatra(e);
 
   const fbHTML = S.fb ? `
     <div style="position:sticky;bottom:0;background:${S.fb.ok?'#059669':'#DC2626'};padding:18px 22px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.14)">
@@ -542,6 +817,210 @@ function buildFree(e) {
     </div>`;
 }
 
+function buildVocab(e) {
+  const isSent = e.t === 'SENT';
+  const wordsHTML = isSent && e.words
+    ? e.words.map(w => `
+        <div style="background:#F7F2EB;border-radius:8px;padding:6px 12px;text-align:center">
+          <div class="ml" style="font-size:15px;color:#0D5C39;font-weight:700">${w.ml}</div>
+          <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:1px">${w.eng}</div>
+        </div>`).join('')
+    : '';
+  return `
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="font-size:10px;font-weight:900;color:#0D5C39;letter-spacing:2px;margin-bottom:16px">${isSent ? 'SIMPLE SENTENCE' : 'VOCABULARY'}</div>
+      <div style="background:#fff;border-radius:24px;padding:28px 24px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+        <div class="ml" style="font-size:${mlSize(e.ml)}px;font-weight:700;color:#0D5C39;line-height:1.3">${e.ml}</div>
+        <button data-action="speak" data-text="${esc(e.ml)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:7px 20px;font-size:14px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:7px">
+          🔈 <span>${e.rom}</span>
+        </button>
+        <div style="font-size:17px;font-weight:900;color:#1C1917">${e.eng}</div>
+        ${isSent && e.words ? `<div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:4px">${wordsHTML}</div>` : ''}
+        ${!isSent && e.note ? `<div style="background:#F0FDF4;border-radius:12px;padding:9px 16px;font-size:12px;font-weight:800;color:#065F46;max-width:290px">${e.note}</div>` : ''}
+      </div>
+      <button data-action="next-ex" style="margin-top:16px;background:#0D5C39;color:white;border:none;border-radius:16px;padding:16px;font-size:15px;font-weight:900;cursor:pointer;width:100%">GOT IT →</button>
+    </div>`;
+}
+
+function buildMatra(e) {
+  return `
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="font-size:10px;font-weight:900;color:#0E7490;letter-spacing:2px;margin-bottom:16px">VOWEL SIGN (MATRA)</div>
+      <div style="background:#fff;border-radius:24px;padding:28px 24px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+          <div style="text-align:center">
+            <div class="ml" style="font-size:62px;font-weight:700;color:#0D5C39;line-height:1">${e.base}</div>
+            <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:4px">consonant</div>
+          </div>
+          <div style="font-size:36px;color:#E7E5E4;font-weight:900">+</div>
+          <div style="text-align:center">
+            <div class="ml" style="font-size:62px;font-weight:700;color:#0E7490;line-height:1">${e.matra}</div>
+            <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:4px">vowel sign</div>
+          </div>
+          <div style="font-size:36px;color:#E7E5E4;font-weight:900">=</div>
+          <div style="text-align:center">
+            <div class="ml" style="font-size:62px;font-weight:700;color:#059669;line-height:1">${e.result}</div>
+            <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:4px">result</div>
+          </div>
+        </div>
+        <button data-action="speak" data-text="${esc(e.result)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:7px 20px;font-size:15px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:7px">
+          🔈 <span>${e.rom}</span>
+        </button>
+        <div style="background:#F0F9FF;border-radius:12px;padding:9px 16px;font-size:12px;font-weight:800;color:#0E7490;max-width:290px">${e.hint}</div>
+        <button data-action="speak" data-text="${esc(e.eg.split('·')[0].trim())}" style="background:none;border:1px solid #E7E5E4;border-radius:10px;padding:8px 14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%">
+          <span class="ml" style="font-size:15px;color:#1C1917">${e.eg.split('·')[0].trim()}</span>
+          <span style="font-size:12px;color:#78716C;font-weight:700">${' · ' + e.eg.split('·').slice(1).join('·')}</span>
+          <span style="color:#F5A623;flex-shrink:0">🔈</span>
+        </button>
+      </div>
+      <button data-action="next-ex" style="margin-top:16px;background:#0E7490;color:white;border:none;border-radius:16px;padding:16px;font-size:15px;font-weight:900;cursor:pointer;width:100%">GOT IT →</button>
+    </div>`;
+}
+
+// ─── NAV BAR ────────────────────────────────────────────────────────
+function buildNav(active) {
+  const tabs = [
+    {id:'home',      icon:'🏠', label:'Home'},
+    {id:'practice',  icon:'🎯', label:'Practice'},
+    {id:'reference', icon:'📖', label:'Reference'},
+    {id:'stats',     icon:'📊', label:'Stats'},
+  ];
+  const btns = tabs.map(t => `
+    <button data-action="nav-${t.id}" style="flex:1;padding:10px 4px 8px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px">
+      <span style="font-size:20px">${t.icon}</span>
+      <span style="font-size:10px;font-weight:900;color:${active===t.id?'#0D5C39':'#A8A29E'};letter-spacing:0.5px">${t.label}</span>
+      ${active===t.id?`<div style="width:20px;height:3px;background:#0D5C39;border-radius:99px;margin-top:1px"></div>`:''}
+    </button>`).join('');
+  return `<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E7E5E4;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,8px);box-shadow:0 -2px 12px rgba(0,0,0,0.07)">${btns}</div>`;
+}
+
+// ─── STATS ──────────────────────────────────────────────────────────
+function buildStats() {
+  const acc = S.stats.lessonAcc;
+  const totalCorrect = Object.values(acc).reduce((s,v)=>s+v.correct,0);
+  const totalAttempts = Object.values(acc).reduce((s,v)=>s+v.total,0);
+  const overallPct = totalAttempts > 0 ? Math.round(totalCorrect/totalAttempts*100) : 0;
+
+  // Weekly XP chart — last 7 days
+  const days = Array.from({length:7}).map((_,i) => {
+    const d = new Date(Date.now() - (6-i)*86400000);
+    return { label: d.toLocaleDateString('en',{weekday:'short'}), key: d.toDateString() };
+  });
+  const maxXp = Math.max(1, ...days.map(d => S.stats.xpByDay[d.key]||0));
+  const chartBars = days.map(d => {
+    const xp = S.stats.xpByDay[d.key] || 0;
+    const h = Math.max(4, Math.round((xp/maxXp)*80));
+    const isToday = d.key === new Date().toDateString();
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+      <div style="font-size:10px;font-weight:800;color:${xp>0?'#0D5C39':'#A8A29E'}">${xp||''}</div>
+      <div style="width:100%;background:${isToday?'#0D5C39':xp>0?'#6EE7B7':'#E7E5E4'};border-radius:6px 6px 0 0;height:${h}px;min-height:4px;transition:height 0.3s"></div>
+      <div style="font-size:10px;font-weight:800;color:${isToday?'#0D5C39':'#A8A29E'}">${d.label}</div>
+    </div>`;
+  }).join('');
+
+  // Needs work — top 5 wrong items
+  const sorted = Object.entries(S.stats.wrongItems).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const wrongHTML = sorted.length === 0
+    ? `<div style="text-align:center;color:#A8A29E;font-size:13px;font-weight:700;padding:16px">No mistakes yet — amazing! 🌟</div>`
+    : sorted.map(([label, count]) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F7F2EB">
+          <span class="ml" style="font-size:22px;color:#1C1917">${label}</span>
+          <span style="background:#FEE2E2;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:900;color:#DC2626">${count} miss${count>1?'es':''}</span>
+        </div>`).join('');
+
+  // Lesson accuracy list
+  const lessonRows = LESSONS.filter(l => acc[l.id]).map(l => {
+    const {correct,total} = acc[l.id];
+    const pct = Math.round(correct/total*100);
+    const col = pct>=80?'#059669':pct>=60?'#D97706':'#DC2626';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #F7F2EB">
+      <div style="font-size:18px">${l.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:900;color:#1C1917">${l.title}</div>
+        <div style="height:5px;background:#E7E5E4;border-radius:99px;margin-top:4px;overflow:hidden">
+          <div style="height:100%;background:${col};border-radius:99px;width:${pct}%"></div>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:900;color:${col}">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
+      <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:28px 20px 24px;color:white">
+        <div style="max-width:520px;margin:0 auto">
+          <div style="font-size:22px;font-weight:900">Your Stats 📊</div>
+          <div style="font-size:13px;opacity:0.65;font-weight:700;margin-top:3px">Track your Malayalam journey</div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            ${[['🔥',S.streak,'Day Streak'],['⚡',S.xp,'Total XP'],['✅',S.done.size,'Lessons Done']].map(([icon,val,label])=>`
+              <div style="flex:1;background:rgba(255,255,255,0.1);border-radius:14px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,0.14)">
+                <div style="font-size:18px;font-weight:900;color:#F5A623">${icon}${val}</div>
+                <div style="font-size:9px;opacity:0.6;font-weight:900;margin-top:3px;letter-spacing:1px">${label}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
+
+        <!-- Overall accuracy -->
+        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:12px">OVERALL ACCURACY</div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="font-size:42px;font-weight:900;color:${overallPct>=80?'#059669':overallPct>=60?'#D97706':'#DC2626'}">${overallPct}%</div>
+            <div style="flex:1">
+              <div style="height:10px;background:#E7E5E4;border-radius:99px;overflow:hidden">
+                <div style="height:100%;background:${overallPct>=80?'#059669':overallPct>=60?'#D97706':'#DC2626'};border-radius:99px;width:${overallPct}%;transition:width 0.5s"></div>
+              </div>
+              <div style="font-size:12px;color:#78716C;font-weight:700;margin-top:6px">${totalCorrect} correct out of ${totalAttempts} attempts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly XP chart -->
+        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:16px">XP THIS WEEK</div>
+          <div style="display:flex;align-items:flex-end;gap:6px;height:110px">${chartBars}</div>
+        </div>
+
+        <!-- Needs work -->
+        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:4px">NEEDS MORE PRACTICE</div>
+          ${wrongHTML}
+        </div>
+
+        <!-- Lesson accuracy -->
+        ${lessonRows.length > 0 ? `
+        <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:4px">ACCURACY BY LESSON</div>
+          ${lessonRows}
+        </div>` : ''}
+      </div>
+    </div>
+    ${buildNav('stats')}`;
+}
+
+// ─── PRACTICE PLACEHOLDER ────────────────────────────────────────────
+function buildPractice() {
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;padding-bottom:80px">
+      <div style="font-size:64px">🎯</div>
+      <div style="font-size:22px;font-weight:900;color:#1C1917;margin-top:16px">Practice Mode</div>
+      <div style="font-size:14px;color:#78716C;font-weight:700;margin-top:8px;max-width:280px;line-height:1.6">Spaced repetition drills and heart refills — coming soon in the next update! 🌴</div>
+    </div>
+    ${buildNav('practice')}`;
+}
+
+// ─── REFERENCE PLACEHOLDER ───────────────────────────────────────────
+function buildReference() {
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;padding-bottom:80px">
+      <div style="font-size:64px">📖</div>
+      <div style="font-size:22px;font-weight:900;color:#1C1917;margin-top:16px">Reference Card</div>
+      <div style="font-size:14px;color:#78716C;font-weight:700;margin-top:8px;max-width:280px;line-height:1.6">Full alphabet, matras, and chillu letters at a glance — coming soon! 🌴</div>
+    </div>
+    ${buildNav('reference')}`;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // EVENT DELEGATION
 // ═══════════════════════════════════════════════════════════════════
@@ -551,6 +1030,10 @@ document.addEventListener('click', e => {
   if (!el) return;
   const action = el.dataset.action;
   if (action==='go-home')      { S.screen='home'; render(); }
+  else if (action==='nav-home')     { S.screen='home';      render(); }
+  else if (action==='nav-practice') { S.screen='practice';  render(); }
+  else if (action==='nav-reference'){ S.screen='reference'; render(); }
+  else if (action==='nav-stats')    { S.screen='stats';     render(); }
   else if (action==='next-ex') { nextEx(); }
   else if (action==='start-lesson') { startLesson(parseInt(el.dataset.id)); }
   else if (action==='check-free')   { handleFree(); }
