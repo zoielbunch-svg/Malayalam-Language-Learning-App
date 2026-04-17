@@ -183,7 +183,7 @@ LESSONS.push(...NUM_LESSONS);
 // so learners see letters in context immediately.
 const VOCAB_ADDITIONS = {
   1: [
-    {t:'VOCAB', ml:'അച്ഛൻ', rom:'achan', eng:'father', note:'അമ്മ + അച്ഛൻ = amma + achan = mom and dad'},
+    {t:'VOCAB', ml:'അച്ഛൻ', rom:'achan', eng:'father', alts:['appa','dad','achan'], note:'Two common words: അച്ഛൻ (achan) is standard, അപ്പ (appa) is equally common colloquially — both are correct!'},
     {t:'SENT',  ml:'ആന വലുതാണ്', rom:'aana valuthaanu', eng:'The elephant is big',
       words:[{ml:'ആന',eng:'elephant'},{ml:'വലുതാണ്',eng:'is big'}]},
   ],
@@ -415,6 +415,192 @@ const UNITS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════
+// EXERCISE VARIABILITY DATA
+// ═══════════════════════════════════════════════════════════════════
+
+// Alternative example words for each character (used on replay)
+const CHAR_EGS = {
+  // Vowels
+  'അ':['അമ്മ · amma · mother','അരി · ari · uncooked rice','അടുക്കള · adukkaLa · kitchen'],
+  'ആ':['ആന · aana · elephant','ആകാശം · aakasham · sky','ആറ് · aaru · river'],
+  'ഇ':['ഇല · ila · leaf','ഇഷ്ടം · ishtam · liking / love','ഇരുമ്പ് · irumbu · iron'],
+  'ഈ':['ഈച്ച · iicha · fly (insect)','ഈ · ii · this (near here)'],
+  'ഉ':['ഉപ്പ് · uppu · salt','ഉറക്കം · urakkam · sleep','ഉള്ളി · ulli · onion'],
+  'ഊ':['ഊണ് · uunu · meal','ഊഞ്ഞാൽ · uunjaal · swing'],
+  'എ':['എണ്ണ · enna · oil','എലി · eli · mouse / rat','എല്ല് · ellu · bone'],
+  'ഏ':['ഏണി · eeni · ladder','ഏഴ് · eezhu · seven'],
+  'ഐ':['ഐക്യം · aikyam · unity','ഐശ്വര്യം · aishwaryam · prosperity'],
+  'ഒ':['ഒട്ടകം · ottakam · camel','ഒരു · oru · a / an / one'],
+  'ഓ':['ഓട്ടം · oottam · race / run','ഓർമ്മ · orma · memory','ഓല · ola · palm leaf'],
+  'ഔ':['ഔഷധം · aushadham · medicine'],
+  // Key consonants
+  'ക':['കടൽ · kadal · sea','കൊടി · kodi · flag','കാൽ · kaal · foot / leg'],
+  'ഗ':['ഗ്രാമം · graamam · village','ഗൃഹം · gruham · house'],
+  'ങ':['ഉറങ്ങ് · urangu · to sleep','ഇങ്ങ് · ingu · here'],
+  'ച':['ചിരി · chiri · smile','ചായ · chaaya · tea','ചോറ് · choru · cooked rice'],
+  'ജ':['ജലം · jalam · water','ജനാല · janaala · window','ജന്തു · janthu · creature'],
+  'ഞ':['ഞാൻ · njaan · I / me','ഞണ്ട് · njandu · crab','ഞായർ · njaayar · Sunday'],
+  'ണ':['കണ്ണ് · kannu · eye','മണൽ · manal · sand'],
+  'ന':['നദി · nadi · river','നല്ലത് · nallatu · good (thing)','നാടൻ · naadan · folk / native'],
+  'പ':['പൂ · poo · flower','പക്ഷി · pakshi · bird','പഴം · pazham · fruit'],
+  'മ':['മഴ · mazha · rain','മരം · maram · tree','മീൻ · miin · fish'],
+  'യ':['യോഗം · yogam · yoga / meeting','യാത്ര · yaatra · journey / travel'],
+  'ര':['രാജ്യം · raajyam · kingdom','രാത്രി · raatri · night','രക്തം · raktham · blood'],
+  'ല':['ലോകം · lokam · world','ലക്ഷ്യം · laksyam · goal / aim'],
+  'വ':['വഴി · vazhi · road / way','വെള്ളം · vellam · water','വൃക്ഷം · vruksham · tree'],
+  'ശ':['ശബ്ദം · shabdam · sound','ശക്തി · shakthi · power / strength','ശരി · shari · okay'],
+  'സ':['സൂര്യൻ · suuryan · sun','സ്നേഹം · sneham · love / affection','സന്തോഷം · santhosham · happiness'],
+  'ഹ':['ഹൃദയം · hrudayam · heart','ഹരിതം · haritham · green'],
+  'ള':['ഉള്ളി · ulli · onion','ഉള്ളം · ullam · inner self / heart'],
+  'ഴ':['മഴ · mazha · rain (ഴ is in the middle)'],
+  'റ':['ഒറ്റ · otta · single / alone','ഇറ്റ് · itu · drop (of liquid)'],
+  // Matras (using ക as base)
+  'കാ':['കാൽ · kaal · foot / leg','കാടൻ · kaadan · wild / rustic','കാറ്റ് · kaat̤tu · wind'],
+  'കി':['കിളി · kili · bird','കിടക്ക · kidakka · bed','കിരീടം · kiriidam · crown'],
+  'കീ':['കീഴ് · keezhu · below','കീടം · kiidam · insect'],
+  'കു':['കുട · kuda · umbrella','കുറി · kuri · mark / symbol','കുന്ന് · kunnu · hill'],
+  'കൂ':['കൂട് · kuudu · nest / cage','കൂടി · kuudi · also / together'],
+  'കെ':['കെട്ട് · kettu · bundle / tied','കെടുക · keduka · to extinguish'],
+  'കേ':['കേൾക്കൂ · keelkkoo · please listen','കേടൻ · keetan · corrupt (colloquial)'],
+  'കൊ':['കൊടി · kodi · flag','കൊല്ലം · kollam · Kollam (city) / year'],
+  'കോ':['കോഴി · koozhi · chicken','കോട്ടം · koottam · gathering / harm'],
+};
+
+// Alternative FREE questions per lesson (pick one randomly on replay)
+const LESSON_FREE_POOLS = {
+  1:[
+    {q:'What does അമ്മ (amma) mean in English?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
+    {q:'What does ഇല (ila) mean in English?',ans:'leaf',hint:'🍃 Found on trees'},
+    {q:'How do you write the long "aa" vowel?',ans:'ആ',hint:'The longer version of അ'},
+  ],
+  2:[
+    {q:'What does ഊണ് (uunu) mean?',ans:'meal',alts:['food','lunch','dinner','a meal'],hint:'🍽️ A time to eat'},
+    {q:'What does ആന (aana) mean?',ans:'elephant',hint:'🐘 Kerala\'s iconic animal'},
+    {q:'Which vowel makes the long "uu" sound?',ans:'ഊ',hint:'Longer version of ഉ'},
+  ],
+  3:[
+    {q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Desert animal'},
+    {q:'How do you say "a/an" in Malayalam? (romanization)',ans:'oru',hint:'ഒരു — used before nouns'},
+    {q:'What sound does ഔ make?',ans:'au',hint:'Like "ow" in cow'},
+  ],
+  4:[
+    {q:'How do you say "hello" in Malayalam? (romanization)',ans:'namaskaram',hint:'🙏 The all-purpose greeting'},
+    {q:'What does ഇല്ല (illa) mean?',ans:'no',alts:['not','no/not','not there','none'],hint:'The negation word'},
+    {q:'How do you say "okay" in Malayalam? (romanization)',ans:'shari',hint:'ശരി — agreement / acknowledgment'},
+  ],
+  5:[
+    {q:'What does കടൽ (kadal) mean?',ans:'sea',alts:['ocean','the sea'],hint:'🌊 Large body of salt water'},
+    {q:'What sound does ഗ make?',ans:'ga',hint:'Like g in "go"'},
+    {q:'What does the nasal letter ങ sound like?',ans:'nga',hint:'Like ng in "sing"'},
+  ],
+  6:[
+    {q:'What does ജലം (jalam) mean?',ans:'water',hint:'💧 Essential for life'},
+    {q:'What does ഞാൻ (njaan) mean?',ans:'I',alts:['I/me','me','myself'],hint:'🙋 The Malayalam word for yourself'},
+    {q:'What sound does ച make?',ans:'cha',hint:'Like ch in "chair"'},
+  ],
+  7:[
+    {q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'},
+    {q:'What sound does ണ make?',ans:'nn',hint:'Retroflex n — tongue curves back'},
+    {q:'What makes retroflex consonants different from dental ones?',ans:'tongue curls back',alts:['tongue position','curl tongue back','tongue curves back','retroflex'],hint:'It\'s all about tongue position'},
+  ],
+  8:[
+    {q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'},
+    {q:'What does തേൻ (then) mean?',ans:'honey',hint:'🍯 Sweet golden liquid'},
+    {q:'What sound does ദ make?',ans:'dha',hint:'Dental d — tongue behind teeth'},
+  ],
+  9:[
+    {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'},
+    {q:'What does പൂ (poo) mean?',ans:'flower',hint:'🌸 Grows in gardens'},
+    {q:'What does ഭക്ഷണം (bhakshanam) mean?',ans:'food',hint:'🍛 Something you eat'},
+  ],
+  10:[
+    {q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'},
+    {q:'What does വഴി (vazhi) mean?',ans:'road',alts:['road','way','path','road/way'],hint:'🛣️ You walk or drive on it'},
+    {q:'What sound does ര make?',ans:'ra',hint:'A rolled r — like Spanish r'},
+  ],
+  11:[
+    {q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'},
+    {q:'What does ശബ്ദം (shabdam) mean?',ans:'sound',alts:['word','sound','sound/word'],hint:'👂 Something you hear'},
+    {q:'What sound does സ make?',ans:'sa',hint:'Like s in "sun"'},
+  ],
+  12:[
+    {q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when chopped!'},
+    {q:'What sound does ള make?',ans:'ll',hint:'Retroflex lateral — unique to Dravidian languages'},
+    {q:'What makes ഴ special about Malayalam?',ans:'unique sound',alts:['no english equivalent','unique','unique dravidian sound','only in malayalam'],hint:'No equivalent exists in English!'},
+  ],
+  13:[
+    {q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
+    {q:'What is ഒന്ന് (onnu) in English?',ans:'one',alts:['1','one','1/one'],hint:'The first number'},
+    {q:'How do you say 5 in Malayalam? (romanization)',ans:'anchu',hint:'5️⃣ Five fingers on a hand'},
+  ],
+  14:[
+    {q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
+    {q:'What is പത്ത് (pathu) in English?',ans:'ten',alts:['10','ten'],hint:'10 — two hands worth of fingers'},
+    {q:'How do you say 8 in Malayalam? (romanization)',ans:'ettu',hint:'8️⃣ Eight'},
+  ],
+  15:[
+    {q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
+    {q:'What number is പതിനഞ്ച് (pathinanchu)?',ans:'fifteen',alts:['15','fifteen'],hint:'Halfway between 10 and 20'},
+    {q:'How do you say 11 in Malayalam? (romanization)',ans:'pathinonnu',hint:'1️⃣1️⃣ Ten plus one'},
+  ],
+  16:[
+    {q:'What does ഒരു (oru) mean?',ans:'a',alts:['an','one','a/an','one/a/an'],hint:'Used before nouns — like "a" or "an"'},
+    {q:'What sound does ഐ make?',ans:'ai',hint:'Like the "i" in ice'},
+    {q:'How do you say "an elephant"? (romanization)',ans:'oru aana',alts:['oru aana'],hint:'ഒരു + ആന'},
+  ],
+  17:[
+    {q:'What does കടൽ (kadal) mean?',ans:'sea',alts:['ocean'],hint:'🌊 Large saltwater body'},
+    {q:'What does ജലം (jalam) mean?',ans:'water',hint:'💧 Essential for life'},
+    {q:'What is the difference between ത and ട?',ans:'tongue position',alts:['dental vs retroflex','tongue position','different tongue placement'],hint:'One is dental, one is retroflex'},
+  ],
+  18:[
+    {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'},
+    {q:'How do you say "hello" in Malayalam? (romanization)',ans:'namaskaram',hint:'🙏 Covered in an earlier lesson!'},
+    {q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'},
+  ],
+  19:[
+    {q:'If ക = ka, what does കാ sound like? (romanization)',ans:'kaa',hint:'ക + ാ — add the long aa vowel sign'},
+    {q:'What matra gives the short "i" sound?',ans:'ി',hint:'Makes kaaaa → ki when added to ക'},
+    {q:'What does കൂ sound like? (romanization)',ans:'kuu',hint:'ക + ൂ — long uu sound'},
+  ],
+  20:[
+    {q:'What does ് (virama) do to a consonant?',ans:'removes the vowel',alts:['removes vowel','no vowel','kills the vowel','pure consonant','removes inherent a'],hint:'ക = ka but ക് = k (no vowel)'},
+    {q:'What does കോ sound like? (romanization)',ans:'koo',hint:'ക + ോ — long oo sound'},
+    {q:'What does കൊ sound like? (romanization)',ans:'ko',hint:'ക + ൊ — short o sound'},
+  ],
+  21:[
+    {q:'What does അവൾ (avaL) mean?',ans:'she',alts:['her','she/her'],hint:'👩 Feminine pronoun'},
+    {q:'What does അവൻ (avan) mean?',ans:'he',alts:['him','he/him'],hint:'👨 Masculine pronoun'},
+    {q:'What does ആൺ (aan) mean?',ans:'male',alts:['man','masculine','male/man'],hint:'The masculine gender marker'},
+  ],
+  22:[
+    {q:'How do you say "tea" in Malayalam? (romanization)',ans:'chaaya',hint:'☕ Kerala\'s favourite drink'},
+    {q:'What does ചോറ് (choru) mean?',ans:'cooked rice',alts:['rice','rice (cooked)'],hint:'🍚 Kerala\'s staple food'},
+    {q:'How do you say "to eat" in Malayalam? (romanization)',ans:'kazhikkuka',hint:'🍽️ The action of eating'},
+  ],
+  23:[
+    {q:'What color is നീല (neela)?',ans:'blue',hint:'🌊 Color of the sea'},
+    {q:'What color is പച്ച (pacha)?',ans:'green',hint:'🌿 Color of leaves and plants'},
+    {q:'What color is ചുവപ്പ് (chuvappu)?',ans:'red',hint:'🔴 The warmest color'},
+  ],
+  24:[
+    {q:'What does ചേട്ടൻ (chettan) mean?',ans:'older brother',alts:['elder brother','big brother','older bro'],hint:'👦 The elder male sibling'},
+    {q:'What does അനിയത്തി (aniyathi) mean?',ans:'younger sister',alts:['little sister','young sister'],hint:'👧 The younger female sibling'},
+    {q:'How do you say "grandmother" in Malayalam? (romanization)',ans:'muthashi',hint:'👵 The mother of your parent'},
+  ],
+  25:[
+    {q:'What does മനസ്സിലായി (manassilayi) mean?',ans:'I understand',alts:['understood','i got it','got it'],hint:'💡 Literally "it entered my mind"'},
+    {q:'How do you say "my name"? (romanization)',ans:'ente peru',hint:'എന്റെ = my, പേര് = name'},
+    {q:'What does മനസ്സിലായില്ല (manassilayilla) mean?',ans:"I don't understand",alts:["don't understand","i don't understand","i do not understand"],hint:'Add ഇല്ല (no/not) to negate'},
+  ],
+  26:[
+    {q:'How do you say "Sunday" in Malayalam? (romanization)',ans:'njaayar',hint:'☀️ Named after the sun'},
+    {q:'Which day is വ്യാഴം (vyaazham)?',ans:'Thursday',hint:'Named after Jupiter (Vyazha = Jupiter)'},
+    {q:'How do you say "Friday" in Malayalam? (romanization)',ans:'veLLi',hint:'Named after Venus — also means silver!'},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════════════
 // PERSISTENCE
 // ═══════════════════════════════════════════════════════════════════
 
@@ -480,6 +666,8 @@ let S = {
   lessonsTodayCount: 0,
   // learn tab
   learnTab: 'script',
+  // resolved exercises (variability)
+  resolvedEx: [],
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -561,7 +749,7 @@ function launchConfetti() {
 const getLesson  = () => LESSONS.find(l => l.id === S.lid);
 const getEx      = () => S.screen === 'practice-session'
   ? S.practiceQueue[S.practiceEi]
-  : getLesson()?.ex[S.ei];
+  : S.resolvedEx[S.ei];
 const lessonOrder = UNITS.flatMap(u => u.lessonIds);
 
 // Language-first mode: only these units are shown
@@ -581,15 +769,62 @@ const mlSize     = t => !t?48 : t.length<=1?82 : t.length<=4?52 : t.length<=8?36
 const heartsHTML = () => Array.from({length:5}).map((_,i)=>`<span style="font-size:14px;opacity:${i<S.hearts?1:0.2}">❤️</span>`).join('');
 const esc        = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+// ─── EXERCISE VARIABILITY FUNCTIONS ─────────────────────────────────
+
+function resolveEx(e) {
+  // Swap example word from pool if available
+  if ((e.t==='INTRO' || e.t==='MATRA') && CHAR_EGS[e.ml || e.result]) {
+    const pool = CHAR_EGS[e.ml || e.result];
+    const eg = pool[Math.floor(Math.random() * pool.length)];
+    return {...e, eg};
+  }
+  return e;
+}
+
+function resolveLesson(lesson, isReplay) {
+  let exs = lesson.ex.map(resolveEx);
+
+  // On replay: shuffle exercise groups (keep INTRO→MC pairs together, MATCH/FREE at end)
+  if (isReplay) {
+    const groups = [], terminals = [];
+    let i = 0;
+    while (i < exs.length) {
+      const e = exs[i];
+      if (['INTRO','MATRA','VOCAB','SENT'].includes(e.t)) {
+        const group = [e];
+        let j = i + 1;
+        while (j < exs.length && exs[j].t === 'MC') { group.push(exs[j]); j++; }
+        groups.push(group); i = j;
+      } else if (e.t === 'MATCH' || e.t === 'FREE') {
+        terminals.push(e); i++;
+      } else { groups.push([e]); i++; }
+    }
+    exs = [...groups.sort(()=>Math.random()-0.5).flat(), ...terminals];
+  }
+
+  // Replace FREE questions from pool if available
+  const pool = LESSON_FREE_POOLS[lesson.id];
+  if (pool && pool.length > 0) {
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    exs = exs.map(e => e.t === 'FREE' ? {...e, ...pick} : e);
+  }
+
+  return exs;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════════════════════════════════════
 
 function startLesson(id) {
   if (isLocked(id)) return;
-  const firstEx = LESSONS.find(l=>l.id===id)?.ex[0];
+  const lesson = LESSONS.find(l=>l.id===id);
+  const isReplay = S.done.has(id);
+  const resolvedEx = resolveLesson(lesson, isReplay);
+  const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
     mSel:null, mDone:[], mWrong:null, ft:'', lxp:0, screen:'lesson',
+    resolvedEx,
     shuffled: firstEx?.t==='MATCH' ? [...firstEx.pairs].sort(()=>Math.random()-0.5) : []};
   render();
   if (firstEx?.t==='INTRO' || firstEx?.t==='MATRA') setTimeout(()=>speak(firstEx.ml || firstEx.result), 400);
@@ -597,9 +832,8 @@ function startLesson(id) {
 
 function nextEx() {
   if (S.screen === 'practice-session') { nextPracticeEx(); return; }
-  const l = getLesson();
   const newEi = S.ei + 1;
-  if (newEi >= l.ex.length) {
+  if (newEi >= S.resolvedEx.length) {
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     const newStreak = S.lastDay === today ? S.streak
@@ -613,7 +847,7 @@ function nextEx() {
     saveProgress(); render();
     setTimeout(launchConfetti, 100);
   } else {
-    const nextE = l.ex[newEi];
+    const nextE = S.resolvedEx[newEi];
     S = {...S, ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
       shuffled: nextE?.t==='MATCH' ? [...nextE.pairs].sort(()=>Math.random()-0.5) : S.shuffled};
     render();
@@ -691,14 +925,14 @@ function startPractice() {
 function nextPracticeEx() {
   const newIdx = S.practiceEi + 1;
   if (newIdx >= S.practiceQueue.length) {
-    // Practice complete — earn a heart and some XP
-    const heartsEarned = S.hearts < 5 ? 1 : 0;
+    // Practice complete — restore +3 hearts (capped at 5) + XP
+    const newHearts = Math.min(5, S.hearts + 3);
     const bonusXp = S.practiceScore * 3;
     const today = new Date().toDateString();
     const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp + bonusXp};
     S = {...S,
       screen: 'practice-results',
-      hearts: Math.min(5, S.hearts + heartsEarned),
+      hearts: newHearts,
       xp: S.xp + S.lxp + bonusXp,
       fb:null, ft:'', mcPicked:null,
       stats: {...S.stats, xpByDay:newXpByDay},
@@ -734,7 +968,7 @@ function bad(msg) {
   playSound('wrong'); recordStat(false);
   const inP = S.screen === 'practice-session';
   const newHearts = inP ? S.hearts : Math.max(0, S.hearts - 1);
-  const noHeartsMsg = !inP && newHearts === 0 ? ' No hearts left — keep going anyway! 💪' : '';
+  const noHeartsMsg = !inP && newHearts === 0 ? ' No hearts left — finish this lesson, then practice to continue ❤️' : '';
   S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}};
   if (!inP) saveProgress();
   render();
@@ -913,20 +1147,23 @@ function buildHome() {
     const uDone    = uLessons.filter(l=>S.done.has(l.id)).length;
     let lessonsHTML = '';
     for (const l of uLessons) {
-      const isDone  = S.done.has(l.id);
-      const locked  = isLocked(l.id);
-      const bBorder = isDone?'#059669':locked?'#E7E5E4':'#F5A623';
-      const iBg     = isDone?'#D1FAE5':locked?'#F7F2EB':'#FEF3C7';
-      const xpBg    = isDone?'#D1FAE5':'#FEF3C7';
-      const xpCol   = isDone?'#059669':'#d4891e';
+      const isDone   = S.done.has(l.id);
+      const noHearts = S.hearts === 0 && !isDone;
+      const locked   = noHearts || isLocked(l.id);
+      const bBorder  = isDone?'#059669':noHearts?'#FECACA':locked?'#E7E5E4':'#F5A623';
+      const iBg      = isDone?'#D1FAE5':noHearts?'#FEE2E2':locked?'#F7F2EB':'#FEF3C7';
+      const xpBg     = isDone?'#D1FAE5':noHearts?'#FEE2E2':'#FEF3C7';
+      const xpCol    = isDone?'#059669':noHearts?'#DC2626':'#d4891e';
+      const icon     = locked?(noHearts?'💔':'🔒'):isDone?'✅':l.emoji;
+      const xpLabel  = isDone?'DONE ✓':noHearts?'Practice needed':'+ '+l.xp+' XP';
       lessonsHTML += `
-        <button data-action="start-lesson" data-id="${l.id}" style="background:#fff;border:2px solid ${bBorder};border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:${locked?'not-allowed':'pointer'};text-align:left;opacity:${locked?0.4:1};box-shadow:${locked?'none':'0 2px 14px rgba(0,0,0,0.10)'};width:100%;margin:0">
-          <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${locked?'🔒':isDone?'✅':l.emoji}</div>
+        <button data-action="start-lesson" data-id="${l.id}" style="background:#fff;border:2px solid ${bBorder};border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:${locked?'not-allowed':'pointer'};text-align:left;opacity:${locked?0.45:1};box-shadow:${locked?'none':'0 2px 14px rgba(0,0,0,0.10)'};width:100%;margin:0">
+          <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${icon}</div>
           <div style="flex:1;text-align:left">
             <div style="font-size:14px;font-weight:900;color:#1C1917">${l.title}</div>
             <div style="font-size:12px;color:#78716C;margin-top:2px;font-weight:700">${isLF ? l.sub.replace(/[^\x00-\x7F·]/g,'').trim() || l.sub : l.sub}</div>
           </div>
-          <div style="background:${xpBg};border-radius:9px;padding:4px 10px;font-size:11px;font-weight:900;color:${xpCol};white-space:nowrap">${isDone?'DONE ✓':`+${l.xp} XP`}</div>
+          <div style="background:${xpBg};border-radius:9px;padding:4px 10px;font-size:11px;font-weight:900;color:${xpCol};white-space:nowrap">${xpLabel}</div>
         </button>`;
     }
     unitsHTML += `
@@ -1006,6 +1243,14 @@ function buildHome() {
       </div>
       <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
         ${reminderBanner}
+        ${S.hearts === 0 ? `<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:24px">💔</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:900;color:#DC2626">No hearts remaining</div>
+            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Complete a practice session to unlock new lessons. 1 session = 3 hearts, 2 sessions = 5 hearts.</div>
+          </div>
+          <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0">Practice 🎯</button>
+        </div>` : ''}
         ${modeBanner}
         ${unitsHTML}
       </div>
@@ -1047,7 +1292,7 @@ function buildResults() {
 function buildLesson() {
   const l = getLesson(), e = getEx();
   if (!l||!e) return '';
-  const prog = S.ei/l.ex.length;
+  const prog = S.resolvedEx.length > 0 ? S.ei / S.resolvedEx.length : 0;
 
   let exHTML = '';
   if (e.t==='INTRO') exHTML = buildIntro(e);
@@ -1075,6 +1320,11 @@ function buildLesson() {
         </div>
         <div style="display:flex;gap:2px">${heartsHTML()}</div>
       </div>
+      ${S.hearts===0 ? `<div style="background:#FEE2E2;border-bottom:1px solid #FECACA;padding:8px 16px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:14px">💔</span>
+        <span style="font-size:12px;font-weight:800;color:#DC2626;flex:1">No hearts — finish this lesson, then practice to continue</span>
+        <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:900;cursor:pointer">Practice →</button>
+      </div>` : ''}
       <div style="flex:1;display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%;padding:22px 18px 16px">
         ${exHTML}
       </div>
@@ -1631,7 +1881,7 @@ function buildPractice() {
 
         <div style="background:#FEF3C7;border:1px solid #F5A623;border-radius:16px;padding:14px 16px;margin-bottom:20px">
           <div style="font-size:12px;font-weight:900;color:#92400E;margin-bottom:4px">❤️ How hearts work</div>
-          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Complete a practice session to earn a heart back. Wrong answers in lessons no longer lose hearts — they just queue items for review here.</div>
+          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Wrong answers in lessons cost a heart. Complete a practice session to restore 3 hearts — do two sessions to restore fully to 5.</div>
         </div>
 
         ${needsWork.length > 0 ? `
@@ -1709,7 +1959,7 @@ function buildPracticeResults() {
 
       <div class="anim-up" style="background:rgba(255,255,255,0.2);border-radius:16px;padding:14px 28px;margin-top:16px;border:1px solid rgba(255,255,255,0.25);animation-delay:0.3s">
         <div style="font-size:22px;font-weight:900;color:white">${heartsHTML()} ${S.hearts}/5</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;font-weight:700">HEARTS ${S.hearts<5?'(+1 earned!)':'(full!)'}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;font-weight:700">HEARTS ${S.hearts===5?'(full! ✓)':'(+3 restored!)'}</div>
       </div>
 
       <button data-action="nav-practice" class="anim-up" style="margin-top:28px;background:white;color:#d4891e;border:none;border-radius:16px;padding:15px 48px;font-size:16px;font-weight:900;cursor:pointer;animation-delay:0.4s">DONE ✓</button>
