@@ -464,11 +464,10 @@ let S = {
   streak:0, lastDay:null,
   stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{} },
   // onboarding
-  onboarded: false,
-  onboardStep: 0,
-  mode: 'full',         // 'full' | 'language-first'
-  dailyGoal: 1,         // lessons per day
-  reminderTime: null,   // 'HH:MM' string or null
+  onboarded: false, onboardStep: 0,
+  mode: 'full', dailyGoal: 1, reminderTime: null,
+  // practice / spaced repetition
+  practiceQueue: [], practiceEi: 0, practiceScore: 0,
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -548,7 +547,9 @@ function launchConfetti() {
 // ═══════════════════════════════════════════════════════════════════
 
 const getLesson  = () => LESSONS.find(l => l.id === S.lid);
-const getEx      = () => getLesson()?.ex[S.ei];
+const getEx      = () => S.screen === 'practice-session'
+  ? S.practiceQueue[S.practiceEi]
+  : getLesson()?.ex[S.ei];
 const lessonOrder = UNITS.flatMap(u => u.lessonIds);
 
 // Language-first mode: only these units are shown
@@ -583,6 +584,7 @@ function startLesson(id) {
 }
 
 function nextEx() {
+  if (S.screen === 'practice-session') { nextPracticeEx(); return; }
   const l = getLesson();
   const newEi = S.ei + 1;
   if (newEi >= l.ex.length) {
@@ -595,8 +597,7 @@ function nextEx() {
       fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
       streak:newStreak, lastDay:today,
       stats:{...S.stats, xpByDay:newXpByDay}};
-    saveProgress();
-    render();
+    saveProgress(); render();
     setTimeout(launchConfetti, 100);
   } else {
     const nextE = l.ex[newEi];
@@ -604,6 +605,96 @@ function nextEx() {
       shuffled: nextE?.t==='MATCH' ? [...nextE.pairs].sort(()=>Math.random()-0.5) : S.shuffled};
     render();
     if (nextE?.t==='INTRO' || nextE?.t==='MATRA') setTimeout(()=>speak(nextE.ml || nextE.result), 400);
+  }
+}
+
+// ── PRACTICE / SPACED REPETITION ────────────────────────────────────
+
+function buildPracticeQueue() {
+  const itemMap = new Map();
+  for (const lesson of LESSONS) {
+    if (!S.done.has(lesson.id)) continue;
+    for (const ex of lesson.ex) {
+      if (ex.t==='INTRO' && ex.ml)   itemMap.set(ex.ml, {ml:ex.ml, rom:ex.rom, hint:ex.hint, eg:ex.eg, type:'letter'});
+      if (ex.t==='MATRA' && ex.result) itemMap.set(ex.result, {ml:ex.result, rom:ex.rom, hint:ex.hint, eg:ex.eg, type:'matra'});
+      if (ex.t==='VOCAB' && ex.ml)   itemMap.set(ex.ml, {ml:ex.ml, rom:ex.rom, eng:ex.eng, type:'vocab'});
+    }
+  }
+  const items = [...itemMap.values()];
+  if (items.length === 0) return [];
+
+  // Weight by error frequency — more errors = more likely to appear
+  const weighted = items.map(item => ({ item, weight: 1 + (S.stats.wrongItems[item.ml]||0) * 3 }));
+  const total = weighted.reduce((s,w) => s+w.weight, 0);
+
+  const selected = new Set();
+  const queue = [];
+  const target = Math.min(8, items.length);
+  let tries = 0;
+  while (queue.length < target && tries < 200) {
+    tries++;
+    let r = Math.random() * total;
+    for (const {item, weight} of weighted) {
+      r -= weight;
+      if (r <= 0 && !selected.has(item.ml)) {
+        selected.add(item.ml);
+        const ex = makePracticeEx(item, items);
+        if (ex) queue.push(ex);
+        break;
+      }
+    }
+  }
+  return queue;
+}
+
+function makePracticeEx(item, allItems) {
+  const shuffle = a => [...a].sort(()=>Math.random()-0.5);
+  const others = allItems.filter(i => i.ml !== item.ml);
+
+  if (item.type==='letter' || item.type==='matra') {
+    const wrongRoms = shuffle(others.filter(i=>i.rom!==item.rom)).slice(0,3).map(i=>i.rom);
+    if (wrongRoms.length < 3) return null;
+    return {t:'MC', ml:item.ml, q:`What sound does ${item.ml} make?`, ans:item.rom, opts:shuffle([item.rom,...wrongRoms]), isPractice:true};
+  }
+
+  if (item.type==='vocab') {
+    const vocabOthers = others.filter(i=>i.eng && i.eng!==item.eng);
+    if (Math.random()>0.5 && vocabOthers.length>=3) {
+      const wrongEngs = shuffle(vocabOthers).slice(0,3).map(i=>i.eng);
+      return {t:'MC', ml:item.ml, q:`What does ${item.ml} mean?`, ans:item.eng, opts:shuffle([item.eng,...wrongEngs]), isPractice:true};
+    }
+    return {t:'FREE', q:`How do you say "${item.eng}" in Malayalam? (romanization)`, ans:item.rom, hint:`Hint: ${item.ml}`, isPractice:true};
+  }
+  return null;
+}
+
+function startPractice() {
+  const queue = buildPracticeQueue();
+  if (queue.length === 0) return;
+  S = {...S, screen:'practice-session', practiceQueue:queue, practiceEi:0, practiceScore:0, lxp:0, fb:null, ft:'', mcPicked:null};
+  render();
+}
+
+function nextPracticeEx() {
+  const newIdx = S.practiceEi + 1;
+  if (newIdx >= S.practiceQueue.length) {
+    // Practice complete — earn a heart and some XP
+    const heartsEarned = S.hearts < 5 ? 1 : 0;
+    const bonusXp = S.practiceScore * 3;
+    const today = new Date().toDateString();
+    const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp + bonusXp};
+    S = {...S,
+      screen: 'practice-results',
+      hearts: Math.min(5, S.hearts + heartsEarned),
+      xp: S.xp + S.lxp + bonusXp,
+      fb:null, ft:'', mcPicked:null,
+      stats: {...S.stats, xpByDay:newXpByDay},
+    };
+    saveProgress(); render();
+    setTimeout(launchConfetti, 100);
+  } else {
+    S = {...S, practiceEi:newIdx, fb:null, ft:'', mcPicked:null};
+    render();
   }
 }
 
@@ -619,13 +710,21 @@ function recordStat(correct) {
   }
 }
 
-function good(pts=5, msg='Correct! 🎉') { playSound('correct'); recordStat(true);  S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}}; render(); }
+function good(pts=5, msg='Correct! 🎉') {
+  playSound('correct'); recordStat(true);
+  const inP = S.screen === 'practice-session';
+  if (inP) { S.practiceScore++; pts = 3; }
+  S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}};
+  render();
+}
 function bad(msg) {
   playSound('wrong'); recordStat(false);
-  const newHearts = Math.max(0, S.hearts - 1);
-  const noHeartsMsg = newHearts === 0 ? ' No hearts left — keep going anyway! 💪' : '';
+  const inP = S.screen === 'practice-session';
+  const newHearts = inP ? S.hearts : Math.max(0, S.hearts - 1);
+  const noHeartsMsg = !inP && newHearts === 0 ? ' No hearts left — keep going anyway! 💪' : '';
   S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}};
-  saveProgress(); render();
+  if (!inP) saveProgress();
+  render();
 }
 
 function handleMC(opt, ans) {
@@ -690,12 +789,14 @@ function render() {
 }
 
 function buildApp() {
-  if (!S.onboarded)           return buildOnboarding();
-  if (S.screen==='home')      return buildHome();
-  if (S.screen==='results')   return buildResults();
-  if (S.screen==='stats')     return buildStats();
-  if (S.screen==='practice')  return buildPractice();
-  if (S.screen==='reference') return buildReference();
+  if (!S.onboarded)                  return buildOnboarding();
+  if (S.screen==='home')             return buildHome();
+  if (S.screen==='results')          return buildResults();
+  if (S.screen==='stats')            return buildStats();
+  if (S.screen==='practice')         return buildPractice();
+  if (S.screen==='practice-session') return buildPracticeSession();
+  if (S.screen==='practice-results') return buildPracticeResults();
+  if (S.screen==='reference')        return buildReference();
   return buildLesson();
 }
 
@@ -1361,6 +1462,142 @@ function buildReference() {
     ${buildNav('reference')}`;
 }
 
+// ─── PRACTICE LANDING ───────────────────────────────────────────────
+function buildPractice() {
+  const totalDone = S.done.size;
+  const needsWork = Object.entries(S.stats.wrongItems)
+    .filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]);
+  const itemCount = buildPracticeQueue().length;
+  const canPractice = totalDone > 0 && itemCount > 0;
+
+  const topItems = needsWork.slice(0,5).map(([ml,count])=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F7F2EB">
+      <span class="ml" style="font-size:22px;color:#1C1917;min-width:80px">${ml}</span>
+      <div style="flex:1;height:6px;background:#E7E5E4;border-radius:99px;overflow:hidden">
+        <div style="height:100%;background:#DC2626;border-radius:99px;width:${Math.min(100,count*20)}%"></div>
+      </div>
+      <span style="font-size:12px;font-weight:900;color:#DC2626">${count} miss${count>1?'es':''}</span>
+    </div>`).join('');
+
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
+      <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:28px 20px 24px;color:white">
+        <div style="max-width:520px;margin:0 auto">
+          <div style="font-size:22px;font-weight:900">Practice 🎯</div>
+          <div style="font-size:13px;opacity:0.65;font-weight:700;margin-top:3px">Spaced repetition — harder items come back more</div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            ${[['❤️',S.hearts+'/5','Hearts'],['📚',itemCount,'Items to review'],['✅',totalDone,'Lessons done']].map(([icon,val,label])=>`
+              <div style="flex:1;background:rgba(255,255,255,0.1);border-radius:12px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,0.14)">
+                <div style="font-size:16px;font-weight:900;color:#F5A623">${icon} ${val}</div>
+                <div style="font-size:9px;opacity:0.6;font-weight:900;margin-top:3px;letter-spacing:1px">${label}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
+
+        ${canPractice ? `
+        <button data-action="start-practice" style="background:#0D5C39;color:white;border:none;border-radius:20px;padding:20px 24px;width:100%;text-align:left;cursor:pointer;display:flex;align-items:center;gap:16px;box-shadow:0 4px 16px rgba(13,92,57,0.3);margin-bottom:20px">
+          <div style="font-size:40px">🎯</div>
+          <div style="flex:1">
+            <div style="font-size:18px;font-weight:900">Start Practice Session</div>
+            <div style="font-size:13px;opacity:0.75;font-weight:700;margin-top:3px">${itemCount} items · ~3 minutes</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.2);border-radius:12px;padding:6px 14px;font-size:13px;font-weight:900">+❤️</div>
+        </button>` : `
+        <div style="background:#fff;border-radius:20px;padding:24px;text-align:center;margin-bottom:20px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:40px">${totalDone===0?'🔒':'✨'}</div>
+          <div style="font-size:15px;font-weight:900;color:#1C1917;margin-top:12px">${totalDone===0?'Complete some lessons first!':'Nothing to review yet!'}</div>
+          <div style="font-size:13px;color:#78716C;font-weight:700;margin-top:6px">${totalDone===0?'Come back after finishing a few lessons':'Keep doing lessons — review items will appear here'}</div>
+        </div>`}
+
+        <div style="background:#FEF3C7;border:1px solid #F5A623;border-radius:16px;padding:14px 16px;margin-bottom:20px">
+          <div style="font-size:12px;font-weight:900;color:#92400E;margin-bottom:4px">❤️ How hearts work</div>
+          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Complete a practice session to earn a heart back. Wrong answers in lessons no longer lose hearts — they just queue items for review here.</div>
+        </div>
+
+        ${needsWork.length > 0 ? `
+        <div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:10px">NEEDS MOST WORK</div>
+          ${topItems}
+        </div>` : ''}
+      </div>
+    </div>
+    ${buildNav('practice')}`;
+}
+
+// ─── PRACTICE SESSION ────────────────────────────────────────────────
+function buildPracticeSession() {
+  const e = S.practiceQueue[S.practiceEi];
+  if (!e) return '';
+  const prog = S.practiceEi / S.practiceQueue.length;
+
+  let exHTML = '';
+  if (e.t==='MC')   exHTML = buildMC(e);
+  if (e.t==='FREE') exHTML = buildFree(e);
+
+  const fbHTML = S.fb ? `
+    <div style="position:sticky;bottom:0;background:${S.fb.ok?'#059669':'#DC2626'};padding:18px 22px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.14)">
+      <div>
+        <div style="font-size:17px;font-weight:900;color:white">${S.fb.msg}</div>
+        ${!S.fb.ok?'<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700">Added to your review queue 📚</div>':''}
+      </div>
+      <button data-action="next-ex" style="background:white;border:none;border-radius:14px;padding:12px 24px;font-size:14px;font-weight:900;cursor:pointer;color:${S.fb.ok?'#059669':'#DC2626'};white-space:nowrap;flex-shrink:0">CONTINUE →</button>
+    </div>` : '';
+
+  return `
+    <div style="min-height:100vh;background:#F7F2EB;display:flex;flex-direction:column">
+      <div style="background:#fff;padding:10px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E7E5E4;position:sticky;top:0;z-index:10;box-shadow:0 1px 8px rgba(0,0,0,0.06)">
+        <button data-action="nav-practice" style="background:none;border:none;font-size:18px;cursor:pointer;color:#78716C;padding:4px 6px;line-height:1">✕</button>
+        <div style="flex:1;height:12px;background:#E7E5E4;border-radius:999px;overflow:hidden">
+          <div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#F5A623,#fb923c);width:${prog*100}%;transition:width 0.4s ease"></div>
+        </div>
+        <div style="font-size:12px;font-weight:900;color:#78716C">${S.practiceEi+1}/${S.practiceQueue.length}</div>
+      </div>
+      <div style="background:#FEF3C7;padding:6px 14px;text-align:center;border-bottom:1px solid #FDE68A">
+        <span style="font-size:11px;font-weight:900;color:#92400E">🎯 PRACTICE SESSION · No hearts lost · Earn ❤️ on completion</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%;padding:22px 18px 16px">
+        ${exHTML}
+      </div>
+      ${fbHTML}
+    </div>`;
+}
+
+// ─── PRACTICE RESULTS ────────────────────────────────────────────────
+function buildPracticeResults() {
+  const acc = S.practiceScore;
+  const total = S.practiceQueue.length;
+  const pct = total > 0 ? Math.round(acc/total*100) : 0;
+  const heartEarned = S.hearts === 5 || (S.hearts < 5);
+
+  return `
+    <div style="min-height:100vh;background:linear-gradient(135deg,#F5A623,#d4891e);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center">
+      <div class="anim-pop" style="font-size:78px">🎯</div>
+      <div class="anim-up" style="font-size:28px;font-weight:900;color:white;margin-top:8px">Practice Complete!</div>
+      <div class="anim-up" style="font-size:14px;color:rgba(255,255,255,0.75);margin-top:6px;font-weight:700;animation-delay:0.1s">${pct>=80?'Excellent work! 🌟':pct>=60?'Good effort! Keep it up 💪':'Keep practicing — you\'ll get there! 🌴'}</div>
+
+      <div class="anim-xp" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:24px;padding:20px 40px;margin-top:28px;display:flex;gap:24px">
+        <div style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:white">${acc}/${total}</div>
+          <div style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.65);margin-top:4px;letter-spacing:1px">CORRECT</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.25)"></div>
+        <div style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:white">${pct}%</div>
+          <div style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.65);margin-top:4px;letter-spacing:1px">ACCURACY</div>
+        </div>
+      </div>
+
+      <div class="anim-up" style="background:rgba(255,255,255,0.2);border-radius:16px;padding:14px 28px;margin-top:16px;border:1px solid rgba(255,255,255,0.25);animation-delay:0.3s">
+        <div style="font-size:22px;font-weight:900;color:white">${heartsHTML()} ${S.hearts}/5</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;font-weight:700">HEARTS ${S.hearts<5?'(+1 earned!)':'(full!)'}</div>
+      </div>
+
+      <button data-action="nav-practice" class="anim-up" style="margin-top:28px;background:white;color:#d4891e;border:none;border-radius:16px;padding:15px 48px;font-size:16px;font-weight:900;cursor:pointer;animation-delay:0.4s">DONE ✓</button>
+    </div>`;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // EVENT DELEGATION
 // ═══════════════════════════════════════════════════════════════════
@@ -1405,6 +1642,7 @@ document.addEventListener('click', e => {
     render();
   }
   else if (action==='next-ex') { nextEx(); }
+  else if (action==='start-practice') { startPractice(); }
   else if (action==='start-lesson') { startLesson(parseInt(el.dataset.id)); }
   else if (action==='check-free')   { handleFree(); }
   else if (action==='speak')  { e.stopPropagation(); speak(el.dataset.text); }
