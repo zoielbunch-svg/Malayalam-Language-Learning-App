@@ -1159,13 +1159,109 @@ function buildPractice() {
     ${buildNav('practice')}`;
 }
 
-// ─── REFERENCE PLACEHOLDER ───────────────────────────────────────────
+// ─── REFERENCE CARD ─────────────────────────────────────────────────
 function buildReference() {
+  const card = (ml, rom, color) => `
+    <button data-action="speak" data-text="${esc(ml)}" style="background:#fff;border:1px solid #E7E5E4;border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;flex:1;min-width:54px">
+      <div class="ml" style="font-size:26px;color:${color};line-height:1.1">${ml}</div>
+      <div style="font-size:9px;font-weight:800;color:#78716C;margin-top:3px;letter-spacing:0.3px">${rom}</div>
+    </button>`;
+
+  const section = (title, icon, color, content) => `
+    <div style="margin-bottom:24px">
+      <div style="background:${color};border-radius:14px;padding:10px 16px;color:white;display:flex;align-items:center;gap:8px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.12)">
+        <span style="font-size:18px">${icon}</span>
+        <span style="font-size:14px;font-weight:900">${title}</span>
+      </div>
+      ${content}
+    </div>`;
+
+  const row = cards => `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px">${cards}</div>`;
+
+  // ── Vowels ──
+  const vowelsHTML = row([
+    ['അ','a'],['ആ','aa'],['ഇ','i'],['ഈ','ii'],['ഉ','u'],['ഊ','uu'],
+    ['എ','e'],['ഏ','ee'],['ഐ','ai'],['ഒ','o'],['ഓ','oo'],['ഔ','au'],
+  ].map(([ml,rom])=>card(ml,rom,'#0D5C39')).join(''));
+
+  // ── Consonants by group ──
+  const cGroups = [
+    {label:'Velar',     color:'#1D4ED8', letters:[['ക','ka'],['ഖ','kha'],['ഗ','ga'],['ഘ','gha'],['ങ','nga']]},
+    {label:'Palatal',   color:'#1D4ED8', letters:[['ച','cha'],['ഛ','chha'],['ജ','ja'],['ഝ','jha'],['ഞ','nya']]},
+    {label:'Retroflex', color:'#9A3412', letters:[['ട','tt'],['ഠ','tth'],['ഡ','dd'],['ഢ','ddh'],['ണ','nn']]},
+    {label:'Dental',    color:'#9A3412', letters:[['ത','tha'],['ഥ','thha'],['ദ','dha'],['ധ','dhha'],['ന','na']]},
+    {label:'Labial',    color:'#065F46', letters:[['പ','pa'],['ഫ','pha'],['ബ','ba'],['ഭ','bha'],['മ','ma']]},
+    {label:'Semivowel', color:'#065F46', letters:[['യ','ya'],['ര','ra'],['ല','la'],['വ','va']]},
+    {label:'Sibilant',  color:'#4C1D95', letters:[['ശ','sha'],['ഷ','shha'],['സ','sa'],['ഹ','ha']]},
+    {label:'Special',   color:'#4C1D95', letters:[['ള','ll'],['ഴ','zh'],['റ','rra']]},
+  ];
+  const consHTML = cGroups.map(g => `
+    <div style="margin-bottom:10px">
+      <div style="font-size:9px;font-weight:900;color:#A8A29E;letter-spacing:1.5px;margin-bottom:5px">${g.label.toUpperCase()}</div>
+      ${row(g.letters.map(([ml,rom])=>card(ml,rom,g.color)).join(''))}
+    </div>`).join('');
+
+  // ── Matras ──
+  const matrasHTML = `
+    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Using ക (ka) as base — tap any to hear 🔈</div>
+    ${row([['കാ','kaa'],['കി','ki'],['കീ','kii'],['കു','ku'],['കൂ','kuu'],
+           ['കെ','ke'],['കേ','kee'],['കൈ','kai'],['കൊ','ko'],['കോ','koo'],['ക്','k·']
+    ].map(([ml,rom])=>card(ml,rom,'#0E7490')).join(''))}`;
+
+  // ── Chillu ──
+  const chilluHTML = `
+    <div style="font-size:11px;color:#78716C;font-weight:700;margin-bottom:8px">Final consonant forms — appear at end of syllables</div>
+    ${row([['ൻ','n'],['ർ','r'],['ൽ','l'],['ൾ','ll'],['ൺ','nn']
+    ].map(([ml,rom])=>card(ml,rom,'#4C1D95')).join(''))}`;
+
+  // ── Numbers ──
+  const numsHTML = row([
+    ['ഒന്ന്','1 · onnu'],['രണ്ട്','2 · randu'],['മൂന്ന്','3 · moonnu'],['നാല്','4 · naalu'],
+    ['അഞ്ച്','5 · anchu'],['ആറ്','6 · aaru'],['ഏഴ്','7 · eezhu'],['എട്ട്','8 · ettu'],
+    ['ഒമ്പത്','9 · ombathu'],['പത്ത്','10 · pathu'],['ഇരുപത്','20 · irupathu'],
+  ].map(([ml,rom])=>card(ml,rom,'#B45309')).join(''));
+
+  // ── Key Phrases ──
+  const phrases = [
+    ['നമസ്കാരം','namaskaram','hello / greetings'],
+    ['നന്ദി','nandi','thank you'],
+    ['ശരി','shari','okay / alright'],
+    ['ഇല്ല','illa','no / not there'],
+    ['എങ്ങനെ ഉണ്ട്?','engane undu?','how are you?'],
+    ['അമ്മ','amma','mother'],
+    ['അച്ഛൻ','achan','father'],
+    ['ഞാൻ','njaan','I / me'],
+    ['ഒരു','oru','a / an / one'],
+    ['ജലം','jalam','water'],
+    ['ആന','aana','elephant'],
+    ['മഴ','mazha','rain'],
+  ];
+  const phrasesHTML = `<div style="display:flex;flex-direction:column;gap:7px">${phrases.map(([ml,rom,eng])=>`
+    <button data-action="speak" data-text="${esc(ml)}" style="background:#fff;border:1px solid #E7E5E4;border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;width:100%">
+      <span class="ml" style="font-size:19px;color:#7C2D12;min-width:100px;text-align:left">${ml}</span>
+      <div style="flex:1;text-align:left">
+        <div style="font-size:12px;font-weight:900;color:#1C1917">${rom}</div>
+        <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:1px">${eng}</div>
+      </div>
+      <span style="color:#F5A623;flex-shrink:0">🔈</span>
+    </button>`).join('')}</div>`;
+
   return `
-    <div style="min-height:100vh;background:#F7F2EB;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;padding-bottom:80px">
-      <div style="font-size:64px">📖</div>
-      <div style="font-size:22px;font-weight:900;color:#1C1917;margin-top:16px">Reference Card</div>
-      <div style="font-size:14px;color:#78716C;font-weight:700;margin-top:8px;max-width:280px;line-height:1.6">Full alphabet, matras, and chillu letters at a glance — coming soon! 🌴</div>
+    <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
+      <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:24px 20px;color:white">
+        <div style="max-width:520px;margin:0 auto">
+          <div style="font-size:22px;font-weight:900">Quick Reference 📖</div>
+          <div style="font-size:13px;opacity:0.65;font-weight:700;margin-top:3px">Full alphabet · matras · chillu · phrases · Tap any to hear 🔈</div>
+        </div>
+      </div>
+      <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
+        ${section('Vowels · സ്വരങ്ങൾ',       '🌊', '#0D5C39', vowelsHTML)}
+        ${section('Consonants · വ്യഞ്ജനങ്ങൾ', '🔤', '#1D4ED8', consHTML)}
+        ${section('Matras · Vowel Signs',      '✍️', '#0E7490', matrasHTML)}
+        ${section('Chillu Letters',            '⭐', '#4C1D95', chilluHTML)}
+        ${section('Numbers · സംഖ്യകൾ',        '🔢', '#B45309', numsHTML)}
+        ${section('Key Phrases · പ്രയോഗങ്ങൾ', '🙏', '#7C2D12', phrasesHTML)}
+      </div>
     </div>
     ${buildNav('reference')}`;
 }
