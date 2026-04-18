@@ -1150,8 +1150,10 @@ function resolveLesson(lesson, isReplay) {
 
 function startLesson(id) {
   if (isLocked(id)) return;
-  const lesson = LESSONS.find(l=>l.id===id);
   const isReplay = S.done.has(id);
+  // Block new lessons when out of hearts
+  if (S.hearts === 0 && !isReplay) return;
+  const lesson = LESSONS.find(l=>l.id===id);
   const resolvedEx = resolveLesson(lesson, isReplay);
   const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
@@ -1179,9 +1181,12 @@ function nextEx() {
     const newStreak = S.lastDay === today ? S.streak
       : S.lastDay === yesterday ? S.streak + 1 : 1;
     const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp};
+    // Replaying a completed lesson restores +1 heart
+    const wasReplay = S.done.has(S.lid);
+    const newHearts = wasReplay ? Math.min(5, S.hearts + 1) : S.hearts;
     S = {...S, xp:S.xp+S.lxp, done:new Set([...S.done, S.lid]), screen:'results',
       fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
-      streak:newStreak, lastDay:today,
+      hearts:newHearts, streak:newStreak, lastDay:today,
       lessonsTodayCount: S.lessonsTodayCount + 1,
       stats:{...S.stats, xpByDay:newXpByDay}};
     saveProgress(); render();
@@ -1517,7 +1522,7 @@ function buildHome() {
       const xpBg     = isDone?'#D1FAE5':noHearts?'#FEE2E2':'#FEF3C7';
       const xpCol    = isDone?'#059669':noHearts?'#DC2626':'#d4891e';
       const icon     = locked?(noHearts?'💔':'🔒'):isDone?'✅':l.emoji;
-      const xpLabel  = isDone?'DONE ✓':noHearts?'Practice needed':'+ '+l.xp+' XP';
+      const xpLabel  = isDone?'REPLAY +❤️':noHearts?'Practice needed':'+ '+l.xp+' XP';
       lessonsHTML += `
         <button data-action="start-lesson" data-id="${l.id}" style="background:#fff;border:2px solid ${bBorder};border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:${locked?'not-allowed':'pointer'};text-align:left;opacity:${locked?0.45:1};box-shadow:${locked?'none':'0 2px 14px rgba(0,0,0,0.10)'};width:100%;margin:0">
           <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${icon}</div>
@@ -1609,7 +1614,7 @@ function buildHome() {
           <span style="font-size:24px">💔</span>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:900;color:#DC2626">No hearts remaining</div>
-            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Complete a practice session to unlock new lessons. 1 session = 3 hearts, 2 sessions = 5 hearts.</div>
+            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Practice to unlock new lessons (+3 hearts), or replay a completed lesson (+1 heart).</div>
           </div>
           <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0">Practice 🎯</button>
         </div>` : ''}
@@ -2317,7 +2322,7 @@ function buildPractice() {
 
         <div style="background:#FEF3C7;border:1px solid #F5A623;border-radius:16px;padding:14px 16px;margin-bottom:20px">
           <div style="font-size:12px;font-weight:900;color:#92400E;margin-bottom:4px">❤️ How hearts work</div>
-          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Wrong answers in lessons cost a heart. Complete a practice session to restore 3 hearts — do two sessions to restore fully to 5.</div>
+          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Wrong answers in lessons cost a heart. Complete a practice session to restore 3 hearts — do two sessions to restore fully to 5. Replaying a completed lesson restores +1 heart.</div>
         </div>
 
         ${needsWork.length > 0 ? `
