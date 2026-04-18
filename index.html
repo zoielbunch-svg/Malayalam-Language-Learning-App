@@ -620,17 +620,7 @@ const UNITS = [
   {id:9, title:'Consonant Checkpoint',sub:'Review midway',               icon:'🎯', color:'#6B7280', lessonIds:[17]},
   {id:4, title:'Labials & Glides',    sub:'Lips and semivowels',         icon:'🟢', color:'#065F46', lessonIds:[9,10]},
   {id:5, title:'Sibilants & Special', sub:'Unique Malayalam sounds',     icon:'⭐', color:'#4C1D95', lessonIds:[11,12]},
-  {id:6, title:'Phrases',             sub:'Greetings & essentials',      icon:'🙏', color:'#7C2D12', lessonIds:[4]},
-  {id:10,title:'Full Review',         sub:'Complete alphabet + vocab',   icon:'🏆', color:'#92400E', lessonIds:[18]},
-  {id:11,title:'Matras',              sub:'Vowel signs on consonants',   icon:'✍️', color:'#0E7490', lessonIds:[19,20]},
-  {id:12,title:'Chillu Letters',      sub:'Final consonant forms',       icon:'🔚', color:'#4C1D95', lessonIds:[21]},
-  {id:7, title:'Numbers',             sub:'1 through 20',                icon:'🔢', color:'#B45309', lessonIds:[13,14,15]},
-  {id:13,title:'Everyday Words',      sub:'Food · Colors · Family',      icon:'🏡', color:'#0891B2', lessonIds:[22,23,24]},
-  {id:14,title:'Days & Conversation', sub:'Days of the week · Introductions', icon:'💬', color:'#7C3AED', lessonIds:[26,25]},
-  {id:15,title:'Pronouns & Cases',    sub:'I · You · My · Your · Dative', icon:'🙋', color:'#1D4ED8', lessonIds:[27,28]},
-  {id:16,title:'To Be System',        sub:'ആണ് · ഉണ്ട് · ഇല്ല · അല്ല',  icon:'🔗', color:'#7C2D12', lessonIds:[29,30]},
-  {id:17,title:'Present Tense',       sub:'Goes · Eats · Sees · Accusative · Locative', icon:'▶️', color:'#0891B2', lessonIds:[31,32]},
-  // Units 18+ hidden pending accuracy review — lesson data preserved in LESSONS array
+  // Units 6+ hidden pending content review — all lesson data preserved
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1600,6 +1590,11 @@ function buildHome() {
         </div>` : ''}
         ${modeBanner}
         ${unitsHTML}
+        <div style="border:2px dashed #D1D5DB;border-radius:18px;padding:24px 20px;text-align:center;margin-top:8px;margin-bottom:8px">
+          <div style="font-size:28px">🌴</div>
+          <div style="font-size:15px;font-weight:900;color:#78716C;margin-top:8px">More coming soon</div>
+          <div style="font-size:12px;color:#A8A29E;font-weight:700;margin-top:4px">Phrases · Matras · Numbers · Grammar · Vocabulary</div>
+        </div>
       </div>
     </div>
     ${buildNav('home')}`;
