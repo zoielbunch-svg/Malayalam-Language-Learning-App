@@ -33,11 +33,10 @@
 // ═══════════════════════════════════════════════════════════════════
 
 const mkL = (id, title, sub, emoji, xp, letters, reviewLetters, vocabMC) => {
-  // Randomly assign each letter either letter→rom or flip (rom→letter) format
-  // Actual randomisation happens at lesson-start in resolveLesson
-  const ex = letters.flatMap(c => [
-    {t:'MC', ml:c.ml, q:'How do you read this letter?', ans:c.rom, opts:c.opts, _flipAns:c.ml, _flipLabel:c.rom, _flipOpts:c.flipOpts, _canFlip:true},
-  ]);
+  // Flip randomisation happens at lesson-start in resolveLesson
+  const ex = letters.map(c =>
+    ({t:'MC', ml:c.ml, q:'How do you read this letter?', ans:c.rom, opts:c.opts, _flipLabel:c.rom, _flipOpts:c.flipOpts, _canFlip:true})
+  );
   // MATCH mixes new letters + up to 2 review letters
   const matchLetters = [...letters.slice(0,2), ...(reviewLetters||[]).slice(0,2)];
   ex.push({ t:'MATCH', pairs: matchLetters.map(c => ({ ml:c.ml, rom:c.rom })) });
@@ -136,35 +135,21 @@ const LESSONS = [
 // Numbers lessons
 const NUM_LESSONS = [
   { id:13, title:'Numbers 1–5', sub:'ഒന്ന് · രണ്ട് · മൂന്ന്…', xp:20, emoji:'🔢', ex:[
-    {t:'INTRO',ml:'ഒന്ന്', rom:'onnu', hint:'1 — one',  eg:'ഒന്ന് · onnu · one'},
-    {t:'MC',   ml:'ഒന്ന്', q:'What number is this?',ans:'1 (one)',opts:['1 (one)','2 (two)','3 (three)','5 (five)']},
-    {t:'INTRO',ml:'രണ്ട്', rom:'randu', hint:'2 — two',  eg:'രണ്ട് · randu · two'},
-    {t:'MC',   ml:'രണ്ട്', q:'What number is this?',ans:'2 (two)',opts:['1 (one)','2 (two)','4 (four)','6 (six)']},
-    {t:'INTRO',ml:'മൂന്ന്',rom:'moonnu',hint:'3 — three',eg:'മൂന്ന് · moonnu · three'},
-    {t:'MC',   ml:'മൂന്ന്',q:'What number is this?',ans:'3 (three)',opts:['2 (two)','3 (three)','7 (seven)','9 (nine)']},
-    {t:'INTRO',ml:'നാല്', rom:'naalu', hint:'4 — four',  eg:'നാല് · naalu · four'},
-    {t:'INTRO',ml:'അഞ്ച്', rom:'anchu', hint:'5 — five',  eg:'അഞ്ച് · anchu · five'},
+    {t:'MC', ml:'ഒന്ന്', q:'What number is this?',ans:'1 (one)',opts:['1 (one)','2 (two)','3 (three)','5 (five)']},
+    {t:'MC', ml:'രണ്ട്', q:'What number is this?',ans:'2 (two)',opts:['1 (one)','2 (two)','4 (four)','6 (six)']},
+    {t:'MC', ml:'മൂന്ന്',q:'What number is this?',ans:'3 (three)',opts:['2 (two)','3 (three)','7 (seven)','9 (nine)']},
     {t:'MATCH',pairs:[{ml:'ഒന്ന്',rom:'onnu'},{ml:'രണ്ട്',rom:'randu'},{ml:'മൂന്ന്',rom:'moonnu'},{ml:'നാല്',rom:'naalu'}]},
     {t:'FREE', q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
   ]},
   { id:14, title:'Numbers 6–10', sub:'ആറ് · ഏഴ് · എട്ട്…', xp:20, emoji:'🔣', ex:[
-    {t:'INTRO',ml:'ആറ്', rom:'aaru',  hint:'6 — six',   eg:'ആറ് · aaru · six'},
-    {t:'MC',   ml:'ആറ്', q:'What number is this?',ans:'6 (six)',opts:['5 (five)','6 (six)','7 (seven)','8 (eight)']},
-    {t:'INTRO',ml:'ഏഴ്', rom:'eezhu', hint:'7 — seven', eg:'ഏഴ് · eezhu · seven'},
-    {t:'MC',   ml:'ഏഴ്', q:'What number is this?',ans:'7 (seven)',opts:['6 (six)','7 (seven)','8 (eight)','9 (nine)']},
-    {t:'INTRO',ml:'എട്ട്',rom:'ettu',  hint:'8 — eight', eg:'എട്ട് · ettu · eight'},
-    {t:'INTRO',ml:'ഒമ്പത്',rom:'ombathu',hint:'9 — nine',eg:'ഒമ്പത് · ombathu · nine'},
-    {t:'INTRO',ml:'പത്ത്',rom:'pathu', hint:'10 — ten',  eg:'പത്ത് · pathu · ten'},
+    {t:'MC', ml:'ആറ്', q:'What number is this?',ans:'6 (six)',opts:['5 (five)','6 (six)','7 (seven)','8 (eight)']},
+    {t:'MC', ml:'ഏഴ്', q:'What number is this?',ans:'7 (seven)',opts:['6 (six)','7 (seven)','8 (eight)','9 (nine)']},
     {t:'MATCH',pairs:[{ml:'ആറ്',rom:'aaru'},{ml:'ഏഴ്',rom:'eezhu'},{ml:'എട്ട്',rom:'ettu'},{ml:'പത്ത്',rom:'pathu'}]},
     {t:'FREE', q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
   ]},
   { id:15, title:'Numbers 11–20', sub:'പതിനൊന്ന് · ഇരുപത്…', xp:25, emoji:'🔟', ex:[
-    {t:'INTRO',ml:'പതിനൊന്ന്',rom:'pathinonnu', hint:'11 — eleven',   eg:'പതിനൊന്ന് · pathinonnu · eleven'},
-    {t:'MC',   ml:'പതിനൊന്ന്',q:'What number is this?',ans:'11 (eleven)',opts:['10 (ten)','11 (eleven)','12 (twelve)','15 (fifteen)']},
-    {t:'INTRO',ml:'പന്ത്രണ്ട്',rom:'panthrandu',hint:'12 — twelve',    eg:'പന്ത്രണ്ട് · panthrandu · twelve'},
-    {t:'INTRO',ml:'പതിനഞ്ച്', rom:'pathinanchu',hint:'15 — fifteen',  eg:'പതിനഞ്ച് · pathinanchu · fifteen'},
-    {t:'INTRO',ml:'ഇരുപത്',  rom:'irupathu',   hint:'20 — twenty',   eg:'ഇരുപത് · irupathu · twenty'},
-    {t:'MC',   ml:'ഇരുപത്',  q:'What number is this?',ans:'20 (twenty)',opts:['15 (fifteen)','18 (eighteen)','20 (twenty)','25 (twenty-five)']},
+    {t:'MC', ml:'പതിനൊന്ന്',q:'What number is this?',ans:'11 (eleven)',opts:['10 (ten)','11 (eleven)','12 (twelve)','15 (fifteen)']},
+    {t:'MC', ml:'ഇരുപത്',  q:'What number is this?',ans:'20 (twenty)',opts:['15 (fifteen)','18 (eighteen)','20 (twenty)','25 (twenty-five)']},
     {t:'MATCH',pairs:[{ml:'പതിനൊന്ന്',rom:'pathinonnu'},{ml:'പന്ത്രണ്ട്',rom:'panthrandu'},{ml:'പതിനഞ്ച്',rom:'pathinanchu'},{ml:'ഇരുപത്',rom:'irupathu'}]},
     {t:'FREE', q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
   ]},
@@ -303,73 +288,42 @@ const CONTENT_LESSONS = [
 
   // Chillu Letters
   { id:21, title:'Chillu Letters', sub:'ൻ · ർ · ൽ · ൾ · ൺ', xp:20, emoji:'🔚', ex:[
-    {t:'INTRO', ml:'ൻ', rom:'n',  hint:'Final form of ന — a crisp final n at end of syllables', eg:'അവൻ · avan · he / that man'},
     {t:'MC', ml:'ൻ', q:'ൻ is the final (chillu) form of which letter?', ans:'ന', opts:['ന','ണ','മ','ങ']},
-    {t:'INTRO', ml:'ർ', rom:'r',  hint:'Final form of ര — a clean final r sound', eg:'അവർ · avar · they'},
     {t:'MC', ml:'അവർ', q:'What does അവർ mean?', ans:'they', opts:['they','he','she','we']},
-    {t:'INTRO', ml:'ൽ', rom:'l',  hint:'Final form of ല — soft final l', eg:'കൽ · kal · stone'},
-    {t:'INTRO', ml:'ൾ', rom:'ll', hint:'Final form of ള — retroflex final l, unique to Malayalam', eg:'അവൾ · avaL · she / that woman'},
     {t:'MC', ml:'അവൾ', q:'What does അവൾ mean?', ans:'she', opts:['she','he','they','I']},
-    {t:'INTRO', ml:'ൺ', rom:'nn', hint:'Final form of ണ — retroflex final n', eg:'ആൺ · aan · male'},
     {t:'MATCH', pairs:[{ml:'ൻ',rom:'n'},{ml:'ർ',rom:'r'},{ml:'ൽ',rom:'l'},{ml:'ൾ',rom:'ll'}]},
     {t:'FREE', q:'What does അവൾ (avaL) mean?', ans:'she', alts:['her','she/her','that woman'], hint:'👩 The feminine of അവൻ (he)'},
   ]},
 
   // Food & Drink
   { id:22, title:'Food & Drink', sub:'ഭക്ഷണം · ചോറ് · ചായ', xp:20, emoji:'🍛', ex:[
-    {t:'VOCAB', ml:'ഭക്ഷണം', rom:'bhakshanam', eng:'food', note:'You learned ഭ in the labial stops lesson!'},
-    {t:'VOCAB', ml:'ചോറ്', rom:'choru', eng:'rice (cooked)', note:'The staple of Kerala — ചോറ് specifically means cooked rice'},
-    {t:'MC', ml:'ചോറ്', q:'What does ചോറ് mean?', ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
-    {t:'VOCAB', ml:'ചായ', rom:'chaaya', eng:'tea', note:'Kerala is famous for strong tea — കട്ടൻ ചായ (kattan chaaya) is the classic'},
-    {t:'VOCAB', ml:'വെള്ളം', rom:'vellam', eng:'water (colloquial)', note:'More common in everyday speech than ജലം'},
-    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water', opts:['water','milk','juice','tea']},
-    {t:'VOCAB', ml:'കഴിക്കുക', rom:'kazhikkuka', eng:'to eat', note:'കഴിക്കൂ = please eat — you saw this in an earlier sentence!'},
-    {t:'VOCAB', ml:'കുടിക്കുക', rom:'kudikkuka', eng:'to drink', note:'കുടിക്കൂ = please drink'},
+    {t:'MC', ml:'ചോറ്',  q:'What does ചോറ് mean?',  ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
+    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water',       opts:['water','milk','juice','tea']},
     {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'bhakshanam'},{ml:'ചോറ്',rom:'choru'},{ml:'ചായ',rom:'chaaya'},{ml:'വെള്ളം',rom:'vellam'}]},
-    {t:'SENT', ml:'ചോറ് കഴിക്കൂ', rom:'choru kazhikkoo', eng:'Please eat rice', words:[{ml:'ചോറ്',eng:'rice'},{ml:'കഴിക്കൂ',eng:'please eat'}]},
     {t:'FREE', q:'How do you say "tea" in Malayalam? (romanization)', ans:'chaaya', hint:'☕ Kerala\'s favourite drink'},
   ]},
 
   // Colors
   { id:23, title:'Colors', sub:'ചുവപ്പ് · നീല · പച്ച', xp:20, emoji:'🎨', ex:[
-    {t:'VOCAB', ml:'ചുവപ്പ്', rom:'chuvappu', eng:'red', note:'ചുവന്ന (chuvanna) = red (adjective form used before nouns)'},
-    {t:'MC', ml:'ചുവപ്പ്', q:'What color is ചുവപ്പ്?', ans:'red', opts:['red','blue','green','yellow']},
-    {t:'VOCAB', ml:'നീല', rom:'neela', eng:'blue', note:'കടൽ നീലം ആണ് — the sea is blue — you learned this sentence!'},
-    {t:'VOCAB', ml:'പച്ച', rom:'pacha', eng:'green', note:'പച്ചക്കറി (pachakkari) = vegetables — literally "green things"!'},
-    {t:'MC', ml:'പച്ച', q:'What color is പച്ച?', ans:'green', opts:['yellow','green','red','white']},
-    {t:'VOCAB', ml:'മഞ്ഞ', rom:'manja', eng:'yellow', note:'മഞ്ഞൾ (manjal) = turmeric — the spice that gives yellow its name'},
-    {t:'VOCAB', ml:'വെള്ള', rom:'veLLa', eng:'white', note:'Related to വെള്ളം (water) — both suggest clarity'},
-    {t:'VOCAB', ml:'കറുപ്പ്', rom:'karuppu', eng:'black', note:'കറുത്ത (karutta) = black (adjective form)'},
+    {t:'MC', ml:'ചുവപ്പ്', q:'What color is ചുവപ്പ്?', ans:'red',   opts:['red','blue','green','yellow']},
+    {t:'MC', ml:'പച്ച',    q:'What color is പച്ച?',    ans:'green', opts:['yellow','green','red','white']},
     {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'chuvappu'},{ml:'നീല',rom:'neela'},{ml:'പച്ച',rom:'pacha'},{ml:'മഞ്ഞ',rom:'manja'}]},
     {t:'FREE', q:'What does നീല (neela) mean?', ans:'blue', hint:'🌊 Color of the sea — കടൽ നീലം ആണ്'},
   ]},
 
   // Family
   { id:24, title:'Family', sub:'കുടുംബം', xp:20, emoji:'👨‍👩‍👧', ex:[
-    {t:'VOCAB', ml:'കുടുംബം', rom:'kudumbam', eng:'family', note:'The heart of Malayalam culture — family terms are used as respectful address too'},
-    {t:'VOCAB', ml:'ചേട്ടൻ', rom:'chettan', eng:'older brother', note:'Also used to respectfully address any older male — very common in Kerala'},
-    {t:'MC', ml:'ചേട്ടൻ', q:'What does ചേട്ടൻ mean?', ans:'older brother', opts:['older brother','younger brother','older sister','father']},
-    {t:'VOCAB', ml:'ചേച്ചി', rom:'chechi', eng:'older sister', note:'Similarly used to address older women respectfully'},
-    {t:'VOCAB', ml:'അനിയൻ', rom:'aniyan', eng:'younger brother', note:'അനിയൻ vs ചേട്ടൻ — younger vs older male sibling'},
-    {t:'VOCAB', ml:'അനിയത്തി', rom:'aniyathi', eng:'younger sister', note:'The feminine counterpart of അനിയൻ'},
-    {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister', opts:['younger sister','older sister','mother','grandmother']},
-    {t:'VOCAB', ml:'മുത്തശ്ശി', rom:'muthashi', eng:'grandmother', note:'Warm term — also used affectionately for any elderly woman'},
-    {t:'VOCAB', ml:'മുത്തച്ഛൻ', rom:'muthachan', eng:'grandfather', note:'Warm term — also used affectionately for any elderly man'},
+    {t:'MC', ml:'ചേട്ടൻ',    q:'What does ചേട്ടൻ mean?',    ans:'older brother',  opts:['older brother','younger brother','older sister','father']},
+    {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister',  opts:['younger sister','older sister','mother','grandmother']},
     {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'chettan'},{ml:'ചേച്ചി',rom:'chechi'},{ml:'അനിയൻ',rom:'aniyan'},{ml:'അനിയത്തി',rom:'aniyathi'}]},
     {t:'FREE', q:'What does ചേട്ടൻ (chettan) mean?', ans:'older brother', alts:['elder brother','big brother','older bro','elder bro'], hint:'👦 The elder male sibling — also a polite address'},
   ]},
 
   // Basic Conversation
   { id:25, title:'Introductions', sub:'My name is… · I\'m learning', xp:25, emoji:'💬', ex:[
-    {t:'VOCAB', ml:'എന്റെ പേര്', rom:'ente peru', eng:'my name', note:'എന്റെ (ente) = my · പേര് (peru) = name'},
-    {t:'SENT', ml:'എന്റെ പേര് ... ആണ്', rom:'ente peru ... aanu', eng:'My name is ...', words:[{ml:'എന്റെ',eng:'my'},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}]},
-    {t:'VOCAB', ml:'നിങ്ങളുടെ പേര് എന്താണ്?', rom:'ningaLude peru enthaanu?', eng:'What is your name?', note:'നിങ്ങൾ (ningaL) = you (formal) · എന്ത് (enthu) = what'},
     {t:'MC', ml:'എന്റെ', q:'What does എന്റെ (ente) mean?', ans:'my', opts:['my','your','his','their']},
-    {t:'VOCAB', ml:'മനസ്സിലായി', rom:'manassilayi', eng:'I understand / I got it', note:'Literally "it entered the mind" — a beautiful expression'},
-    {t:'VOCAB', ml:'മനസ്സിലായില്ല', rom:'manassilayilla', eng:"I don't understand", note:'Add ഇല്ല (illa = no/not) to negate — you know ഇല്ല already!'},
     {t:'MC', ml:'മനസ്സിലായില്ല', q:'What does മനസ്സിലായില്ല mean?', ans:"I don't understand", opts:["I don't understand","I understand","I don't know","I agree"]},
-    {t:'VOCAB', ml:'ദയവായി പതുക്കെ പറയൂ', rom:'dayavayi pathukkhe parayoo', eng:'Please speak slowly', note:'The most useful phrase for any language learner! 😄'},
-    {t:'SENT', ml:'ഞാൻ മലയാളം പഠിക്കുകയാണ്', rom:'njaan malayaLam paThikkukayaanu', eng:'I am learning Malayalam', words:[{ml:'ഞാൻ',eng:'I'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പഠിക്കുകയാണ്',eng:'am learning'}]},
+    {t:'FREE', q:'How do you say "my name" in Malayalam? (romanization)', ans:'ente peru', hint:'എന്റെ = my · പേര് = name'},
     {t:'FREE', q:'What does മനസ്സിലായി (manassilayi) mean?', ans:'I understand', alts:['understood','i got it','got it','i understand'], hint:'💡 Literally "it entered my mind"'},
   ]},
 
@@ -588,6 +542,18 @@ for (const l of LESSONS) {
   }
 }
 
+// ── LESSON → TAUGHT LETTERS (for vocab MC gating) ───────────────────
+const LESSON_TAUGHT = {};
+for (const l of LESSONS) {
+  const ls = new Set();
+  for (const e of l.ex) {
+    if (e._canFlip && e.ml)       ls.add(e.ml);
+    if (e.t === 'INTRO' && e.ml)  ls.add(e.ml);
+    if (e.t === 'MATRA' && e.result) ls.add(e.result);
+  }
+  if (ls.size > 0) LESSON_TAUGHT[l.id] = ls;
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // EXERCISE VARIABILITY DATA
 // ═══════════════════════════════════════════════════════════════════
@@ -686,6 +652,16 @@ const CHAR_EGS = {
 };
 
 // Alternative FREE questions per lesson (pick one randomly on replay)
+// Also extend ML_ROM with words found in CHAR_EGS example strings
+for (const examples of Object.values(CHAR_EGS)) {
+  for (const eg of examples) {
+    const parts = eg.split('·').map(p => p.trim());
+    if (parts.length >= 2 && parts[0] && parts[1] && !ML_ROM[parts[0]]) {
+      ML_ROM[parts[0]] = parts[1];
+    }
+  }
+}
+
 const LESSON_FREE_POOLS = {
   1:[
     {q:'What does അമ്മ (amma) mean?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
@@ -915,7 +891,7 @@ let S = {
   hearts:5, xp:0, done:new Set(),
   fb:null, lxp:0,
   mSel:null, mDone:[], mWrong:null, shuffled:[],
-  ft:'', grading:false, mcPicked:null, speaking:false,
+  ft:'', grading:false, mcPicked:null,
   streak:0, lastDay:null,
   stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{}, wrongItemsRecent:{} },
   // onboarding
@@ -937,6 +913,8 @@ let S = {
   buildPlaced: [], buildAvailable: [],
   // replay flag (heart-safe mode)
   isReplay: false,
+  // match heart-loss flag (lose at most 1 heart per MATCH exercise)
+  mHeartLost: false,
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1040,15 +1018,7 @@ const getEx      = () => S.screen === 'practice-session'
   : S.resolvedEx[S.ei];
 const lessonOrder = UNITS.flatMap(u => u.lessonIds);
 
-// Language-first mode: only these units are shown
-const LF_UNIT_IDS   = [6, 7, 13, 14, 15, 16, 17];  // Phrases, Numbers, Everyday Words, Days, Pronouns, To Be, Present Tense
-const LF_LESSON_IDS = UNITS.filter(u=>LF_UNIT_IDS.includes(u.id)).flatMap(u=>u.lessonIds);
-
 const isLocked = id => {
-  if (S.mode === 'language-first') {
-    const idx = LF_LESSON_IDS.indexOf(id);
-    return idx > 0 && !S.done.has(LF_LESSON_IDS[idx-1]);
-  }
   const i = lessonOrder.indexOf(id);
   return i > 0 && !S.done.has(lessonOrder[i-1]);
 };
@@ -1080,6 +1050,17 @@ function resolveLesson(lesson, isReplay) {
       }
     }
     return resolveEx(e);
+  });
+
+  // Gate vocab MCs: only show if at least one character of the word has been taught
+  // (in a completed lesson OR this lesson itself)
+  const taughtLetters = new Set();
+  for (const lid of S.done) { const ls = LESSON_TAUGHT[lid]; if (ls) ls.forEach(c => taughtLetters.add(c)); }
+  const ownLetters = LESSON_TAUGHT[lesson.id];
+  if (ownLetters) ownLetters.forEach(c => taughtLetters.add(c));
+  exs = exs.filter(e => {
+    if (e.t !== 'MC' || e._canFlip || e.flip) return true; // keep letter MCs + non-MCs
+    return [...e.ml].some(ch => taughtLetters.has(ch));
   });
 
   // On replay: shuffle exercise groups (keep INTRO→MC pairs together, MATCH/FREE at end)
@@ -1120,10 +1101,10 @@ function startLesson(id) {
   // Block new lessons when out of hearts
   if (S.hearts === 0 && !isReplay) return;
   const lesson = LESSONS.find(l=>l.id===id);
-  const resolvedEx = resolveLesson(lesson, isReplay);
+  const resolvedEx = resolveLesson(lesson, isReplay).map((e, i) => ({...e, _qid: i}));
   const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
-    mSel:null, mDone:[], mWrong:null, ft:'', lxp:0, screen:'lesson',
+    mSel:null, mDone:[], mWrong:null, mHeartLost:false, ft:'', lxp:0, screen:'lesson',
     resolvedEx, retryQueue:[], tooltip:null, isReplay,
     buildPlaced: firstEx?.t==='BUILD' ? [] : [],
     buildAvailable: firstEx?.t==='BUILD' ? [...firstEx.tiles].sort(()=>Math.random()-0.5) : [],
@@ -1161,7 +1142,7 @@ function nextEx() {
     const nextE = S.resolvedEx[newEi];
     const newBuildAvail = nextE?.t==='BUILD' ? [...nextE.tiles].sort(()=>Math.random()-0.5) : S.buildAvailable;
     const newBuildPlaced = nextE?.t==='BUILD' ? [] : S.buildPlaced;
-    S = {...S, ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
+    S = {...S, ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null, mHeartLost:false,
       buildAvailable:newBuildAvail, buildPlaced:newBuildPlaced,
       shuffled: nextE?.t==='MATCH' ? [...nextE.pairs].sort(()=>Math.random()-0.5) : S.shuffled};
     render();
@@ -1289,7 +1270,7 @@ function good(pts=5, msg='Correct! 🎉') {
   if (inP) { S.practiceScore++; pts = 3; }
   // Remove from retry queue if it was there
   const e = getEx();
-  const newRetry = S.retryQueue.filter(r => JSON.stringify(r) !== JSON.stringify(e));
+  const newRetry = S.retryQueue.filter(r => r._qid !== e?._qid);
   S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}, retryQueue:newRetry};
   render();
 }
@@ -1302,7 +1283,7 @@ function bad(msg) {
   const noHeartsMsg = !heartSafe && newHearts === 0 ? ' No hearts left — finish this lesson, then practice to continue ❤️' : '';
   // Add current exercise to retry queue (avoid duplicates), mark as retry
   const e = getEx();
-  const alreadyQueued = S.retryQueue.some(r => JSON.stringify(r) === JSON.stringify(e));
+  const alreadyQueued = S.retryQueue.some(r => r._qid === e?._qid);
   const retryEx = e && !alreadyQueued ? {...e, _retry:true} : null;
   const newRetry = retryEx ? [...S.retryQueue, retryEx] : S.retryQueue;
   S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}, retryQueue:newRetry};
@@ -1345,6 +1326,18 @@ async function handleFree() {
   S.grading = false; render();
 }
 
+function loseHeartSilent() {
+  if (S.screen === 'practice-session' || S.isReplay || getEx()?._retry) return;
+  playSound('wrong');
+  recordStat(false);
+  const newHearts = Math.max(0, S.hearts - 1);
+  const e = getEx();
+  const alreadyQueued = S.retryQueue.some(r => r._qid === e?._qid);
+  const newRetry = e && !alreadyQueued ? [...S.retryQueue, {...e, _retry:true}] : S.retryQueue;
+  S = {...S, hearts: newHearts, retryQueue: newRetry};
+  saveProgress();
+}
+
 function handleMatch(side, val) {
   const e = getEx();
   if (!e?.pairs || S.fb || S.mDone.includes(val) || S.mWrong) return;
@@ -1356,6 +1349,7 @@ function handleMatch(side, val) {
     const nd=[...S.mDone,lv,rv]; S.mDone=nd; S.mSel=null; render();
     if (nd.length>=e.pairs.length*2) setTimeout(()=>good(10,'All matched! 🎉'),200);
   } else {
+    if (!S.mHeartLost) { loseHeartSilent(); S.mHeartLost = true; }
     S.mWrong=[S.mSel.val,val]; render();
     setTimeout(()=>{ S.mWrong=null; S.mSel=null; render(); },700);
   }
@@ -1459,8 +1453,8 @@ function buildOnboarding() {
 // ─── HOME ───────────────────────────────────────────────────────────
 function buildHome() {
   const isLF = S.mode === 'language-first';
-  const visibleUnits = isLF ? UNITS.filter(u => LF_UNIT_IDS.includes(u.id)) : UNITS;
-  const trackLessons = isLF ? LF_LESSON_IDS.map(id=>LESSONS.find(l=>l.id===id)) : LESSONS;
+  const visibleUnits = UNITS;
+  const trackLessons = LESSONS;
   const done = S.done.size;
   const trackDone = trackLessons.filter(l=>S.done.has(l.id)).length;
   const pct = Math.round(trackDone / trackLessons.length * 100);
@@ -1504,7 +1498,7 @@ function buildHome() {
           <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${icon}</div>
           <div style="flex:1;text-align:left">
             <div style="font-size:14px;font-weight:900;color:#1C1917">${l.title}</div>
-            <div style="font-size:12px;color:#78716C;margin-top:2px;font-weight:700">${isLF ? l.sub.replace(/[^\x00-\x7F·]/g,'').trim() || l.sub : l.sub}</div>
+            <div style="font-size:12px;color:#78716C;margin-top:2px;font-weight:700">${l.sub}</div>
           </div>
           <div style="background:${xpBg};border-radius:9px;padding:4px 10px;font-size:11px;font-weight:900;color:${xpCol};white-space:nowrap">${xpLabel}</div>
         </button>`;
@@ -1730,15 +1724,22 @@ function buildMC(e) {
     optsHTML += `<button data-action="mc-pick" data-opt="${esc(opt)}" data-ans="${esc(e.ans)}" style="background:${bg};border:${bdr};border-radius:14px;padding:15px 10px;font-size:${fs}px;font-weight:800;cursor:${S.fb?'default':'pointer'};color:${col};font-family:${ff};box-shadow:0 2px 14px rgba(0,0,0,0.10)">${opt}</button>`;
   }
 
-  // If the word is shown in the card, simplify the question label
-  const isTranslation = e.ml && !e.flip && /^What does .+ mean\?|^What color is/i.test(e.q);
-  const qLabel = isTranslation ? 'What does this mean?' : e.q;
+  // Simplify question label for vocab MCs (word is already shown)
+  const qLabel = isVocabMC ? 'What does this mean?' : e.q;
+
+  // For vocab MCs (not letter MCs), show romanization inline under the word
+  const isVocabMC = !e.flip && !e._canFlip;
+  const inlineRom = isVocabMC && S.mode === 'language-first' ? (e.rom || ML_ROM[e.ml] || '') : '';
+  // For letter MCs, data-eng = '' (answer IS the rom — avoid showing it twice in tooltip)
+  // For vocab MCs, data-eng = English meaning
+  const tooltipEng = e._canFlip ? '' : e.ans;
 
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(e.ans)}" data-rom="${esc(e._flipLabel||ML_ROM[e.ml]||'')}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
+         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(tooltipEng)}" data-rom="${esc(e._flipLabel||ML_ROM[e.ml]||'')}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
+         ${inlineRom ? `<div style="font-size:15px;color:#78716C;font-weight:700;letter-spacing:0.5px">${inlineRom}</div>` : ''}
          <button data-action="speak" data-text="${esc(e.ml)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:5px 16px;font-size:13px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:5px">🔈 hear it</button>
-         <div style="font-size:10px;color:#A8A29E;font-weight:700">tap word to peek</div>
+         <div style="font-size:10px;color:#A8A29E;font-weight:700">${isVocabMC ? 'tap for meaning' : 'tap to peek'}</div>
        </div>`
     : `<div style="font-size:34px;font-weight:900;color:#0D5C39">"${e.flabel}"</div>`;
   return `
