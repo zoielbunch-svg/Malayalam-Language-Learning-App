@@ -32,116 +32,113 @@
 // DATA
 // ═══════════════════════════════════════════════════════════════════
 
-const mkL = (id, title, sub, emoji, xp, letters, free) => {
-  const ex = letters.flatMap(c => {
-    const parts = c.eg.split('·').map(s => s.trim());
-    const egMl  = parts[0];
-    const egEng = parts[2];
-    return [
-      { t:'INTRO', ml:c.ml, rom:c.rom, hint:c.hint, eg:c.eg },
-      { t:'MC', ml:egMl, q:`What does ${egMl} mean?`, ans:egEng, opts:c.opts },
-    ];
-  });
+const mkL = (id, title, sub, emoji, xp, letters, vocabMC, free) => {
+  const ex = letters.map(c => ({
+    t:'MC', ml:c.ml, q:'How do you read this letter?', ans:c.rom, opts:c.opts
+  }));
   ex.push({ t:'MATCH', pairs: letters.slice(0,4).map(c => ({ ml:c.ml, rom:c.rom })) });
+  if (vocabMC) ex.push(vocabMC);
   if (free) ex.push(free);
   return { id, title, sub, xp, emoji, ex };
 };
 
 const LESSONS = [
   { id:1, title:'First Vowels', sub:'അ · ആ · ഇ · ഈ', xp:15, emoji:'🌱', ex:[
-    {t:'INTRO',ml:'അ',rom:'a',  hint:"Short 'a' — like in 'about'", eg:'അമ്മ · amma · mother'},
-    {t:'MC',   ml:'അമ്മ', q:'What does അമ്മ mean?', ans:'mother', opts:['mother','father','sister','brother']},
-    {t:'INTRO',ml:'ആ',rom:'aa', hint:"Long 'aa' — like in 'father'",eg:'ആന · aana · elephant'},
-    {t:'MC',   ml:'ആന', q:'What does ആന mean?', ans:'elephant', opts:['elephant','tiger','monkey','horse']},
-    {t:'INTRO',ml:'ഇ',rom:'i',  hint:"Short 'i' — like in 'bit'",   eg:'ഇല · ila · leaf'},
-    {t:'INTRO',ml:'ഈ',rom:'ii', hint:"Long 'ii' — like in 'feet'",  eg:'ഈച്ച · iicha · fly'},
-    {t:'MC',flip:true,flabel:'i',q:"Which letter makes the 'i' sound?",ans:'ഇ',opts:['അ','ആ','ഇ','ഈ']},
+    {t:'MC', ml:'അ', q:'How do you read this letter?', ans:'a',  opts:['a','aa','i','u']},
+    {t:'MC', ml:'ആ', q:'How do you read this letter?', ans:'aa', opts:['a','aa','e','o']},
+    {t:'MC', ml:'ഇ', q:'How do you read this letter?', ans:'i',  opts:['i','ii','e','a']},
+    {t:'MC', ml:'ഈ', q:'How do you read this letter?', ans:'ii', opts:['i','ii','ee','u']},
     {t:'MATCH',pairs:[{ml:'അ',rom:'a'},{ml:'ആ',rom:'aa'},{ml:'ഇ',rom:'i'},{ml:'ഈ',rom:'ii'}]},
+    {t:'MC', ml:'അമ്മ', q:'What does അമ്മ mean?', ans:'mother', opts:['mother','father','sister','brother']},
     {t:'FREE', q:'What does അമ്മ (amma) mean?', ans:'mother', alts:['mom','mum','mama','amma'], hint:'💛 Think family...'},
   ]},
   { id:2, title:'More Vowels', sub:'ഉ · ഊ · എ · ഏ', xp:15, emoji:'🌿', ex:[
-    {t:'INTRO',ml:'ഉ',rom:'u',  hint:"Short 'u' — like in 'put'",  eg:'ഉപ്പ് · uppu · salt'},
-    {t:'MC',   ml:'ഉപ്പ്', q:'What does ഉപ്പ് mean?', ans:'salt', opts:['salt','sugar','pepper','rice']},
-    {t:'INTRO',ml:'ഊ',rom:'uu', hint:"Long 'uu' — like in 'food'", eg:'ഊണ് · uunu · meal'},
-    {t:'MC',   ml:'ഊണ്', q:'What does ഊണ് mean?', ans:'meal', opts:['meal','snack','drink','spice']},
-    {t:'INTRO',ml:'എ',rom:'e',  hint:"Short 'e' — like in 'get'",  eg:'എണ്ണ · enna · oil'},
-    {t:'INTRO',ml:'ഏ',rom:'ee', hint:"Long 'ee' — like in 'they'", eg:'ഏണി · eeni · ladder'},
+    {t:'MC', ml:'ഉ', q:'How do you read this letter?', ans:'u',  opts:['u','uu','o','a']},
+    {t:'MC', ml:'ഊ', q:'How do you read this letter?', ans:'uu', opts:['u','uu','oo','ii']},
+    {t:'MC', ml:'എ', q:'How do you read this letter?', ans:'e',  opts:['e','ee','a','i']},
+    {t:'MC', ml:'ഏ', q:'How do you read this letter?', ans:'ee', opts:['e','ee','ai','oo']},
     {t:'MATCH',pairs:[{ml:'ഉ',rom:'u'},{ml:'ഊ',rom:'uu'},{ml:'എ',rom:'e'},{ml:'ഏ',rom:'ee'}]},
+    {t:'MC', ml:'ഊണ്', q:'What does ഊണ് mean?', ans:'meal', opts:['meal','snack','drink','spice']},
     {t:'FREE', q:'What does ഊണ് (uunu) mean?', ans:'meal', alts:['food','lunch','dinner','a meal'], hint:'🍽️ A time to eat'},
   ]},
   { id:3, title:'Final Vowels', sub:'ഐ · ഒ · ഓ · ഔ', xp:15, emoji:'🌸', ex:[
-    {t:'INTRO',ml:'ഐ',rom:'ai', hint:"Diphthong 'ai' — like 'i' in ice", eg:'ഐക്യം · aikyam · unity'},
-    {t:'MC',   ml:'ഐക്യം', q:'What does ഐക്യം mean?', ans:'unity', opts:['unity','strength','beauty','peace']},
-    {t:'INTRO',ml:'ഒ',rom:'o',  hint:"Short 'o' — like in 'not'",     eg:'ഒട്ടകം · ottakam · camel'},
-    {t:'MC',   ml:'ഒട്ടകം', q:'What does ഒട്ടകം mean?', ans:'camel', opts:['camel','elephant','horse','donkey']},
-    {t:'INTRO',ml:'ഓ',rom:'oo', hint:"Long 'oo' — like in 'go'",      eg:'ഓട്ടം · oottam · race'},
-    {t:'MC',   ml:'ഓട്ടം', q:'What does ഓട്ടം mean?', ans:'race', opts:['race','walk','jump','rest']},
-    {t:'INTRO',ml:'ഔ',rom:'au', hint:"Diphthong 'au' — like 'ow' in cow", eg:'ഔഷധം · aushadham · medicine'},
+    {t:'MC', ml:'ഐ', q:'How do you read this letter?', ans:'ai', opts:['ai','ee','e','oi']},
+    {t:'MC', ml:'ഒ', q:'How do you read this letter?', ans:'o',  opts:['o','oo','u','au']},
+    {t:'MC', ml:'ഓ', q:'How do you read this letter?', ans:'oo', opts:['o','oo','u','ee']},
+    {t:'MC', ml:'ഔ', q:'How do you read this letter?', ans:'au', opts:['au','oo','ai','u']},
     {t:'MATCH',pairs:[{ml:'ഐ',rom:'ai'},{ml:'ഒ',rom:'o'},{ml:'ഓ',rom:'oo'},{ml:'ഔ',rom:'au'}]},
-    {t:'FREE', q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Desert animal'},
+    {t:'MC', ml:'ഒട്ടകം', q:'What does ഒട്ടകം mean?', ans:'camel', opts:['camel','elephant','horse','donkey']},
+    {t:'FREE', q:'What does ഒട്ടകം (ottakam) mean?', ans:'camel', hint:'🐪 Desert animal'},
   ]},
   { id:4, title:'Greetings', sub:'Hello · Thanks · Okay', xp:20, emoji:'🙏', ex:[
-    {t:'INTRO',ml:'നമസ്കാരം',rom:'namaskaram',hint:'The all-purpose Malayalam greeting',eg:'Hello · goodbye · namaste'},
-    {t:'MC',   ml:'നമസ്കാരം',q:'What does this word mean?',ans:'hello / greetings',opts:['hello / greetings','thank you','please','goodbye']},
-    {t:'INTRO',ml:'നന്ദി',   rom:'nandi',     hint:'Express gratitude 🙏',            eg:'Said when someone helps you'},
-    {t:'MC',   ml:'നന്ദി',   q:'What does this word mean?',ans:'thank you',          opts:['hello','thank you','sorry','yes']},
-    {t:'INTRO',ml:'ശരി',    rom:'shari',     hint:'Agreement or acknowledgment',     eg:'ശരി · shari · okay / alright'},
-    {t:'INTRO',ml:'ഇല്ല',   rom:'illa',      hint:"Negation — 'no' or 'not there'",  eg:'ഇല്ല · illa · no / not'},
+    {t:'MC', ml:'നമസ്കാരം', q:'How do you read this?', ans:'namaskaram', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'നന്ദി', q:'How do you read this?', ans:'nandi', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'ശരി', q:'How do you read this?', ans:'shari', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'ഇല്ല', q:'How do you read this?', ans:'illa', opts:['namaskaram','nandi','shari','illa']},
     {t:'MATCH',pairs:[{ml:'നമസ്കാരം',rom:'namaskaram'},{ml:'നന്ദി',rom:'nandi'},{ml:'ശരി',rom:'shari'},{ml:'ഇല്ല',rom:'illa'}]},
-    {t:'FREE', q:"How do you say 'hello' in Malayalam? (romanization)",ans:'namaskaram',hint:'🙏 You just learned this!'},
+    {t:'MC', ml:'നമസ്കാരം', q:'What does നമസ്കാരം mean?', ans:'hello / greetings', opts:['hello / greetings','thank you','okay','no']},
+    {t:'FREE', q:"How do you say 'hello' in Malayalam? (romanization)", ans:'namaskaram', hint:'🙏 You just learned this!'},
   ]},
   mkL(5,'Velar Stops','ക · ഖ · ഗ · ഘ · ങ','🔵',20,[
-    {ml:'ക',rom:'ka', hint:"Like 'k' in king",               eg:'കടൽ · kadal · sea',            opts:['sea','mountain','river','forest']},
-    {ml:'ഖ',rom:'kha',hint:'Aspirated k — breathy k sound',  eg:'ഖേദം · khedam · sorrow',       opts:['sorrow','joy','anger','surprise']},
-    {ml:'ഗ',rom:'ga', hint:"Like 'g' in go",                 eg:'ഗൃഹം · gruham · house',        opts:['house','school','temple','shop']},
-    {ml:'ഘ',rom:'gha',hint:'Aspirated g — breathy g sound',  eg:'ഘടം · ghadam · pot',           opts:['pot','cup','plate','bowl']},
-    {ml:'ങ',rom:'nga',hint:"Nasal 'ng' — like ng in sing",   eg:'ഉറങ്ങ് · urangu · to sleep',   opts:['to sleep','to eat','to walk','to talk']},
-  ],{t:'FREE',q:'What does കടൽ (kadal) mean?',ans:'sea',hint:'🌊 Large body of salt water'}),
+    {ml:'ക',rom:'ka', hint:"Like 'k' in king",               eg:'കടൽ · kadal · sea',            opts:['ka','ga','cha','pa']},
+    {ml:'ഖ',rom:'kha',hint:'Aspirated k — breathy k sound',  eg:'ഖേദം · khedam · sorrow',       opts:['ka','kha','gha','pha']},
+    {ml:'ഗ',rom:'ga', hint:"Like 'g' in go",                 eg:'ഗൃഹം · gruham · house',        opts:['ka','ga','ja','ba']},
+    {ml:'ഘ',rom:'gha',hint:'Aspirated g — breathy g sound',  eg:'ഘടം · ghadam · pot',           opts:['ga','gha','dha','bha']},
+    {ml:'ങ',rom:'nga',hint:"Nasal 'ng' — like ng in sing",   eg:'ഉറങ്ങ് · urangu · to sleep',   opts:['na','nga','ma','nya']},
+  ],{t:'MC',ml:'കടൽ',q:'What does കടൽ mean?',ans:'sea',opts:['sea','river','mountain','forest']},
+  {t:'FREE',q:'What does കടൽ (kadal) mean?',ans:'sea',hint:'🌊 Large body of salt water'}),
   mkL(6,'Palatal Stops','ച · ഛ · ജ · ഝ · ഞ','🟣',20,[
-    {ml:'ച',rom:'cha', hint:"Like 'ch' in chair",           eg:'ചിരി · chiri · smile',           opts:['smile','cry','shout','frown']},
-    {ml:'ഛ',rom:'chha',hint:'Aspirated ch — breathy sound', eg:'ഛായ · chhaya · shadow',          opts:['shadow','light','fire','colour']},
-    {ml:'ജ',rom:'ja',  hint:"Like 'j' in jump",             eg:'ജലം · jalam · water',            opts:['water','fire','air','earth']},
-    {ml:'ഝ',rom:'jha', hint:'Aspirated j — breathy sound',  eg:'ഝരം · jharam · stream',          opts:['stream','mountain','desert','forest']},
-    {ml:'ഞ',rom:'nya', hint:"Nasal 'ny' — like ny in canyon",eg:'ഞാൻ · njaan · I (me)',          opts:['I (me)','you','he','they']},
-  ],{t:'FREE',q:'What does ഞാൻ (njaan) mean?',ans:'I',hint:'🙋 The Malayalam word for yourself'}),
+    {ml:'ച',rom:'cha', hint:"Like 'ch' in chair",           eg:'ചിരി · chiri · smile',           opts:['cha','ja','ka','sha']},
+    {ml:'ഛ',rom:'chha',hint:'Aspirated ch — breathy sound', eg:'ഛായ · chhaya · shadow',          opts:['cha','chha','jha','pha']},
+    {ml:'ജ',rom:'ja',  hint:"Like 'j' in jump",             eg:'ജലം · jalam · water',            opts:['cha','ja','ga','da']},
+    {ml:'ഝ',rom:'jha', hint:'Aspirated j — breathy sound',  eg:'ഝരം · jharam · stream',          opts:['ja','jha','cha','gha']},
+    {ml:'ഞ',rom:'nya', hint:"Nasal 'ny' — like ny in canyon",eg:'ഞാൻ · njaan · I (me)',          opts:['na','nya','nga','ma']},
+  ],{t:'MC',ml:'ജലം',q:'What does ജലം mean?',ans:'water',opts:['water','fire','air','earth']},
+  {t:'FREE',q:'What does ഞാൻ (njaan) mean?',ans:'I',hint:'🙋 The Malayalam word for yourself'}),
   mkL(7,'Retroflex Stops','ട · ഠ · ഡ · ഢ · ണ','🟠',20,[
-    {ml:'ട',rom:'tt',  hint:'Retroflex t — curl tongue back toward palate', eg:'ടൺ · tan · ton / unit of weight',     opts:['ton / unit of weight','bird','flower','colour']},
-    {ml:'ഠ',rom:'tth', hint:'Aspirated retroflex t — breathy tongue-curl',  eg:'ഠക്കൻ · thakkan · stubborn',          opts:['stubborn','kind','clever','brave']},
-    {ml:'ഡ',rom:'dd',  hint:'Retroflex d — tongue curls back',              eg:'ഡോക്ടർ · doktar · doctor',            opts:['doctor','teacher','farmer','driver']},
-    {ml:'ഢ',rom:'ddh', hint:'Aspirated retroflex d — rare in modern use',   eg:'ഢോൽ · dhol · drum',                   opts:['drum','flute','song','bell']},
-    {ml:'ണ',rom:'nn',  hint:'Retroflex n — tongue curves slightly back',    eg:'കണ്ണ് · kannu · eye',                 opts:['eye','ear','nose','mouth']},
-  ],{t:'FREE',q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'}),
+    {ml:'ട',rom:'tt',  hint:'Retroflex t — curl tongue back toward palate', eg:'ടൺ · tan · ton / unit of weight',     opts:['tt','th','dd','ka']},
+    {ml:'ഠ',rom:'tth', hint:'Aspirated retroflex t — breathy tongue-curl',  eg:'ഠക്കൻ · thakkan · stubborn',          opts:['tt','tth','ddh','pha']},
+    {ml:'ഡ',rom:'dd',  hint:'Retroflex d — tongue curls back',              eg:'ഡോക്ടർ · doktar · doctor',            opts:['dd','tt','dha','ba']},
+    {ml:'ഢ',rom:'ddh', hint:'Aspirated retroflex d — rare in modern use',   eg:'ഢോൽ · dhol · drum',                   opts:['dd','ddh','dha','gha']},
+    {ml:'ണ',rom:'nn',  hint:'Retroflex n — tongue curves slightly back',    eg:'കണ്ണ് · kannu · eye',                 opts:['n','nn','ma','nga']},
+  ],{t:'MC',ml:'കണ്ണ്',q:'What does കണ്ണ് mean?',ans:'eye',opts:['eye','ear','nose','mouth']},
+  {t:'FREE',q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'}),
   mkL(8,'Dental Stops','ത · ഥ · ദ · ധ · ന','🟤',20,[
-    {ml:'ത',rom:'tha', hint:"Dental 'th' — tongue behind upper teeth",   eg:'തേൻ · then · honey',           opts:['honey','sugar','salt','oil']},
-    {ml:'ഥ',rom:'thha',hint:'Aspirated dental th — breathy th sound',    eg:'ഥൈലം · thailam · oil / balm',  opts:['oil / balm','water','medicine','spice']},
-    {ml:'ദ',rom:'dha', hint:"Dental 'd' — tongue behind teeth, voiced",  eg:'ദിവസം · divasam · day',        opts:['day','night','week','year']},
-    {ml:'ധ',rom:'dhha',hint:'Aspirated dental d — breathy dh sound',     eg:'ധനം · dhanam · wealth',        opts:['wealth','food','health','knowledge']},
-    {ml:'ന',rom:'na',  hint:"Like 'n' in now",                           eg:'നദി · nadi · river',           opts:['river','sea','lake','mountain']},
-  ],{t:'FREE',q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'}),
+    {ml:'ത',rom:'tha', hint:"Dental 'th' — tongue behind upper teeth",   eg:'തേൻ · then · honey',           opts:['tha','dha','tt','sha']},
+    {ml:'ഥ',rom:'thha',hint:'Aspirated dental th — breathy th sound',    eg:'ഥൈലം · thailam · oil / balm',  opts:['tha','thha','ddh','pha']},
+    {ml:'ദ',rom:'dha', hint:"Dental 'd' — tongue behind teeth, voiced",  eg:'ദിവസം · divasam · day',        opts:['tha','dha','dd','ba']},
+    {ml:'ധ',rom:'dhha',hint:'Aspirated dental d — breathy dh sound',     eg:'ധനം · dhanam · wealth',        opts:['dha','dhha','ddh','gha']},
+    {ml:'ന',rom:'na',  hint:"Like 'n' in now",                           eg:'നദി · nadi · river',           opts:['n','na','ma','nga']},
+  ],{t:'MC',ml:'തേൻ',q:'What does തേൻ mean?',ans:'honey',opts:['honey','sugar','salt','oil']},
+  {t:'FREE',q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'}),
   mkL(9,'Labial Stops','പ · ഫ · ബ · ഭ · മ','🟢',20,[
-    {ml:'പ',rom:'pa', hint:"Like 'p' in pen",                  eg:'പൂ · poo · flower',            opts:['flower','tree','grass','leaf']},
-    {ml:'ഫ',rom:'pha',hint:"Aspirated p — like 'ph' in phone", eg:'ഫലം · phalam · fruit',         opts:['fruit','flower','vegetable','grain']},
-    {ml:'ബ',rom:'ba', hint:"Like 'b' in ball",                 eg:'ബഹളം · bahalam · commotion',   opts:['commotion','silence','peace','joy']},
-    {ml:'ഭ',rom:'bha',hint:'Aspirated b — breathy b sound',    eg:'ഭക്ഷണം · bhakshanam · food',   opts:['food','drink','medicine','spice']},
-    {ml:'മ',rom:'ma', hint:"Like 'm' in mother",               eg:'മഴ · mazha · rain',            opts:['rain','sun','wind','cloud']},
-  ],{t:'FREE',q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'}),
+    {ml:'പ',rom:'pa', hint:"Like 'p' in pen",                  eg:'പൂ · poo · flower',            opts:['pa','ba','ka','tha']},
+    {ml:'ഫ',rom:'pha',hint:"Aspirated p — like 'ph' in phone", eg:'ഫലം · phalam · fruit',         opts:['pa','pha','bha','kha']},
+    {ml:'ബ',rom:'ba', hint:"Like 'b' in ball",                 eg:'ബഹളം · bahalam · commotion',   opts:['ba','pa','da','ga']},
+    {ml:'ഭ',rom:'bha',hint:'Aspirated b — breathy b sound',    eg:'ഭക്ഷണം · bhakshanam · food',   opts:['ba','bha','dha','gha']},
+    {ml:'മ',rom:'ma', hint:"Like 'm' in mother",               eg:'മഴ · mazha · rain',            opts:['ma','na','ba','va']},
+  ],{t:'MC',ml:'മഴ',q:'What does മഴ mean?',ans:'rain',opts:['rain','sun','wind','cloud']},
+  {t:'FREE',q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'}),
   mkL(10,'Semivowels','യ · ര · ല · വ','🌊',20,[
-    {ml:'യ',rom:'ya',hint:"Like 'y' in yes",              eg:'യോഗം · yogam · yoga / meeting',opts:['yoga / meeting','food','travel','sleep']},
-    {ml:'ര',rom:'ra',hint:"Rolled 'r' — like Spanish r",  eg:'രാത്രി · raatri · night',       opts:['night','morning','noon','evening']},
-    {ml:'ല',rom:'la',hint:"Like 'l' in love",             eg:'ലോകം · lokam · world',          opts:['world','country','city','village']},
-    {ml:'വ',rom:'va',hint:"Like 'v' in voice",            eg:'വഴി · vazhi · road / way',      opts:['road / way','river','sea','bridge']},
-  ],{t:'FREE',q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'}),
+    {ml:'യ',rom:'ya',hint:"Like 'y' in yes",              eg:'യോഗം · yogam · yoga / meeting',opts:['ya','va','ja','la']},
+    {ml:'ര',rom:'ra',hint:"Rolled 'r' — like Spanish r",  eg:'രാത്രി · raatri · night',       opts:['ra','la','rra','na']},
+    {ml:'ല',rom:'la',hint:"Like 'l' in love",             eg:'ലോകം · lokam · world',          opts:['la','ll','ra','na']},
+    {ml:'വ',rom:'va',hint:"Like 'v' in voice",            eg:'വഴി · vazhi · road / way',      opts:['va','ba','ya','ma']},
+  ],{t:'MC',ml:'ലോകം',q:'What does ലോകം mean?',ans:'world',opts:['world','country','city','village']},
+  {t:'FREE',q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'}),
   mkL(11,'Sibilants','ശ · ഷ · സ · ഹ','✨',20,[
-    {ml:'ശ',rom:'sha', hint:"Palatal 'sh' — like sh in shoe",          eg:'ശബ്ദം · shabdam · sound / voice',  opts:['sound / voice','light','colour','taste']},
-    {ml:'ഷ',rom:'shha',hint:'Retroflex sh — tongue curls for this sh', eg:'ഷഡ്ജം · shadjam · a musical note', opts:['a musical note','a flower','a number','a colour']},
-    {ml:'സ',rom:'sa',  hint:"Like 's' in sun",                          eg:'സൂര്യൻ · suuryan · sun',           opts:['sun','moon','star','cloud']},
-    {ml:'ഹ',rom:'ha',  hint:"Like 'h' in home",                         eg:'ഹൃദയം · hrudayam · heart',         opts:['heart','mind','body','breath']},
-  ],{t:'FREE',q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'}),
+    {ml:'ശ',rom:'sha', hint:"Palatal 'sh' — like sh in shoe",          eg:'ശബ്ദം · shabdam · sound / voice',  opts:['sha','sa','cha','ha']},
+    {ml:'ഷ',rom:'shha',hint:'Retroflex sh — tongue curls for this sh', eg:'ഷഡ്ജം · shadjam · a musical note', opts:['sha','shha','cha','sa']},
+    {ml:'സ',rom:'sa',  hint:"Like 's' in sun",                          eg:'സൂര്യൻ · suuryan · sun',           opts:['sa','sha','cha','za']},
+    {ml:'ഹ',rom:'ha',  hint:"Like 'h' in home",                         eg:'ഹൃദയം · hrudayam · heart',         opts:['ha','sha','ka','va']},
+  ],{t:'MC',ml:'സൂര്യൻ',q:'What does സൂര്യൻ mean?',ans:'sun',opts:['sun','moon','star','cloud']},
+  {t:'FREE',q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'}),
   mkL(12,'Special Malayalam','ള · ഴ · റ','⭐',20,[
-    {ml:'ള',rom:'ll', hint:'Retroflex lateral l — tongue curls back, unique to Dravidian languages',eg:'ഉള്ളി · ulli · onion',         opts:['onion','garlic','ginger','chilli']},
-    {ml:'ഴ',rom:'zh', hint:'No English equivalent! Unique Dravidian sound — between l, r and z',   eg:'മഴ · mazha · rain',            opts:['rain','river','sea','wind']},
-    {ml:'റ',rom:'rra',hint:"Strong trilled 'r' — more forceful than ര",                            eg:'ഒറ്റ · otta · single / alone', opts:['single / alone','together','many','both']},
-  ],{t:'FREE',q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when you chop it!'}),
+    {ml:'ള',rom:'ll', hint:'Retroflex lateral l — tongue curls back, unique to Dravidian languages',eg:'ഉള്ളി · ulli · onion',         opts:['ll','la','nn','rra']},
+    {ml:'ഴ',rom:'zh', hint:'No English equivalent! Unique Dravidian sound — between l, r and z',   eg:'മഴ · mazha · rain',            opts:['zh','za','sha','la']},
+    {ml:'റ',rom:'rra',hint:"Strong trilled 'r' — more forceful than ര",                            eg:'ഒറ്റ · otta · single / alone', opts:['rra','ra','ll','na']},
+  ],{t:'MC',ml:'ഉള്ളി',q:'What does ഉള്ളി mean?',ans:'onion',opts:['onion','garlic','ginger','chilli']},
+  {t:'FREE',q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when you chop it!'}),
 ];
 
 // Numbers lessons
@@ -187,23 +184,19 @@ LESSONS.push(...NUM_LESSONS);
 // so learners see letters in context immediately.
 const VOCAB_ADDITIONS = {
   1: [
-    {t:'VOCAB', ml:'അച്ഛൻ', rom:'achan', eng:'father', alts:['appa','dad','achan'], note:'Two common words: അച്ഛൻ (achan) is standard, അപ്പ (appa) is equally common colloquially — both are correct!'},
-    {t:'SENT',  ml:'ആന വലുതാണ്', rom:'aana valuthaanu', eng:'The elephant is big',
+    {t:'SENT', ml:'ആന വലുതാണ്', rom:'aana valuthaanu', eng:'The elephant is big',
       words:[{ml:'ആന',eng:'elephant'},{ml:'വലുതാണ്',eng:'is big'}]},
   ],
   2: [
-    {t:'VOCAB', ml:'ഉണ്ണി', rom:'unni', eng:'young child (term of endearment)', note:'ഉണ്ണി ഉണ്ണൂ = "the child ate"'},
-    {t:'SENT',  ml:'ഊണ് കഴിക്കൂ', rom:'uunu kazhikkoo', eng:'Please eat your meal',
+    {t:'SENT', ml:'ഊണ് കഴിക്കൂ', rom:'uunu kazhikkoo', eng:'Please eat your meal',
       words:[{ml:'ഊണ്',eng:'meal'},{ml:'കഴിക്കൂ',eng:'please eat'}]},
   ],
   3: [
-    {t:'VOCAB', ml:'ഒരു', rom:'oru', eng:'one / a / an', note:'Used before nouns — ഒരു ആന = an elephant'},
-    {t:'SENT',  ml:'ഒരു ആന ഓടി', rom:'oru aana oodi', eng:'An elephant ran',
+    {t:'SENT', ml:'ഒരു ആന ഓടി', rom:'oru aana oodi', eng:'An elephant ran',
       words:[{ml:'ഒരു',eng:'a/an'},{ml:'ആന',eng:'elephant'},{ml:'ഓടി',eng:'ran'}]},
   ],
   4: [
-    {t:'VOCAB', ml:'എങ്ങനെ ഉണ്ട്?', rom:'engane undu?', eng:'How are you?', note:'Natural follow-up to നമസ്കാരം'},
-    {t:'SENT',  ml:'നമസ്കാരം, എങ്ങനെ ഉണ്ട്?', rom:'namaskaram, engane undu?', eng:'Hello, how are you?',
+    {t:'SENT', ml:'നമസ്കാരം, എങ്ങനെ ഉണ്ട്?', rom:'namaskaram, engane undu?', eng:'Hello, how are you?',
       words:[{ml:'നമസ്കാരം',eng:'hello'},{ml:'എങ്ങനെ',eng:'how'},{ml:'ഉണ്ട്?',eng:'are (you)?'}]},
     {t:'FITB',
       parts:[{ml:'___',eng:'?',isBlank:true},{ml:'ഉണ്ട്?',eng:'are (you)?'}],
@@ -213,28 +206,23 @@ const VOCAB_ADDITIONS = {
       hint:'You\'ve seen this phrase already!'},
   ],
   5: [
-    {t:'VOCAB', ml:'കടൽ', rom:'kadal', eng:'sea / ocean', note:'You learned ക — now see it in a full word!'},
-    {t:'SENT',  ml:'കടൽ നീലം ആണ്', rom:'kadal neelam aanu', eng:'The sea is blue',
+    {t:'SENT', ml:'കടൽ നീലം ആണ്', rom:'kadal neelam aanu', eng:'The sea is blue',
       words:[{ml:'കടൽ',eng:'sea'},{ml:'നീലം',eng:'blue'},{ml:'ആണ്',eng:'is'}]},
   ],
   6: [
-    {t:'VOCAB', ml:'ജലം', rom:'jalam', eng:'water', note:'ജ + ലം — you just learned ജ!'},
-    {t:'SENT',  ml:'ജലം കുടിക്കൂ', rom:'jalam kudikkoo', eng:'Drink water (please)',
+    {t:'SENT', ml:'ജലം കുടിക്കൂ', rom:'jalam kudikkoo', eng:'Drink water (please)',
       words:[{ml:'ജലം',eng:'water'},{ml:'കുടിക്കൂ',eng:'please drink'}]},
   ],
   9: [
-    {t:'VOCAB', ml:'പൂ', rom:'poo', eng:'flower', note:'Simple and sweet — just two characters'},
-    {t:'SENT',  ml:'പൂ സുന്ദരം ആണ്', rom:'poo sundaram aanu', eng:'The flower is beautiful',
+    {t:'SENT', ml:'പൂ സുന്ദരം ആണ്', rom:'poo sundaram aanu', eng:'The flower is beautiful',
       words:[{ml:'പൂ',eng:'flower'},{ml:'സുന്ദരം',eng:'beautiful'},{ml:'ആണ്',eng:'is'}]},
   ],
   10: [
-    {t:'VOCAB', ml:'വഴി', rom:'vazhi', eng:'road / way / path', note:'വ + ഴി — contains the special ഴ sound!'},
-    {t:'SENT',  ml:'ഈ വഴി നല്ലതാണ്', rom:'ee vazhi nallathanu', eng:'This road is good',
+    {t:'SENT', ml:'ഈ വഴി നല്ലതാണ്', rom:'ee vazhi nallathanu', eng:'This road is good',
       words:[{ml:'ഈ',eng:'this'},{ml:'വഴി',eng:'road'},{ml:'നല്ലതാണ്',eng:'is good'}]},
   ],
   11: [
-    {t:'VOCAB', ml:'ശബ്ദം', rom:'shabdam', eng:'sound / word / voice', note:'ശ — you just learned this letter!'},
-    {t:'SENT',  ml:'ശബ്ദം നല്ലതാണ്', rom:'shabdam nallathanu', eng:'The sound is good',
+    {t:'SENT', ml:'ശബ്ദം നല്ലതാണ്', rom:'shabdam nallathanu', eng:'The sound is good',
       words:[{ml:'ശബ്ദം',eng:'sound'},{ml:'നല്ലതാണ്',eng:'is good'}]},
   ],
   22: [
@@ -1743,8 +1731,9 @@ function buildMC(e) {
 
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-         <div class="ml" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39">${e.ml}</div>
+         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(e.ans)}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
          <button data-action="speak" data-text="${esc(e.ml)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:5px 16px;font-size:13px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:5px">🔈 hear it</button>
+         <div style="font-size:10px;color:#A8A29E;font-weight:700">tap word to peek</div>
        </div>`
     : `<div style="font-size:34px;font-weight:900;color:#0D5C39">"${e.flabel}"</div>`;
   return `
