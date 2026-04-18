@@ -233,23 +233,27 @@ for (const [idStr, exs] of Object.entries(VOCAB_ADDITIONS)) {
 // ── REVIEW LESSONS ───────────────────────────────────────────────────
 const REVIEW_LESSONS = [
   { id:16, title:'Vowel Checkpoint', sub:'Review all 13 vowels', xp:25, emoji:'🎯', ex:[
-    {t:'MC', ml:'ഐക്യം', q:'What does ഐക്യം mean?', ans:'unity', opts:['unity','strength','beauty','peace']},
+    {t:'MC', ml:'ഐ', q:'How do you read this letter?', ans:'ai', opts:['ai','ee','e','oi'],  _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'ai', _canFlip:true},
+    {t:'MC', ml:'ഔ', q:'How do you read this letter?', ans:'au', opts:['au','oo','ai','u'],  _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'au', _canFlip:true},
+    {t:'MC', ml:'ഓ', q:'How do you read this letter?', ans:'oo', opts:['o','oo','u','ee'],   _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'oo', _canFlip:true},
+    {t:'MC', ml:'ഊ', q:'How do you read this letter?', ans:'uu', opts:['u','uu','oo','ii'],  _flipOpts:['ഉ','ഊ','എ','ഏ'], _flipLabel:'uu', _canFlip:true},
+    {t:'MC', ml:'ഐക്യം', q:'What does ഐക്യം mean?', ans:'unity',    opts:['unity','strength','beauty','peace']},
     {t:'MC', ml:'ഔഷധം', q:'What does ഔഷധം mean?', ans:'medicine', opts:['medicine','food','water','poison']},
-    {t:'MC', ml:'ഓട്ടം', q:'What does ഓട്ടം mean?', ans:'race', opts:['race','walk','jump','rest']},
+    {t:'MC', ml:'ഓട്ടം', q:'What does ഓട്ടം mean?',  ans:'race',     opts:['race','walk','jump','rest']},
     {t:'MATCH', pairs:[{ml:'അ',rom:'a'},{ml:'ഇ',rom:'i'},{ml:'ഉ',rom:'u'},{ml:'എ',rom:'e'}]},
     {t:'MATCH', pairs:[{ml:'ആ',rom:'aa'},{ml:'ഈ',rom:'ii'},{ml:'ഊ',rom:'uu'},{ml:'ഏ',rom:'ee'}]},
-    {t:'FREE', q:'What does ഒരു (oru) mean?', ans:'a', alts:['an','one','a/an','one/a/an'], hint:'It comes before nouns — like "a" or "an"'},
-    {t:'FREE', q:'How do you say "The elephant is big" in Malayalam?', ans:'aana valuthaanu', alts:['aaana valuthaanu','aana valutha aanu'], hint:'ആന + വലുതാണ്'},
   ]},
   { id:17, title:'Consonant Checkpoint', sub:'Velar · palatal · retroflex · dental', xp:25, emoji:'🎯', ex:[
-    {t:'MC', ml:'കടൽ', q:'What does കടൽ mean?', ans:'sea', opts:['sea','river','lake','mountain']},
-    {t:'MC', ml:'കണ്ണ്', q:'What does കണ്ണ് mean?', ans:'eye', opts:['eye','ear','nose','mouth']},
-    {t:'MC', ml:'ജലം', q:'What does ജലം mean?', ans:'water', opts:['water','fire','air','earth']},
-    {t:'MC', ml:'ദിവസം', q:'What does ദിവസം mean?', ans:'day', opts:['day','night','week','month']},
+    {t:'MC', ml:'ങ', q:'How do you read this letter?', ans:'nga', opts:['na','nga','ma','nya'],  _flipOpts:['ക','ഖ','ഗ','ങ'], _flipLabel:'nga', _canFlip:true},
+    {t:'MC', ml:'ഞ', q:'How do you read this letter?', ans:'nya', opts:['na','nya','nga','ma'],  _flipOpts:['ച','ജ','ഞ','ങ'], _flipLabel:'nya', _canFlip:true},
+    {t:'MC', ml:'ണ', q:'How do you read this letter?', ans:'nn',  opts:['n','nn','ma','nga'],    _flipOpts:['ട','ഡ','ണ','ഞ'], _flipLabel:'nn',  _canFlip:true},
+    {t:'MC', ml:'ന', q:'How do you read this letter?', ans:'na',  opts:['n','na','ma','nga'],    _flipOpts:['ത','ദ','ന','ണ'], _flipLabel:'na',  _canFlip:true},
+    {t:'MC', ml:'കടൽ',  q:'What does കടൽ mean?',  ans:'sea',   opts:['sea','river','lake','mountain']},
+    {t:'MC', ml:'കണ്ണ്', q:'What does കണ്ണ് mean?', ans:'eye',   opts:['eye','ear','nose','mouth']},
+    {t:'MC', ml:'ജലം',  q:'What does ജലം mean?',  ans:'water', opts:['water','fire','air','earth']},
+    {t:'MC', ml:'ദിവസം', q:'What does ദിവസം mean?', ans:'day',  opts:['day','night','week','month']},
     {t:'MATCH', pairs:[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'},{ml:'ച',rom:'cha'},{ml:'ജ',rom:'ja'}]},
     {t:'MATCH', pairs:[{ml:'ട',rom:'tt'},{ml:'ഡ',rom:'dd'},{ml:'ത',rom:'tha'},{ml:'ദ',rom:'dha'}]},
-    {t:'FREE', q:'What does കടൽ (kadal) mean?', ans:'sea', alts:['ocean','the sea','the ocean'], hint:'🌊 Large body of salt water'},
-    {t:'FREE', q:'What does ജലം (jalam) mean?', ans:'water', hint:'💧 Essential for life'},
   ]},
   { id:18, title:'Full Alphabet Review', sub:'All consonants + vocab', xp:30, emoji:'🏆', ex:[
     {t:'MC', ml:'മഴ', q:'What does മഴ mean?', ans:'rain', opts:['rain','sun','wind','cloud']},
@@ -572,6 +576,17 @@ const UNITS = [
   {id:5, title:'Sibilants & Special', sub:'Unique Malayalam sounds',     icon:'⭐', color:'#4C1D95', lessonIds:[11,12]},
   // Units 6+ hidden pending content review — all lesson data preserved
 ];
+
+// ── ML → ROMANIZATION LOOKUP (used by tooltip) ──────────────────────
+const ML_ROM = {};
+for (const l of LESSONS) {
+  for (const e of l.ex) {
+    if (e._canFlip && e.ml && e._flipLabel) ML_ROM[e.ml] = e._flipLabel;
+    if (e.t === 'INTRO' && e.ml && e.rom)   ML_ROM[e.ml] = e.rom;
+    if (e.t === 'MATCH') (e.pairs||[]).forEach(p => { if (p.ml && p.rom) ML_ROM[p.ml] = p.rom; });
+    if (e.t === 'MATRA' && e.result && e.rom) ML_ROM[e.result] = e.rom;
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // EXERCISE VARIABILITY DATA
@@ -920,6 +935,8 @@ let S = {
   tooltip: null,
   // drag-and-drop build state
   buildPlaced: [], buildAvailable: [],
+  // replay flag (heart-safe mode)
+  isReplay: false,
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -982,16 +999,16 @@ function playSound(type) {
         osc.stop(ctx.currentTime + delay + 0.35);
       });
     } else {
-      // Low dull thud for wrong
+      // Soft low thud for wrong — gentle sine, low volume
       const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 160;
-      osc.type = 'sawtooth';
-      gain.gain.setValueAtTime(0.18, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+      osc.frequency.value = 220;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.10, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.28);
+      osc.stop(ctx.currentTime + 0.35);
     }
   } catch(e) {}
 }
@@ -1107,7 +1124,7 @@ function startLesson(id) {
   const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
     mSel:null, mDone:[], mWrong:null, ft:'', lxp:0, screen:'lesson',
-    resolvedEx, retryQueue:[], tooltip:null,
+    resolvedEx, retryQueue:[], tooltip:null, isReplay,
     buildPlaced: firstEx?.t==='BUILD' ? [] : [],
     buildAvailable: firstEx?.t==='BUILD' ? [...firstEx.tiles].sort(()=>Math.random()-0.5) : [],
     shuffled: firstEx?.t==='MATCH' ? [...firstEx.pairs].sort(()=>Math.random()-0.5) : []};
@@ -1279,12 +1296,15 @@ function good(pts=5, msg='Correct! 🎉') {
 function bad(msg) {
   playSound('wrong'); recordStat(false);
   const inP = S.screen === 'practice-session';
-  const newHearts = inP ? S.hearts : Math.max(0, S.hearts - 1);
-  const noHeartsMsg = !inP && newHearts === 0 ? ' No hearts left — finish this lesson, then practice to continue ❤️' : '';
-  // Add current exercise to retry queue (avoid duplicates)
+  const isRetry = getEx()?._retry === true;
+  const heartSafe = inP || S.isReplay || isRetry;
+  const newHearts = heartSafe ? S.hearts : Math.max(0, S.hearts - 1);
+  const noHeartsMsg = !heartSafe && newHearts === 0 ? ' No hearts left — finish this lesson, then practice to continue ❤️' : '';
+  // Add current exercise to retry queue (avoid duplicates), mark as retry
   const e = getEx();
   const alreadyQueued = S.retryQueue.some(r => JSON.stringify(r) === JSON.stringify(e));
-  const newRetry = e && !alreadyQueued ? [...S.retryQueue, e] : S.retryQueue;
+  const retryEx = e && !alreadyQueued ? {...e, _retry:true} : null;
+  const newRetry = retryEx ? [...S.retryQueue, retryEx] : S.retryQueue;
   S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}, retryQueue:newRetry};
   if (!inP) saveProgress();
   render();
@@ -1654,7 +1674,7 @@ function buildLesson() {
         </div>
         <div style="display:flex;gap:2px">${heartsHTML()}</div>
       </div>
-      ${S.hearts===0 ? `<div style="background:#FEE2E2;border-bottom:1px solid #FECACA;padding:8px 16px;display:flex;align-items:center;gap:8px">
+      ${S.hearts===0 && !S.isReplay ? `<div style="background:#FEE2E2;border-bottom:1px solid #FECACA;padding:8px 16px;display:flex;align-items:center;gap:8px">
         <span style="font-size:14px">💔</span>
         <span style="font-size:12px;font-weight:800;color:#DC2626;flex:1">No hearts — finish this lesson, then practice to continue</span>
         <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:900;cursor:pointer">Practice →</button>
@@ -1716,7 +1736,7 @@ function buildMC(e) {
 
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(e.ans)}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
+         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(e.ans)}" data-rom="${esc(e._flipLabel||ML_ROM[e.ml]||'')}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
          <button data-action="speak" data-text="${esc(e.ml)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:5px 16px;font-size:13px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:5px">🔈 hear it</button>
          <div style="font-size:10px;color:#A8A29E;font-weight:700">tap word to peek</div>
        </div>`
@@ -2439,7 +2459,8 @@ document.addEventListener('click', e => {
   // Tooltip
   else if (action==='show-tooltip') {
     e.stopPropagation();
-    S.tooltip = {ml: el.dataset.ml, eng: el.dataset.eng, rom: el.dataset.rom||''};
+    const ttRom = el.dataset.rom || ML_ROM[el.dataset.ml] || '';
+    S.tooltip = {ml: el.dataset.ml, eng: el.dataset.eng, rom: ttRom};
     render();
   }
   else if (action==='dismiss-tooltip') { S.tooltip = null; render(); }
