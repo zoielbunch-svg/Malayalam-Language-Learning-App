@@ -1724,15 +1724,14 @@ function buildMC(e) {
     optsHTML += `<button data-action="mc-pick" data-opt="${esc(opt)}" data-ans="${esc(e.ans)}" style="background:${bg};border:${bdr};border-radius:14px;padding:15px 10px;font-size:${fs}px;font-weight:800;cursor:${S.fb?'default':'pointer'};color:${col};font-family:${ff};box-shadow:0 2px 14px rgba(0,0,0,0.10)">${opt}</button>`;
   }
 
-  // Simplify question label for vocab MCs (word is already shown)
-  const qLabel = isVocabMC ? 'What does this mean?' : e.q;
-
   // For vocab MCs (not letter MCs), show romanization inline under the word
   const isVocabMC = !e.flip && !e._canFlip;
   const inlineRom = isVocabMC && S.mode === 'language-first' ? (e.rom || ML_ROM[e.ml] || '') : '';
   // For letter MCs, data-eng = '' (answer IS the rom — avoid showing it twice in tooltip)
   // For vocab MCs, data-eng = English meaning
   const tooltipEng = e._canFlip ? '' : e.ans;
+  // Simplify question label for vocab MCs (word is already shown)
+  const qLabel = isVocabMC ? 'What does this mean?' : e.q;
 
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
