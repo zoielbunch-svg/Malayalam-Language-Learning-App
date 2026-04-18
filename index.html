@@ -1744,6 +1744,11 @@ function buildMC(e) {
     const fs = e.flip ? 24 : 15;
     optsHTML += `<button data-action="mc-pick" data-opt="${esc(opt)}" data-ans="${esc(e.ans)}" style="background:${bg};border:${bdr};border-radius:14px;padding:15px 10px;font-size:${fs}px;font-weight:800;cursor:${S.fb?'default':'pointer'};color:${col};font-family:${ff};box-shadow:0 2px 14px rgba(0,0,0,0.10)">${opt}</button>`;
   }
+
+  // If the word is shown in the card, simplify the question label
+  const isTranslation = e.ml && !e.flip && /^What does .+ mean\?|^What color is/i.test(e.q);
+  const qLabel = isTranslation ? 'What does this mean?' : e.q;
+
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
          <div class="ml" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39">${e.ml}</div>
@@ -1752,7 +1757,7 @@ function buildMC(e) {
     : `<div style="font-size:34px;font-weight:900;color:#0D5C39">"${e.flabel}"</div>`;
   return `
     <div style="flex:1;display:flex;flex-direction:column">
-      <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:16px">${e.q}</div>
+      <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:16px">${qLabel}</div>
       <div style="background:#fff;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);margin-bottom:18px">
         ${display}
         <div style="font-size:12px;color:#78716C;margin-top:10px;font-weight:800">${e.flip?'→ Tap the matching letter':'→ Tap the correct answer'}</div>
