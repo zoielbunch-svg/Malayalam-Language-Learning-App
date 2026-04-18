@@ -32,112 +32,105 @@
 // DATA
 // ═══════════════════════════════════════════════════════════════════
 
-const mkL = (id, title, sub, emoji, xp, letters, free) => {
+const mkL = (id, title, sub, emoji, xp, letters, reviewLetters, vocabMC) => {
+  // Randomly assign each letter either letter→rom or flip (rom→letter) format
+  // Actual randomisation happens at lesson-start in resolveLesson
   const ex = letters.flatMap(c => [
-    { t:'INTRO', ml:c.ml, rom:c.rom, hint:c.hint, eg:c.eg },
-    { t:'MC', ml:c.ml, q:'What sound does this letter make?', ans:c.rom, opts:c.opts },
+    {t:'MC', ml:c.ml, q:'How do you read this letter?', ans:c.rom, opts:c.opts, _flipAns:c.ml, _flipLabel:c.rom, _flipOpts:c.flipOpts, _canFlip:true},
   ]);
-  ex.push({ t:'MATCH', pairs: letters.slice(0,4).map(c => ({ ml:c.ml, rom:c.rom })) });
-  if (free) ex.push(free);
+  // MATCH mixes new letters + up to 2 review letters
+  const matchLetters = [...letters.slice(0,2), ...(reviewLetters||[]).slice(0,2)];
+  ex.push({ t:'MATCH', pairs: matchLetters.map(c => ({ ml:c.ml, rom:c.rom })) });
+  if (vocabMC) ex.push(vocabMC);
   return { id, title, sub, xp, emoji, ex };
 };
 
 const LESSONS = [
   { id:1, title:'First Vowels', sub:'അ · ആ · ഇ · ഈ', xp:15, emoji:'🌱', ex:[
-    {t:'INTRO',ml:'അ',rom:'a',  hint:"Short 'a' — like in 'about'", eg:'അമ്മ · amma · mother'},
-    {t:'MC',   ml:'അ',q:'What sound does this letter make?',ans:'a',  opts:['a','aa','i','u']},
-    {t:'INTRO',ml:'ആ',rom:'aa', hint:"Long 'aa' — like in 'father'",eg:'ആന · aana · elephant'},
-    {t:'MC',   ml:'ആ',q:'What sound does this letter make?',ans:'aa', opts:['a','aa','e','o']},
-    {t:'INTRO',ml:'ഇ',rom:'i',  hint:"Short 'i' — like in 'bit'",   eg:'ഇല · ila · leaf'},
-    {t:'INTRO',ml:'ഈ',rom:'ii', hint:"Long 'ii' — like in 'feet'",  eg:'ഈച്ച · iicha · fly'},
-    {t:'MC',flip:true,flabel:'i',q:"Which letter makes the 'i' sound?",ans:'ഇ',opts:['അ','ആ','ഇ','ഈ']},
+    {t:'MC', ml:'അ', q:'How do you read this letter?', ans:'a',  opts:['a','aa','i','u'],   _flipOpts:['അ','ആ','ഇ','ഈ'], _flipLabel:'a',  _canFlip:true},
+    {t:'MC', ml:'ആ', q:'How do you read this letter?', ans:'aa', opts:['a','aa','e','o'],   _flipOpts:['അ','ആ','ഇ','ഈ'], _flipLabel:'aa', _canFlip:true},
+    {t:'MC', ml:'ഇ', q:'How do you read this letter?', ans:'i',  opts:['i','ii','e','a'],   _flipOpts:['അ','ആ','ഇ','ഈ'], _flipLabel:'i',  _canFlip:true},
+    {t:'MC', ml:'ഈ', q:'How do you read this letter?', ans:'ii', opts:['i','ii','ee','u'],  _flipOpts:['അ','ആ','ഇ','ഈ'], _flipLabel:'ii', _canFlip:true},
     {t:'MATCH',pairs:[{ml:'അ',rom:'a'},{ml:'ആ',rom:'aa'},{ml:'ഇ',rom:'i'},{ml:'ഈ',rom:'ii'}]},
-    {t:'FREE', q:'What does അമ്മ (amma) mean in English?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
+    {t:'MC', ml:'അമ്മ', q:'What does അമ്മ mean?', ans:'mother', opts:['mother','father','sister','brother']},
   ]},
   { id:2, title:'More Vowels', sub:'ഉ · ഊ · എ · ഏ', xp:15, emoji:'🌿', ex:[
-    {t:'INTRO',ml:'ഉ',rom:'u',  hint:"Short 'u' — like in 'put'",  eg:'ഉപ്പ് · uppu · salt'},
-    {t:'MC',   ml:'ഉ',q:'What sound does this letter make?',ans:'u',  opts:['u','uu','o','a']},
-    {t:'INTRO',ml:'ഊ',rom:'uu', hint:"Long 'uu' — like in 'food'", eg:'ഊണ് · uunu · meal'},
-    {t:'MC',   ml:'ഊ',q:'What sound does this letter make?',ans:'uu', opts:['u','uu','oo','ii']},
-    {t:'INTRO',ml:'എ',rom:'e',  hint:"Short 'e' — like in 'get'",  eg:'എണ്ണ · enna · oil'},
-    {t:'INTRO',ml:'ഏ',rom:'ee', hint:"Long 'ee' — like in 'they'", eg:'ഏണി · eeni · ladder'},
-    {t:'MATCH',pairs:[{ml:'ഉ',rom:'u'},{ml:'ഊ',rom:'uu'},{ml:'എ',rom:'e'},{ml:'ഏ',rom:'ee'}]},
-    {t:'FREE', q:'What does ആന (aana) mean in English?',ans:'elephant',hint:'🐘 Large grey animal'},
+    {t:'MC', ml:'ഉ', q:'How do you read this letter?', ans:'u',  opts:['u','uu','o','a'],   _flipOpts:['ഉ','ഊ','എ','ഏ'], _flipLabel:'u',  _canFlip:true},
+    {t:'MC', ml:'ഊ', q:'How do you read this letter?', ans:'uu', opts:['u','uu','oo','ii'], _flipOpts:['ഉ','ഊ','എ','ഏ'], _flipLabel:'uu', _canFlip:true},
+    {t:'MC', ml:'എ', q:'How do you read this letter?', ans:'e',  opts:['e','ee','a','i'],   _flipOpts:['ഉ','ഊ','എ','ഏ'], _flipLabel:'e',  _canFlip:true},
+    {t:'MC', ml:'ഏ', q:'How do you read this letter?', ans:'ee', opts:['e','ee','ai','oo'], _flipOpts:['ഉ','ഊ','എ','ഏ'], _flipLabel:'ee', _canFlip:true},
+    {t:'MATCH',pairs:[{ml:'ഉ',rom:'u'},{ml:'ഊ',rom:'uu'},{ml:'അ',rom:'a'},{ml:'ആ',rom:'aa'}]},
+    {t:'MC', ml:'ഊണ്', q:'What does ഊണ് mean?', ans:'meal', opts:['meal','snack','drink','spice']},
   ]},
   { id:3, title:'Final Vowels', sub:'ഐ · ഒ · ഓ · ഔ', xp:15, emoji:'🌸', ex:[
-    {t:'INTRO',ml:'ഐ',rom:'ai', hint:"Diphthong 'ai' — like 'i' in ice", eg:'ഐക്യം · aikyam · unity'},
-    {t:'MC',   ml:'ഐ',q:'What sound does this letter make?',ans:'ai', opts:['ai','ee','e','oi']},
-    {t:'INTRO',ml:'ഒ',rom:'o',  hint:"Short 'o' — like in 'not'",     eg:'ഒട്ടകം · ottakam · camel'},
-    {t:'MC',   ml:'ഒ',q:'What sound does this letter make?',ans:'o',  opts:['o','oo','u','au']},
-    {t:'INTRO',ml:'ഓ',rom:'oo', hint:"Long 'oo' — like in 'go'",      eg:'ഓട്ടം · oottam · race'},
-    {t:'MC',   ml:'ഓ',q:'What sound does this letter make?',ans:'oo', opts:['o','oo','u','ee']},
-    {t:'INTRO',ml:'ഔ',rom:'au', hint:"Diphthong 'au' — like 'ow' in cow", eg:'ഔഷധം · aushadham · medicine'},
-    {t:'MATCH',pairs:[{ml:'ഐ',rom:'ai'},{ml:'ഒ',rom:'o'},{ml:'ഓ',rom:'oo'},{ml:'ഔ',rom:'au'}]},
-    {t:'FREE', q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Desert animal'},
+    {t:'MC', ml:'ഐ', q:'How do you read this letter?', ans:'ai', opts:['ai','ee','e','oi'],  _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'ai', _canFlip:true},
+    {t:'MC', ml:'ഒ', q:'How do you read this letter?', ans:'o',  opts:['o','oo','u','au'],   _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'o',  _canFlip:true},
+    {t:'MC', ml:'ഓ', q:'How do you read this letter?', ans:'oo', opts:['o','oo','u','ee'],   _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'oo', _canFlip:true},
+    {t:'MC', ml:'ഔ', q:'How do you read this letter?', ans:'au', opts:['au','oo','ai','u'],  _flipOpts:['ഐ','ഒ','ഓ','ഔ'], _flipLabel:'au', _canFlip:true},
+    {t:'MATCH',pairs:[{ml:'ഐ',rom:'ai'},{ml:'ഒ',rom:'o'},{ml:'ഇ',rom:'i'},{ml:'ഉ',rom:'u'}]},
+    {t:'MC', ml:'ഒട്ടകം', q:'What does ഒട്ടകം mean?', ans:'camel', opts:['camel','elephant','horse','donkey']},
   ]},
   { id:4, title:'Greetings', sub:'Hello · Thanks · Okay', xp:20, emoji:'🙏', ex:[
-    {t:'INTRO',ml:'നമസ്കാരം',rom:'namaskaram',hint:'The all-purpose Malayalam greeting',eg:'Hello · goodbye · namaste'},
-    {t:'MC',   ml:'നമസ്കാരം',q:'What does this word mean?',ans:'hello / greetings',opts:['hello / greetings','thank you','please','goodbye']},
-    {t:'INTRO',ml:'നന്ദി',   rom:'nandi',     hint:'Express gratitude 🙏',            eg:'Said when someone helps you'},
-    {t:'MC',   ml:'നന്ദി',   q:'What does this word mean?',ans:'thank you',          opts:['hello','thank you','sorry','yes']},
-    {t:'INTRO',ml:'ശരി',    rom:'shari',     hint:'Agreement or acknowledgment',     eg:'ശരി · shari · okay / alright'},
-    {t:'INTRO',ml:'ഇല്ല',   rom:'illa',      hint:"Negation — 'no' or 'not there'",  eg:'ഇല്ല · illa · no / not'},
+    {t:'MC', ml:'നമസ്കാരം', q:'How do you read this?', ans:'namaskaram', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'നന്ദി', q:'How do you read this?', ans:'nandi', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'ശരി', q:'How do you read this?', ans:'shari', opts:['namaskaram','nandi','shari','illa']},
+    {t:'MC', ml:'ഇല്ല', q:'How do you read this?', ans:'illa', opts:['namaskaram','nandi','shari','illa']},
     {t:'MATCH',pairs:[{ml:'നമസ്കാരം',rom:'namaskaram'},{ml:'നന്ദി',rom:'nandi'},{ml:'ശരി',rom:'shari'},{ml:'ഇല്ല',rom:'illa'}]},
-    {t:'FREE', q:"How do you say 'hello' in Malayalam? (romanization)",ans:'namaskaram',hint:'🙏 You just learned this!'},
-    {t:'FREE', q:"How do you say 'thank you'? (romanization)",ans:'nandi',hint:'💛 Express gratitude'},
+    {t:'MC', ml:'നമസ്കാരം', q:'What does നമസ്കാരം mean?', ans:'hello / greetings', opts:['hello / greetings','thank you','okay','no']},
+    {t:'FREE', q:"How do you say 'hello' in Malayalam? (romanization)", ans:'namaskaram', hint:'🙏 You just learned this!'},
   ]},
   mkL(5,'Velar Stops','ക · ഖ · ഗ · ഘ · ങ','🔵',20,[
-    {ml:'ക',rom:'ka', hint:"Like 'k' in king",               eg:'കടൽ · kadal · sea',          opts:['ka','ga','cha','pa']},
-    {ml:'ഖ',rom:'kha',hint:'Aspirated k — breathy k sound',  eg:'ഖേദം · khedam · sorrow',     opts:['ka','kha','gha','pha']},
-    {ml:'ഗ',rom:'ga', hint:"Like 'g' in go",                 eg:'ഗൃഹം · gruham · house',      opts:['ka','ga','ja','ba']},
-    {ml:'ഘ',rom:'gha',hint:'Aspirated g — breathy g sound',  eg:'ഘടം · ghadam · pot',         opts:['ga','gha','dha','bha']},
-    {ml:'ങ',rom:'nga',hint:"Nasal 'ng' — like ng in sing",   eg:'ഉറങ്ങ് · urangu · to sleep', opts:['na','nga','ma','nya']},
-  ],{t:'FREE',q:'What does കടൽ (kadal) mean?',ans:'sea',hint:'🌊 Large body of salt water'}),
+    {ml:'ക',rom:'ka', hint:"Like 'k' in king",               eg:'കടൽ · kadal · sea',            opts:['ka','ga','cha','pa'],   flipOpts:['ക','ഖ','ഗ','ഘ']},
+    {ml:'ഖ',rom:'kha',hint:'Aspirated k — breathy k sound',  eg:'ഖേദം · khedam · sorrow',       opts:['ka','kha','gha','pha'], flipOpts:['ക','ഖ','ഘ','ങ']},
+    {ml:'ഗ',rom:'ga', hint:"Like 'g' in go",                 eg:'ഗൃഹം · gruham · house',        opts:['ka','ga','ja','ba'],    flipOpts:['ക','ഗ','ഘ','ങ']},
+    {ml:'ഘ',rom:'gha',hint:'Aspirated g — breathy g sound',  eg:'ഘടം · ghadam · pot',           opts:['ga','gha','dha','bha'], flipOpts:['ഗ','ഘ','ങ','ക']},
+    {ml:'ങ',rom:'nga',hint:"Nasal 'ng' — like ng in sing",   eg:'ഉറങ്ങ് · urangu · to sleep',   opts:['na','nga','ma','nya'],  flipOpts:['ക','ഖ','ഗ','ങ']},
+  ],null,{t:'MC',ml:'കടൽ',q:'What does കടൽ mean?',ans:'sea',opts:['sea','river','mountain','forest']}),
   mkL(6,'Palatal Stops','ച · ഛ · ജ · ഝ · ഞ','🟣',20,[
-    {ml:'ച',rom:'cha', hint:"Like 'ch' in chair",           eg:'ചിരി · chiri · smile',         opts:['cha','ja','ka','sha']},
-    {ml:'ഛ',rom:'chha',hint:'Aspirated ch — breathy sound', eg:'ഛായ · chhaya · shadow',        opts:['cha','chha','jha','pha']},
-    {ml:'ജ',rom:'ja',  hint:"Like 'j' in jump",             eg:'ജലം · jalam · water',          opts:['cha','ja','ga','da']},
-    {ml:'ഝ',rom:'jha', hint:'Aspirated j — breathy sound',  eg:'ഝരം · jharam · stream',        opts:['ja','jha','cha','gha']},
-    {ml:'ഞ',rom:'nya', hint:"Nasal 'ny' — like ny in canyon",eg:'ഞാൻ · njaan · I (me)',        opts:['na','nya','nga','ma']},
-  ],{t:'FREE',q:'What does ഞാൻ (njaan) mean?',ans:'I',hint:'🙋 The Malayalam word for yourself'}),
+    {ml:'ച',rom:'cha', hint:"Like 'ch' in chair",           eg:'ചിരി · chiri · smile',           opts:['cha','ja','ka','sha'],  flipOpts:['ച','ഛ','ജ','ഝ']},
+    {ml:'ഛ',rom:'chha',hint:'Aspirated ch — breathy sound', eg:'ഛായ · chhaya · shadow',          opts:['cha','chha','jha','pha'],flipOpts:['ച','ഛ','ഝ','ഞ']},
+    {ml:'ജ',rom:'ja',  hint:"Like 'j' in jump",             eg:'ജലം · jalam · water',            opts:['cha','ja','ga','da'],   flipOpts:['ച','ജ','ഝ','ഞ']},
+    {ml:'ഝ',rom:'jha', hint:'Aspirated j — breathy sound',  eg:'ഝരം · jharam · stream',          opts:['ja','jha','cha','gha'], flipOpts:['ജ','ഝ','ഛ','ഞ']},
+    {ml:'ഞ',rom:'nya', hint:"Nasal 'ny' — like ny in canyon",eg:'ഞാൻ · njaan · I (me)',          opts:['na','nya','nga','ma'],  flipOpts:['ച','ജ','ഞ','ങ']},
+  ],[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'}],{t:'MC',ml:'ജലം',q:'What does ജലം mean?',ans:'water',opts:['water','fire','air','earth']}),
   mkL(7,'Retroflex Stops','ട · ഠ · ഡ · ഢ · ണ','🟠',20,[
-    {ml:'ട',rom:'tt',  hint:'Retroflex t — curl tongue back toward palate', eg:'ടൺ · tan · ton',        opts:['tt','th','dd','ka']},
-    {ml:'ഠ',rom:'tth', hint:'Aspirated retroflex t — breathy tongue-curl',  eg:'ഠക്കൻ · thakkan · stubborn',opts:['tt','tth','ddh','pha']},
-    {ml:'ഡ',rom:'dd',  hint:'Retroflex d — tongue curls back',              eg:'ഡോക്ടർ · doktar · doctor',opts:['dd','tt','dha','ba']},
-    {ml:'ഢ',rom:'ddh', hint:'Aspirated retroflex d — rare in modern use',   eg:'ഢോൽ · dhol · drum',      opts:['dd','ddh','dha','gha']},
-    {ml:'ണ',rom:'nn',  hint:'Retroflex n — tongue curves slightly back',    eg:'കണ്ണ് · kannu · eye',     opts:['n','nn','ma','nga']},
-  ],{t:'FREE',q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'}),
+    {ml:'ട',rom:'tt',  hint:'Retroflex t — curl tongue back toward palate', eg:'ടൺ · tan · ton / unit of weight',     opts:['tt','th','dd','ka'],   flipOpts:['ട','ഠ','ഡ','ഢ']},
+    {ml:'ഠ',rom:'tth', hint:'Aspirated retroflex t — breathy tongue-curl',  eg:'ഠക്കൻ · thakkan · stubborn',          opts:['tt','tth','ddh','pha'], flipOpts:['ട','ഠ','ഢ','ണ']},
+    {ml:'ഡ',rom:'dd',  hint:'Retroflex d — tongue curls back',              eg:'ഡോക്ടർ · doktar · doctor',            opts:['dd','tt','dha','ba'],  flipOpts:['ട','ഡ','ഢ','ണ']},
+    {ml:'ഢ',rom:'ddh', hint:'Aspirated retroflex d — rare in modern use',   eg:'ഢോൽ · dhol · drum',                   opts:['dd','ddh','dha','gha'], flipOpts:['ഡ','ഢ','ഠ','ണ']},
+    {ml:'ണ',rom:'nn',  hint:'Retroflex n — tongue curves slightly back',    eg:'കണ്ണ് · kannu · eye',                 opts:['n','nn','ma','nga'],   flipOpts:['ട','ഡ','ണ','ഞ']},
+  ],[{ml:'ച',rom:'cha'},{ml:'ജ',rom:'ja'}],{t:'MC',ml:'കണ്ണ്',q:'What does കണ്ണ് mean?',ans:'eye',opts:['eye','ear','nose','mouth']}),
   mkL(8,'Dental Stops','ത · ഥ · ദ · ധ · ന','🟤',20,[
-    {ml:'ത',rom:'tha', hint:"Dental 'th' — tongue behind upper teeth",   eg:'തേൻ · then · honey',         opts:['tha','dha','tt','sha']},
-    {ml:'ഥ',rom:'thha',hint:'Aspirated dental th — breathy th sound',    eg:'ഥൈലം · thailam · oil/balm',  opts:['tha','thha','ddh','pha']},
-    {ml:'ദ',rom:'dha', hint:"Dental 'd' — tongue behind teeth, voiced",  eg:'ദിവസം · divasam · day',      opts:['tha','dha','dd','ba']},
-    {ml:'ധ',rom:'dhha',hint:'Aspirated dental d — breathy dh sound',     eg:'ധനം · dhanam · wealth',      opts:['dha','dhha','ddh','gha']},
-    {ml:'ന',rom:'na',  hint:"Like 'n' in now",                           eg:'നാടൻ · naadan · native',     opts:['n','nn','ma','nga']},
-  ],{t:'FREE',q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'}),
+    {ml:'ത',rom:'tha', hint:"Dental 'th' — tongue behind upper teeth",   eg:'തേൻ · then · honey',           opts:['tha','dha','tt','sha'],  flipOpts:['ത','ഥ','ദ','ധ']},
+    {ml:'ഥ',rom:'thha',hint:'Aspirated dental th — breathy th sound',    eg:'ഥൈലം · thailam · oil / balm',  opts:['tha','thha','ddh','pha'], flipOpts:['ത','ഥ','ധ','ന']},
+    {ml:'ദ',rom:'dha', hint:"Dental 'd' — tongue behind teeth, voiced",  eg:'ദിവസം · divasam · day',        opts:['tha','dha','dd','ba'],   flipOpts:['ത','ദ','ധ','ട']},
+    {ml:'ധ',rom:'dhha',hint:'Aspirated dental d — breathy dh sound',     eg:'ധനം · dhanam · wealth',        opts:['dha','dhha','ddh','gha'], flipOpts:['ദ','ധ','ഥ','ന']},
+    {ml:'ന',rom:'na',  hint:"Like 'n' in now",                           eg:'നദി · nadi · river',           opts:['n','na','ma','nga'],     flipOpts:['ത','ദ','ന','ണ']},
+  ],[{ml:'ട',rom:'tt'},{ml:'ഡ',rom:'dd'}],{t:'MC',ml:'തേൻ',q:'What does തേൻ mean?',ans:'honey',opts:['honey','sugar','salt','oil']}),
   mkL(9,'Labial Stops','പ · ഫ · ബ · ഭ · മ','🟢',20,[
-    {ml:'പ',rom:'pa', hint:"Like 'p' in pen",                  eg:'പൂ · poo · flower',          opts:['pa','ba','ka','tha']},
-    {ml:'ഫ',rom:'pha',hint:"Aspirated p — like 'ph' in phone", eg:'ഫലം · phalam · fruit',       opts:['pa','pha','bha','kha']},
-    {ml:'ബ',rom:'ba', hint:"Like 'b' in ball",                 eg:'ബഹളം · bahalam · commotion', opts:['ba','pa','da','ga']},
-    {ml:'ഭ',rom:'bha',hint:'Aspirated b — breathy b sound',    eg:'ഭക്ഷണം · bhakshanam · food', opts:['ba','bha','dha','gha']},
-    {ml:'മ',rom:'ma', hint:"Like 'm' in mother",               eg:'മഴ · mazha · rain',          opts:['ma','na','ba','va']},
-  ],{t:'FREE',q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'}),
+    {ml:'പ',rom:'pa', hint:"Like 'p' in pen",                  eg:'പൂ · poo · flower',            opts:['pa','ba','ka','tha'],   flipOpts:['പ','ഫ','ബ','ഭ']},
+    {ml:'ഫ',rom:'pha',hint:"Aspirated p — like 'ph' in phone", eg:'ഫലം · phalam · fruit',         opts:['pa','pha','bha','kha'], flipOpts:['പ','ഫ','ഭ','മ']},
+    {ml:'ബ',rom:'ba', hint:"Like 'b' in ball",                 eg:'ബഹളം · bahalam · commotion',   opts:['ba','pa','da','ga'],   flipOpts:['പ','ബ','ഭ','മ']},
+    {ml:'ഭ',rom:'bha',hint:'Aspirated b — breathy b sound',    eg:'ഭക്ഷണം · bhakshanam · food',   opts:['ba','bha','dha','gha'], flipOpts:['ബ','ഭ','ഫ','മ']},
+    {ml:'മ',rom:'ma', hint:"Like 'm' in mother",               eg:'മഴ · mazha · rain',            opts:['ma','na','ba','va'],   flipOpts:['പ','ബ','മ','ന']},
+  ],[{ml:'ത',rom:'tha'},{ml:'ദ',rom:'dha'}],{t:'MC',ml:'മഴ',q:'What does മഴ mean?',ans:'rain',opts:['rain','sun','wind','cloud']}),
   mkL(10,'Semivowels','യ · ര · ല · വ','🌊',20,[
-    {ml:'യ',rom:'ya',hint:"Like 'y' in yes",              eg:'യോഗം · yogam · yoga/meeting',opts:['ya','va','ja','la']},
-    {ml:'ര',rom:'ra',hint:"Rolled 'r' — like Spanish r",  eg:'രാജ്യം · raajyam · kingdom', opts:['ra','la','rra','na']},
-    {ml:'ല',rom:'la',hint:"Like 'l' in love",             eg:'ലോകം · lokam · world',        opts:['la','ll','ra','na']},
-    {ml:'വ',rom:'va',hint:"Like 'v' in voice",            eg:'വഴി · vazhi · road/way',      opts:['va','ba','ya','ma']},
-  ],{t:'FREE',q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'}),
+    {ml:'യ',rom:'ya',hint:"Like 'y' in yes",              eg:'യോഗം · yogam · yoga / meeting',opts:['ya','va','ja','la'], flipOpts:['യ','ര','ല','വ']},
+    {ml:'ര',rom:'ra',hint:"Rolled 'r' — like Spanish r",  eg:'രാത്രി · raatri · night',       opts:['ra','la','rra','na'], flipOpts:['യ','ര','ല','മ']},
+    {ml:'ല',rom:'la',hint:"Like 'l' in love",             eg:'ലോകം · lokam · world',          opts:['la','ll','ra','na'],  flipOpts:['ര','ല','വ','ള']},
+    {ml:'വ',rom:'va',hint:"Like 'v' in voice",            eg:'വഴി · vazhi · road / way',      opts:['va','ba','ya','ma'],  flipOpts:['യ','ല','വ','ബ']},
+  ],[{ml:'പ',rom:'pa'},{ml:'മ',rom:'ma'}],{t:'MC',ml:'ലോകം',q:'What does ലോകം mean?',ans:'world',opts:['world','country','city','village']}),
   mkL(11,'Sibilants','ശ · ഷ · സ · ഹ','✨',20,[
-    {ml:'ശ',rom:'sha', hint:"Palatal 'sh' — like sh in shoe",          eg:'ശബ്ദം · shabdam · sound',   opts:['sha','sa','cha','ha']},
-    {ml:'ഷ',rom:'shha',hint:'Retroflex sh — tongue curls for this sh', eg:'ഷഡ്ജം · shadjam · a musical note',opts:['sha','shha','cha','sa']},
-    {ml:'സ',rom:'sa',  hint:"Like 's' in sun",                          eg:'സൂര്യൻ · suuryan · sun',    opts:['sa','sha','cha','za']},
-    {ml:'ഹ',rom:'ha',  hint:"Like 'h' in home",                         eg:'ഹൃദയം · hrudayam · heart',  opts:['ha','sha','ka','va']},
-  ],{t:'FREE',q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'}),
+    {ml:'ശ',rom:'sha', hint:"Palatal 'sh' — like sh in shoe",          eg:'ശബ്ദം · shabdam · sound / voice',  opts:['sha','sa','cha','ha'],  flipOpts:['ശ','ഷ','സ','ഹ']},
+    {ml:'ഷ',rom:'shha',hint:'Retroflex sh — tongue curls for this sh', eg:'ഷഡ്ജം · shadjam · a musical note', opts:['sha','shha','cha','sa'], flipOpts:['ശ','ഷ','സ','ചn']},
+    {ml:'സ',rom:'sa',  hint:"Like 's' in sun",                          eg:'സൂര്യൻ · suuryan · sun',           opts:['sa','sha','cha','za'],  flipOpts:['ശ','സ','ഹ','ഷ']},
+    {ml:'ഹ',rom:'ha',  hint:"Like 'h' in home",                         eg:'ഹൃദയം · hrudayam · heart',         opts:['ha','sha','ka','va'],   flipOpts:['ശ','സ','ഹ','വ']},
+  ],[{ml:'ര',rom:'ra'},{ml:'ല',rom:'la'}],{t:'MC',ml:'സൂര്യൻ',q:'What does സൂര്യൻ mean?',ans:'sun',opts:['sun','moon','star','cloud']}),
   mkL(12,'Special Malayalam','ള · ഴ · റ','⭐',20,[
-    {ml:'ള',rom:'ll', hint:'Retroflex lateral l — tongue curls back, unique to Dravidian languages',eg:'ഉള്ളി · ulli · onion',     opts:['ll','la','nn','rra']},
-    {ml:'ഴ',rom:'zh', hint:'No English equivalent! Unique Dravidian sound — between l, r and z',   eg:'മഴ · mazha · rain (has zh)',opts:['zh','za','sha','la']},
-    {ml:'റ',rom:'rra',hint:"Strong trilled 'r' — more forceful than ര",                            eg:'ഒറ്റ · otta · single/alone',opts:['rra','ra','ll','na']},
-  ],{t:'FREE',q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when you chop it!'}),
+    {ml:'ള',rom:'ll', hint:'Retroflex lateral l — tongue curls back, unique to Dravidian languages',eg:'ഉള്ളി · ulli · onion',         opts:['ll','la','nn','rra'], flipOpts:['ള','ഴ','റ','ല']},
+    {ml:'ഴ',rom:'zh', hint:'No English equivalent! Unique Dravidian sound — between l, r and z',   eg:'മഴ · mazha · rain',            opts:['zh','za','sha','la'],  flipOpts:['ള','ഴ','റ','ശ']},
+    {ml:'റ',rom:'rra',hint:"Strong trilled 'r' — more forceful than ര",                            eg:'ഒറ്റ · otta · single / alone', opts:['rra','ra','ll','na'],  flipOpts:['ള','ഴ','റ','ര']},
+  ],[{ml:'ശ',rom:'sha'},{ml:'സ',rom:'sa'}],{t:'MC',ml:'ഉള്ളി',q:'What does ഉള്ളി mean?',ans:'onion',opts:['onion','garlic','ginger','chilli']}),
 ];
 
 // Numbers lessons
@@ -179,53 +172,49 @@ const NUM_LESSONS = [
 LESSONS.push(...NUM_LESSONS);
 
 // ── VOCAB & SENTENCE CONTEXT INJECTION ──────────────────────────────
-// Adds real words and simple sentences into each alphabet lesson
-// so learners see letters in context immediately.
+// Only used for vocab/grammar lessons (22+). Script lessons 1-12 are
+// handled entirely within their lesson definitions.
 const VOCAB_ADDITIONS = {
-  1: [
-    {t:'VOCAB', ml:'അച്ഛൻ', rom:'achan', eng:'father', alts:['appa','dad','achan'], note:'Two common words: അച്ഛൻ (achan) is standard, അപ്പ (appa) is equally common colloquially — both are correct!'},
-    {t:'SENT',  ml:'ആന വലുതാണ്', rom:'aana valuthaanu', eng:'The elephant is big',
-      words:[{ml:'ആന',eng:'elephant'},{ml:'വലുതാണ്',eng:'is big'}]},
+  22: [
+    {t:'BUILD', eng:'Please eat rice', correct:['ചോറ്','കഴിക്കൂ'],
+      tiles:[{ml:'ചോറ്',eng:'cooked rice'},{ml:'കഴിക്കൂ',eng:'please eat'},{ml:'ചായ',eng:'tea'},{ml:'കുടിക്കൂ',eng:'please drink'}],
+      hint:'Object + Verb — subject "you" is implied in Malayalam'},
   ],
-  2: [
-    {t:'VOCAB', ml:'ഉണ്ണി', rom:'unni', eng:'young child (term of endearment)', note:'ഉണ്ണി ഉണ്ണൂ = "the child ate"'},
-    {t:'SENT',  ml:'ഊണ് കഴിക്കൂ', rom:'uunu kazhikkoo', eng:'Please eat your meal',
-      words:[{ml:'ഊണ്',eng:'meal'},{ml:'കഴിക്കൂ',eng:'please eat'}]},
+  23: [
+    {t:'FITB',
+      parts:[{ml:'കടൽ',eng:'sea'},{ml:'___',eng:'',isBlank:true},{ml:'ആണ്',eng:'is'}],
+      ans:'നീലം', opts:['നീലം','ചുവപ്പ്','പച്ച','മഞ്ഞ'],
+      q:'Complete: "The sea is ___"', hint:'What color is the ocean?'},
+    {t:'BUILD', eng:'The sea is blue', correct:['കടൽ','നീലം','ആണ്'],
+      tiles:[{ml:'കടൽ',eng:'sea'},{ml:'നീലം',eng:'blue'},{ml:'ആണ്',eng:'is'},{ml:'പച്ച',eng:'green'}],
+      hint:'Subject + Color predicate + ആണ്'},
   ],
-  3: [
-    {t:'VOCAB', ml:'ഒരു', rom:'oru', eng:'one / a / an', note:'Used before nouns — ഒരു ആന = an elephant'},
-    {t:'SENT',  ml:'ഒരു ആന ഓടി', rom:'oru aana oodi', eng:'An elephant ran',
-      words:[{ml:'ഒരു',eng:'a/an'},{ml:'ആന',eng:'elephant'},{ml:'ഓടി',eng:'ran'}]},
+  24: [
+    {t:'FITB',
+      parts:[{ml:'അവൾ',eng:'she'},{ml:'എന്റെ',eng:'my'},{ml:'___',eng:'',isBlank:true},{ml:'ആണ്',eng:'is'}],
+      ans:'ചേച്ചി', opts:['ചേച്ചി','ചേട്ടൻ','അനിയൻ','അനിയത്തി'],
+      q:'Complete: "She is my older sister"', hint:'Female term for older sibling'},
+    {t:'BUILD', eng:'She is my older sister', correct:['അവൾ','എന്റെ','ചേച്ചി','ആണ്'],
+      tiles:[{ml:'അവൾ',eng:'she'},{ml:'എന്റെ',eng:'my'},{ml:'ചേച്ചി',eng:'older sister'},{ml:'ആണ്',eng:'is'},{ml:'ചേട്ടൻ',eng:'older brother'}],
+      hint:'Subject + my + family member + ആണ്'},
   ],
-  4: [
-    {t:'VOCAB', ml:'എങ്ങനെ ഉണ്ട്?', rom:'engane undu?', eng:'How are you?', note:'Natural follow-up to നമസ്കാരം'},
-    {t:'SENT',  ml:'നമസ്കാരം, എങ്ങനെ ഉണ്ട്?', rom:'namaskaram, engane undu?', eng:'Hello, how are you?',
-      words:[{ml:'നമസ്കാരം',eng:'hello'},{ml:'എങ്ങനെ ഉണ്ട്?',eng:'how are you?'}]},
+  25: [
+    {t:'FITB',
+      parts:[{ml:'___',eng:'',isBlank:true},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}],
+      ans:'എന്റെ', opts:['എന്റെ','നിങ്ങളുടെ','അവന്റെ','അവളുടെ'],
+      q:'Complete: "___ name is ..." (My name is...)', hint:'Possessive/genitive form of ഞാൻ'},
+    {t:'BUILD', eng:'I am learning Malayalam', correct:['ഞാൻ','മലയാളം','പഠിക്കുകയാണ്'],
+      tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പഠിക്കുകയാണ്',eng:'am learning'},{ml:'മനസ്സിലായി',eng:'I understand'}],
+      hint:'Subject + Object + Verb — SOV order'},
   ],
-  5: [
-    {t:'VOCAB', ml:'കടൽ', rom:'kadal', eng:'sea / ocean', note:'You learned ക — now see it in a full word!'},
-    {t:'SENT',  ml:'കടൽ നീലം ആണ്', rom:'kadal neelam aanu', eng:'The sea is blue',
-      words:[{ml:'കടൽ',eng:'sea'},{ml:'നീലം',eng:'blue'},{ml:'ആണ്',eng:'is'}]},
-  ],
-  6: [
-    {t:'VOCAB', ml:'ജലം', rom:'jalam', eng:'water', note:'ജ + ലം — you just learned ജ!'},
-    {t:'SENT',  ml:'ജലം കുടിക്കൂ', rom:'jalam kudikkoo', eng:'Drink water (please)',
-      words:[{ml:'ജലം',eng:'water'},{ml:'കുടിക്കൂ',eng:'please drink'}]},
-  ],
-  9: [
-    {t:'VOCAB', ml:'പൂ', rom:'poo', eng:'flower', note:'Simple and sweet — just two characters'},
-    {t:'SENT',  ml:'പൂ സുന്ദരം ആണ്', rom:'poo sundaram aanu', eng:'The flower is beautiful',
-      words:[{ml:'പൂ',eng:'flower'},{ml:'സുന്ദരം',eng:'beautiful'},{ml:'ആണ്',eng:'is'}]},
-  ],
-  10: [
-    {t:'VOCAB', ml:'വഴി', rom:'vazhi', eng:'road / way / path', note:'വ + ഴി — contains the special ഴ sound!'},
-    {t:'SENT',  ml:'ഈ വഴി നല്ലതാണ്', rom:'ee vazhi nallathanu', eng:'This road is good',
-      words:[{ml:'ഈ',eng:'this'},{ml:'വഴി',eng:'road'},{ml:'നല്ലതാണ്',eng:'is good'}]},
-  ],
-  11: [
-    {t:'VOCAB', ml:'ശബ്ദം', rom:'shabdam', eng:'sound / word / voice', note:'ശ — you just learned this letter!'},
-    {t:'SENT',  ml:'ശബ്ദം നല്ലതാണ്', rom:'shabdam nallathanu', eng:'The sound is good',
-      words:[{ml:'ശബ്ദം',eng:'sound'},{ml:'നല്ലതാണ്',eng:'is good'}]},
+  26: [
+    {t:'FITB',
+      parts:[{ml:'ഇന്ന്',eng:'today'},{ml:'___',eng:'',isBlank:true},{ml:'ആണ്',eng:'is'}],
+      ans:'ഞായർ', opts:['ഞായർ','ശനി','തിങ്കൾ','ബുധൻ'],
+      q:'Complete: "Today is Sunday" (ഇന്ന് ___ ആണ്)', hint:'Named after the sun — the last day of the week'},
+    {t:'BUILD', eng:'Today is Sunday', correct:['ഇന്ന്','ഞായർ','ആണ്'],
+      tiles:[{ml:'ഇന്ന്',eng:'today'},{ml:'ഞായർ',eng:'Sunday'},{ml:'ആണ്',eng:'is'},{ml:'ശനി',eng:'Saturday'}],
+      hint:'Time word + Day name + ആണ്'},
   ],
 };
 
@@ -244,28 +233,28 @@ for (const [idStr, exs] of Object.entries(VOCAB_ADDITIONS)) {
 // ── REVIEW LESSONS ───────────────────────────────────────────────────
 const REVIEW_LESSONS = [
   { id:16, title:'Vowel Checkpoint', sub:'Review all 13 vowels', xp:25, emoji:'🎯', ex:[
-    {t:'MC', ml:'ഐ', q:'What sound does ഐ make?', ans:'ai', opts:['ai','ii','au','ee']},
-    {t:'MC', ml:'ഔ', q:'What sound does ഔ make?', ans:'au', opts:['au','oo','ai','u']},
-    {t:'MC', ml:'ഓ', q:'What sound does ഓ make?', ans:'oo', opts:['o','oo','au','ee']},
+    {t:'MC', ml:'ഐക്യം', q:'What does ഐക്യം mean?', ans:'unity', opts:['unity','strength','beauty','peace']},
+    {t:'MC', ml:'ഔഷധം', q:'What does ഔഷധം mean?', ans:'medicine', opts:['medicine','food','water','poison']},
+    {t:'MC', ml:'ഓട്ടം', q:'What does ഓട്ടം mean?', ans:'race', opts:['race','walk','jump','rest']},
     {t:'MATCH', pairs:[{ml:'അ',rom:'a'},{ml:'ഇ',rom:'i'},{ml:'ഉ',rom:'u'},{ml:'എ',rom:'e'}]},
     {t:'MATCH', pairs:[{ml:'ആ',rom:'aa'},{ml:'ഈ',rom:'ii'},{ml:'ഊ',rom:'uu'},{ml:'ഏ',rom:'ee'}]},
     {t:'FREE', q:'What does ഒരു (oru) mean?', ans:'a', alts:['an','one','a/an','one/a/an'], hint:'It comes before nouns — like "a" or "an"'},
     {t:'FREE', q:'How do you say "The elephant is big" in Malayalam?', ans:'aana valuthaanu', alts:['aaana valuthaanu','aana valutha aanu'], hint:'ആന + വലുതാണ്'},
   ]},
   { id:17, title:'Consonant Checkpoint', sub:'Velar · palatal · retroflex · dental', xp:25, emoji:'🎯', ex:[
-    {t:'MC', ml:'ക', q:'What sound does ക make?', ans:'ka', opts:['ka','ga','cha','pa']},
-    {t:'MC', ml:'ണ', q:'What sound does ണ make?', ans:'nn', opts:['n','nn','ma','nga']},
-    {t:'MC', ml:'ജ', q:'What sound does ജ make?', ans:'ja', opts:['cha','ja','ga','da']},
-    {t:'MC', ml:'ദ', q:'What sound does ദ make?', ans:'dha', opts:['tha','dha','dd','ba']},
+    {t:'MC', ml:'കടൽ', q:'What does കടൽ mean?', ans:'sea', opts:['sea','river','lake','mountain']},
+    {t:'MC', ml:'കണ്ണ്', q:'What does കണ്ണ് mean?', ans:'eye', opts:['eye','ear','nose','mouth']},
+    {t:'MC', ml:'ജലം', q:'What does ജലം mean?', ans:'water', opts:['water','fire','air','earth']},
+    {t:'MC', ml:'ദിവസം', q:'What does ദിവസം mean?', ans:'day', opts:['day','night','week','month']},
     {t:'MATCH', pairs:[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'},{ml:'ച',rom:'cha'},{ml:'ജ',rom:'ja'}]},
     {t:'MATCH', pairs:[{ml:'ട',rom:'tt'},{ml:'ഡ',rom:'dd'},{ml:'ത',rom:'tha'},{ml:'ദ',rom:'dha'}]},
     {t:'FREE', q:'What does കടൽ (kadal) mean?', ans:'sea', alts:['ocean','the sea','the ocean'], hint:'🌊 Large body of salt water'},
     {t:'FREE', q:'What does ജലം (jalam) mean?', ans:'water', hint:'💧 Essential for life'},
   ]},
   { id:18, title:'Full Alphabet Review', sub:'All consonants + vocab', xp:30, emoji:'🏆', ex:[
-    {t:'MC', ml:'മ', q:'What sound does മ make?', ans:'ma', opts:['ma','na','ba','va']},
-    {t:'MC', ml:'ശ', q:'What sound does ശ make?', ans:'sha', opts:['sha','sa','cha','ha']},
-    {t:'MC', ml:'ഴ', q:'What sound does ഴ make?', ans:'zh', opts:['zh','za','sha','la']},
+    {t:'MC', ml:'മഴ', q:'What does മഴ mean?', ans:'rain', opts:['rain','sun','wind','cloud']},
+    {t:'MC', ml:'ശബ്ദം', q:'What does ശബ്ദം mean?', ans:'sound / voice', opts:['sound / voice','light','colour','taste']},
+    {t:'MC', ml:'ഉള്ളി', q:'What does ഉള്ളി mean?', ans:'onion', opts:['onion','garlic','ginger','chilli']},
     {t:'MATCH', pairs:[{ml:'പ',rom:'pa'},{ml:'ബ',rom:'ba'},{ml:'മ',rom:'ma'},{ml:'വ',rom:'va'}]},
     {t:'MATCH', pairs:[{ml:'ശ',rom:'sha'},{ml:'സ',rom:'sa'},{ml:'ഹ',rom:'ha'},{ml:'ള',rom:'ll'}]},
     {t:'FREE', q:'What does മഴ (mazha) mean?', ans:'rain', hint:'🌧️ Falls from the sky'},
@@ -281,26 +270,26 @@ LESSONS.push(...REVIEW_LESSONS);
 const MATRA_LESSONS = [
   { id:19, title:'Matras Part 1', sub:'കാ · കി · കീ · കു · കൂ', xp:25, emoji:'✍️', ex:[
     {t:'MATRA', base:'ക', matra:'ാ', result:'കാ', rom:'kaa', hint:"Add ാ to get the long 'aa' sound", eg:'കാൽ · kaal · leg/foot'},
-    {t:'MC', ml:'കാ', q:'What sound does കാ make?', ans:'kaa', opts:['ka','kaa','ki','kee']},
+    {t:'MC', ml:'കാൽ', q:'What does കാൽ mean?', ans:'leg / foot', opts:['leg / foot','hand','eye','ear']},
     {t:'MATRA', base:'ക', matra:'ി', result:'കി', rom:'ki',  hint:"Add ി to get the short 'i' sound", eg:'കിളി · kili · bird'},
     {t:'MATRA', base:'ക', matra:'ീ', result:'കീ', rom:'kii', hint:"Add ീ to get the long 'ii' sound", eg:'കീഴ് · keezhu · below'},
-    {t:'MC', ml:'കി', q:'What sound does കി make?', ans:'ki', opts:['ka','ki','kii','ku']},
+    {t:'MC', ml:'കിളി', q:'What does കിളി mean?', ans:'bird', opts:['bird','fish','insect','animal']},
     {t:'MATRA', base:'ക', matra:'ു', result:'കു', rom:'ku',  hint:"Add ു to get the short 'u' sound", eg:'കുട · kuda · umbrella'},
     {t:'MATRA', base:'ക', matra:'ൂ', result:'കൂ', rom:'kuu', hint:"Add ൂ to get the long 'uu' sound", eg:'കൂട് · kuudu · nest/cage'},
-    {t:'MC', ml:'കൂ', q:'What sound does കൂ make?', ans:'kuu', opts:['ku','kuu','koo','kee']},
+    {t:'MC', ml:'കുട', q:'What does കുട mean?', ans:'umbrella', opts:['umbrella','hat','bag','basket']},
     {t:'MATCH', pairs:[{ml:'കാ',rom:'kaa'},{ml:'കി',rom:'ki'},{ml:'കു',rom:'ku'},{ml:'കൂ',rom:'kuu'}]},
-    {t:'FREE', q:'If ക = ka and ാ adds "aa", what does കാ sound like?', ans:'kaa', hint:'ക + ാ = ?'},
+    {t:'FREE', q:'What does കിളി (kili) mean?', ans:'bird', hint:'🐦 Has the കി matra'},
   ]},
   { id:20, title:'Matras Part 2', sub:'കെ · കേ · കൊ · കോ · ക്', xp:25, emoji:'✍️', ex:[
     {t:'MATRA', base:'ക', matra:'െ', result:'കെ', rom:'ke',  hint:"Add െ to get the short 'e' sound", eg:'കെട്ട് · kettu · bundle/tied'},
     {t:'MATRA', base:'ക', matra:'േ', result:'കേ', rom:'kee', hint:"Add േ to get the long 'ee' sound", eg:'കേൾക്കൂ · keelkkoo · please listen'},
-    {t:'MC', ml:'കേ', q:'What sound does കേ make?', ans:'kee', opts:['ke','kee','kai','koo']},
+    {t:'MC', ml:'കേൾക്കൂ', q:'What does കേൾക്കൂ mean?', ans:'please listen', opts:['please listen','please eat','please come','please go']},
     {t:'MATRA', base:'ക', matra:'ൊ', result:'കൊ', rom:'ko',  hint:"Add ൊ to get the short 'o' sound", eg:'കൊടി · kodi · flag'},
     {t:'MATRA', base:'ക', matra:'ോ', result:'കോ', rom:'koo', hint:"Add ോ to get the long 'oo' sound", eg:'കോഴി · koozhi · chicken'},
-    {t:'MC', ml:'കോ', q:'What sound does കോ make?', ans:'koo', opts:['ko','koo','ku','kee']},
+    {t:'MC', ml:'കോഴി', q:'What does കോഴി mean?', ans:'chicken', opts:['chicken','duck','fish','goat']},
     {t:'MATRA', base:'ക', matra:'്', result:'ക്', rom:'k',   hint:"Add ് (virama) to remove the vowel — pure consonant sound", eg:'ക്ഷമ · kshama · forgiveness/patience'},
     {t:'MATCH', pairs:[{ml:'കെ',rom:'ke'},{ml:'കേ',rom:'kee'},{ml:'കൊ',rom:'ko'},{ml:'കോ',rom:'koo'}]},
-    {t:'FREE', q:'What does ് (virama) do to a consonant?', ans:'removes the vowel', alts:['removes vowel','no vowel sound','pure consonant','kills the vowel','removes the a sound'], hint:'It cancels the inherent "a" — ക = ka but ക് = k'},
+    {t:'FREE', q:'What does കോഴി (koozhi) mean?', ans:'chicken', hint:'🐔 Common Kerala food — has the കോ matra'},
   ]},
 ];
 LESSONS.push(...MATRA_LESSONS);
@@ -313,10 +302,10 @@ const CONTENT_LESSONS = [
     {t:'INTRO', ml:'ൻ', rom:'n',  hint:'Final form of ന — a crisp final n at end of syllables', eg:'അവൻ · avan · he / that man'},
     {t:'MC', ml:'ൻ', q:'ൻ is the final (chillu) form of which letter?', ans:'ന', opts:['ന','ണ','മ','ങ']},
     {t:'INTRO', ml:'ർ', rom:'r',  hint:'Final form of ര — a clean final r sound', eg:'അവർ · avar · they'},
-    {t:'MC', ml:'ർ', q:'What sound does ർ make?', ans:'r', opts:['r','rr','l','n']},
+    {t:'MC', ml:'അവർ', q:'What does അവർ mean?', ans:'they', opts:['they','he','she','we']},
     {t:'INTRO', ml:'ൽ', rom:'l',  hint:'Final form of ല — soft final l', eg:'കൽ · kal · stone'},
     {t:'INTRO', ml:'ൾ', rom:'ll', hint:'Final form of ള — retroflex final l, unique to Malayalam', eg:'അവൾ · avaL · she / that woman'},
-    {t:'MC', ml:'ൾ', q:'What sound does ൾ make?', ans:'ll', opts:['l','ll','r','n']},
+    {t:'MC', ml:'അവൾ', q:'What does അവൾ mean?', ans:'she', opts:['she','he','they','I']},
     {t:'INTRO', ml:'ൺ', rom:'nn', hint:'Final form of ണ — retroflex final n', eg:'ആൺ · aan · male'},
     {t:'MATCH', pairs:[{ml:'ൻ',rom:'n'},{ml:'ർ',rom:'r'},{ml:'ൽ',rom:'l'},{ml:'ൾ',rom:'ll'}]},
     {t:'FREE', q:'What does അവൾ (avaL) mean?', ans:'she', alts:['her','she/her','that woman'], hint:'👩 The feminine of അവൻ (he)'},
@@ -397,6 +386,182 @@ const CONTENT_LESSONS = [
 ];
 LESSONS.push(...CONTENT_LESSONS);
 
+// ── GRAMMAR LESSONS ──────────────────────────────────────────────────
+const GRAMMAR_LESSONS = [
+
+  // Lesson 27: Pronouns — Nominative + Dative intro
+  { id:27, title:'Pronouns', sub:'ഞാൻ · നിങ്ങൾ · അവൻ · അവൾ · അവർ', xp:25, emoji:'🙋', ex:[
+    {t:'INTRO', ml:'ഞാൻ',  rom:'njaan',   hint:'I — the speaker. Used when YOU are the subject of the sentence.', eg:'ഞാൻ പോകുന്നു · njaan pokunnu · I am going'},
+    {t:'MC', ml:'ഞാൻ', q:'What does ഞാൻ (njaan) mean?', ans:'I', opts:['I','you','he','we']},
+    {t:'INTRO', ml:'നിങ്ങൾ', rom:'ningaL', hint:'You (formal/plural) — use with strangers, elders, anyone you respect. Also means "you all".', eg:'നിങ്ങൾ എവിടെ? · ningaL evide? · Where are you?'},
+    {t:'INTRO', ml:'നീ', rom:'nee', hint:'You (informal) — use only with close friends, children, or those younger than you. Using this with strangers can seem rude!', eg:'നീ നന്നായി · nee nannaayi · You\'re doing well'},
+    {t:'MC', q:'Which is the formal/polite "you"?', ans:'നിങ്ങൾ', opts:['നിങ്ങൾ','നീ','അവൻ','ഞാൻ']},
+    {t:'INTRO', ml:'അവൻ', rom:'avan',  hint:'He — third person masculine singular', eg:'അവൻ വരുന്നു · avan varunnu · He is coming'},
+    {t:'INTRO', ml:'അവൾ', rom:'avaL',  hint:'She — third person feminine singular', eg:'അവൾ ടീച്ചർ ആണ് · avaL teacher aanu · She is a teacher'},
+    {t:'MC', ml:'അവൾ', q:'What does അവൾ (avaL) mean?', ans:'she', opts:['he','she','they','I']},
+    {t:'INTRO', ml:'ഞങ്ങൾ', rom:'njangaL', hint:'We (exclusive) — does NOT include the listener. "We went" but you weren\'t there.', eg:'ഞങ്ങൾ കേരളത്തിൽ നിന്ന് · njangaL keralatthil ninnu · We are from Kerala'},
+    {t:'INTRO', ml:'നമ്മൾ', rom:'nammaL', hint:'We (inclusive) — INCLUDES the listener. "We" meaning you and I together. Like "let\'s".', eg:'നമ്മൾ പോകാം · nammaL pokaam · Let\'s go'},
+    {t:'MC', q:'Which "we" includes the person you\'re speaking to?', ans:'നമ്മൾ', opts:['ഞങ്ങൾ','നമ്മൾ','അവർ','നിങ്ങൾ']},
+    {t:'INTRO', ml:'അവർ', rom:'avar', hint:'They — also used respectfully for a single person (he/she) when showing respect to elders.', eg:'അവർ വരുന്നു · avar varunnu · They are coming'},
+    {t:'MATCH', pairs:[{ml:'ഞാൻ',rom:'I'},{ml:'നിങ്ങൾ',rom:'you (formal)'},{ml:'അവൾ',rom:'she'},{ml:'അവർ',rom:'they'}]},
+    {t:'VOCAB', ml:'എനിക്ക്', rom:'enikku', eng:'to me / for me', note:'The DATIVE form of ഞാൻ. When "I" is the receiver (not the doer), ഞാൻ changes to എനിക്ക്. Used for: want, need, know, like, feel.'},
+    {t:'SENT', ml:'എനിക്ക് വേണം', rom:'enikku venam', eng:'I want / I need', words:[{ml:'എനിക്ക്',eng:'to me (dative I)'},{ml:'വേണം',eng:'want / need'}]},
+    {t:'SENT', ml:'എനിക്ക് അറിയില്ല', rom:'enikku ariyilla', eng:'I don\'t know', words:[{ml:'എനിക്ക്',eng:'to me (dative I)'},{ml:'അറിയില്ല',eng:'don\'t know'}]},
+    {t:'SENT', ml:'എനിക്ക് സന്തോഷം ഉണ്ട്', rom:'enikku santhosham undu', eng:'I am happy', words:[{ml:'എനിക്ക്',eng:'to me'},{ml:'സന്തോഷം',eng:'happiness'},{ml:'ഉണ്ട്',eng:'there is / I have'}]},
+    {t:'FITB', parts:[{ml:'___',eng:'',isBlank:true},{ml:'വേണം',eng:'want/need'}], ans:'എനിക്ക്', opts:['എനിക്ക്','ഞാൻ','നിങ്ങൾ','അവൻ'], q:'Complete: "___ വേണം" — I want/need', hint:'The dative form of ഞാൻ'},
+    {t:'BUILD', eng:'I want water', correct:['എനിക്ക്','വെള്ളം','വേണം'], tiles:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'വെള്ളം',eng:'water'},{ml:'വേണം',eng:'want/need'},{ml:'ഞാൻ',eng:'I (subject)'}], hint:'Dative · Object · വേണം — "to me water want" = I want water'},
+    {t:'FREE', q:'How do you say "I don\'t know"? (romanization)', ans:'enikku ariyilla', hint:'Dative "I" + "don\'t know"'},
+  ]},
+
+  // Lesson 28: Possession + Cases Overview
+  { id:28, title:'My, Your, His, Her', sub:'Genitive case · Possession', xp:25, emoji:'🔑', ex:[
+    {t:'VOCAB', ml:'Genitive Case', rom:'possessive', eng:'Shows ownership — my, your, his, her', note:'ഞാൻ (I) → എന്റെ (my) · നിങ്ങൾ (you) → നിങ്ങളുടെ (your) · അവൻ (he) → അവന്റെ (his) · അവൾ (she) → അവളുടെ (her)'},
+    {t:'INTRO', ml:'എന്റെ', rom:'ente', hint:'My — genitive of ഞാൻ. ഞാൻ (I) → എന്റെ (my)', eg:'എന്റെ പേര് · ente peru · my name'},
+    {t:'MC', ml:'എന്റെ', q:'What does എന്റെ (ente) mean?', ans:'my', opts:['my','your','his','their']},
+    {t:'INTRO', ml:'നിങ്ങളുടെ', rom:'ningaLude', hint:'Your (formal) — genitive of നിങ്ങൾ', eg:'നിങ്ങളുടെ പേര് · ningaLude peru · your name'},
+    {t:'INTRO', ml:'അവന്റെ', rom:'avante', hint:'His — genitive of അവൻ', eg:'അവന്റെ പേര് · avante peru · his name'},
+    {t:'INTRO', ml:'അവളുടെ', rom:'avaLude', hint:'Her — genitive of അവൾ', eg:'അവളുടെ അമ്മ · avaLude amma · her mother'},
+    {t:'MC', ml:'അവളുടെ', q:'What does അവളുടെ (avaLude) mean?', ans:'her', opts:['his','her','their','my']},
+    {t:'MATCH', pairs:[{ml:'എന്റെ',rom:'my'},{ml:'നിങ്ങളുടെ',rom:'your (formal)'},{ml:'അവന്റെ',rom:'his'},{ml:'അവളുടെ',rom:'her'}]},
+    {t:'SENT', ml:'എന്റെ പേര് ... ആണ്', rom:'ente peru ... aanu', eng:'My name is ...', words:[{ml:'എന്റെ',eng:'my'},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}]},
+    {t:'SENT', ml:'നിങ്ങളുടെ പേര് എന്താണ്?', rom:'ningaLude peru enthaanu?', eng:'What is your name?', words:[{ml:'നിങ്ങളുടെ',eng:'your (formal)'},{ml:'പേര്',eng:'name'},{ml:'എന്താണ്?',eng:'what is?'}]},
+    {t:'FITB', parts:[{ml:'___',eng:'',isBlank:true},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}], ans:'എന്റെ', opts:['എന്റെ','നിങ്ങളുടെ','അവന്റെ','അവളുടെ'], q:'Complete: "___ പേര് ആണ് ..." — My name is...', hint:'Genitive form of ഞാൻ'},
+    {t:'BUILD', eng:'What is your name?', correct:['നിങ്ങളുടെ','പേര്','എന്താണ്?'], tiles:[{ml:'നിങ്ങളുടെ',eng:'your'},{ml:'പേര്',eng:'name'},{ml:'എന്താണ്?',eng:'what is?'},{ml:'എന്റെ',eng:'my'},{ml:'ആണ്',eng:'is'}], hint:'Genitive + Noun + Question — What is your name?'},
+    {t:'VOCAB', ml:'Cases · കാരകങ്ങൾ', rom:'kaarakangaL', eng:'How pronouns change role in a sentence', note:'ഞാൻ = I (subject) · എന്നെ = me (object) · എനിക്ക് = to me (receiver) · എന്റെ = my (possessor). Same person, four forms — each shows a different grammatical role!'},
+    {t:'FREE', q:'What does എന്റെ (ente) mean?', ans:'my', alts:['mine'], hint:'Genitive form of ഞാൻ'},
+  ]},
+];
+LESSONS.push(...GRAMMAR_LESSONS);
+
+// ── GRAMMAR UNIT 2 ───────────────────────────────────────────────────
+const GRAMMAR_LESSONS_2 = [
+
+  // Lesson 29: ആണ് — Identity
+  { id:29, title:'ആണ് — To Be', sub:'Identity · Classification · അല്ല', xp:25, emoji:'🔗', ex:[
+    {t:'VOCAB', ml:'ആണ്', rom:'aanu', eng:'is / am / are (identity)', note:'Used for identity and classification. Think "equals": "She = teacher". Goes at END of sentence (SOV). For existence/presence, use ഉണ്ട് instead.'},
+    {t:'SENT', ml:'ഞാൻ മലയാളി ആണ്', rom:'njaan malayaaLi aanu', eng:'I am Malayali', words:[{ml:'ഞാൻ',eng:'I'},{ml:'മലയാളി',eng:'Malayali (from Kerala)'},{ml:'ആണ്',eng:'am (identity)'}]},
+    {t:'SENT', ml:'അവൾ ടീച്ചർ ആണ്', rom:'avaL teacher aanu', eng:'She is a teacher', words:[{ml:'അവൾ',eng:'she'},{ml:'ടീച്ചർ',eng:'teacher'},{ml:'ആണ്',eng:'is (identity)'}]},
+    {t:'MC', q:'How do you say "She is a teacher"?', ans:'അവൾ ടീച്ചർ ആണ്', opts:['അവൾ ടീച്ചർ ആണ്','ടീച്ചർ അവൾ ആണ്','അവൾ ആണ് ടീച്ചർ','ടീച്ചർ ഉണ്ട് അവൾ']},
+    {t:'SENT', ml:'ഇത് നല്ലതാണ്', rom:'ithu nallathanu', eng:'This is good', words:[{ml:'ഇത്',eng:'this'},{ml:'നല്ലതാണ്',eng:'is good (ആണ് contracts onto predicate)'}]},
+    {t:'VOCAB', ml:'ആണോ?', rom:'aano?', eng:'Is it? / Are you? (yes/no question)', note:'Add -ഓ to ആണ് to ask a yes/no question. "She IS a teacher" → "Is she a teacher?" = "അവൾ ടീച്ചർ ആണോ?"'},
+    {t:'SENT', ml:'നിങ്ങൾ ഡോക്ടർ ആണോ?', rom:'ningaL doctor aano?', eng:'Are you a doctor?', words:[{ml:'നിങ്ങൾ',eng:'you (formal)'},{ml:'ഡോക്ടർ',eng:'doctor'},{ml:'ആണോ?',eng:'are? (question)'}]},
+    {t:'VOCAB', ml:'അല്ല', rom:'alla', eng:'is not / am not / are not', note:'The negation of ആണ്. Important: use അല്ല, NOT ഇല്ല! "She IS a teacher" = ടീച്ചർ ആണ് → "She is NOT a teacher" = ടീച്ചർ അല്ല'},
+    {t:'SENT', ml:'ഞാൻ ഡോക്ടർ അല്ല', rom:'njaan doctor alla', eng:'I am not a doctor', words:[{ml:'ഞാൻ',eng:'I'},{ml:'ഡോക്ടർ',eng:'doctor'},{ml:'അല്ല',eng:'am not (negation of ആണ്)'}]},
+    {t:'MC', q:'How do you negate ആണ്?', ans:'അല്ല', opts:['ഇല്ല','അല്ല','ഇല്ലാ','ഉണ്ടായില്ല']},
+    {t:'MATCH', pairs:[{ml:'ആണ്',rom:'is (identity)'},{ml:'അല്ല',rom:'is not (identity)'},{ml:'ഇത്',rom:'this'},{ml:'അത്',rom:'that'}]},
+    {t:'FITB', parts:[{ml:'അവൾ',eng:'she'},{ml:'ടീച്ചർ',eng:'teacher'},{ml:'___',eng:'',isBlank:true}], ans:'ആണ്', opts:['ആണ്','ഉണ്ട്','അല്ല','ഇല്ല'], q:'Complete: "She is a teacher"', hint:'Identity statement — ആണ് ends the sentence'},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ഡോക്ടർ',eng:'doctor'},{ml:'___',eng:'',isBlank:true}], ans:'അല്ല', opts:['അല്ല','ഇല്ല','ആണ്','ഉണ്ട്'], q:'Complete: "I am not a doctor"', hint:'Negate ആണ് with this word'},
+    {t:'BUILD', eng:'She is a teacher', correct:['അവൾ','ടീച്ചർ','ആണ്'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'ടീച്ചർ',eng:'teacher'},{ml:'ആണ്',eng:'is (identity)'},{ml:'ഉണ്ട്',eng:'is present'}], hint:'Subject · Predicate · ആണ് — all three in this order'},
+    {t:'FREE', q:'How do you say "I am not a doctor"? (romanization)', ans:'njaan doctor alla', alts:['njan doctor alla'], hint:'Use അല്ല to negate ആണ്'},
+  ]},
+
+  // Lesson 30: ഉണ്ട് and ഇല്ല — Existence and Possession
+  { id:30, title:'ഉണ്ട് and ഇല്ല', sub:'There is · I have · There is no', xp:25, emoji:'✅', ex:[
+    {t:'VOCAB', ml:'ഉണ്ട്', rom:'undu', eng:'there is / exists / is present / I have', note:'Used for existence, presence, and possession (with dative). Very different from ആണ്! "Water EXISTS" · "He IS HERE" · "I HAVE (=to me exists)" — all use ഉണ്ട്.'},
+    {t:'SENT', ml:'വെള്ളം ഉണ്ട്', rom:'vellam undu', eng:'There is water', words:[{ml:'വെള്ളം',eng:'water'},{ml:'ഉണ്ട്',eng:'there is (exists)'}]},
+    {t:'SENT', ml:'അവൻ ഇവിടെ ഉണ്ട്', rom:'avan ivide undu', eng:'He is here', words:[{ml:'അവൻ',eng:'he'},{ml:'ഇവിടെ',eng:'here'},{ml:'ഉണ്ട്',eng:'is present'}]},
+    {t:'SENT', ml:'എനിക്ക് സമയം ഉണ്ട്', rom:'enikku samayam undu', eng:'I have time', words:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'സമയം',eng:'time'},{ml:'ഉണ്ട്',eng:'there is / I have'}]},
+    {t:'SENT', ml:'ഭക്ഷണം ഉണ്ടോ?', rom:'bhakshanam undo?', eng:'Is there food?', words:[{ml:'ഭക്ഷണം',eng:'food'},{ml:'ഉണ്ടോ?',eng:'is there? (question form)'}]},
+    {t:'MC', q:'Which is correct for "I have water"?', ans:'എനിക്ക് വെള്ളം ഉണ്ട്', opts:['എനിക്ക് വെള്ളം ഉണ്ട്','ഞാൻ വെള്ളം ആണ്','വെള്ളം ഞാൻ ഉണ്ട്','ഞാൻ വെള്ളം ഉണ്ട്']},
+    {t:'VOCAB', ml:'ഇല്ല', rom:'illa', eng:'there is no / doesn\'t exist / I don\'t have', note:'The negation of ഉണ്ട്. Replace ഉണ്ട് with ഇല്ല. Also appears as verb suffix: "അറിയ+ഇല്ല" = അറിയില്ല (don\'t know). Very common in daily speech!'},
+    {t:'SENT', ml:'വെള്ളം ഇല്ല', rom:'vellam illa', eng:'There is no water', words:[{ml:'വെള്ളം',eng:'water'},{ml:'ഇല്ല',eng:'there is no (negation)'}]},
+    {t:'SENT', ml:'എനിക്ക് സമയം ഇല്ല', rom:'enikku samayam illa', eng:'I don\'t have time', words:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'സമയം',eng:'time'},{ml:'ഇല്ല',eng:'don\'t have'}]},
+    {t:'MC', q:'How do you say "There is no water"?', ans:'വെള്ളം ഇല്ല', opts:['വെള്ളം ഇല്ല','വെള്ളം അല്ല','ഇല്ല വെള്ളം','വെള്ളം ആണ്']},
+    {t:'MC', q:'Which is correct for "I am not a teacher"?', ans:'ഞാൻ ടീച്ചർ അല്ല', opts:['ഞാൻ ടീച്ചർ അല്ല','ഞാൻ ടീച്ചർ ഇല്ല','ടീച്ചർ ഞാൻ ഇല്ല','ഞാൻ ഇല്ല ടീച്ചർ']},
+    {t:'MATCH', pairs:[{ml:'ആണ്',rom:'is (identity)'},{ml:'ഉണ്ട്',rom:'exists / is present'},{ml:'അല്ല',rom:'is not (identity)'},{ml:'ഇല്ല',rom:'doesn\'t exist / not there'}]},
+    {t:'FITB', parts:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'സമയം',eng:'time'},{ml:'___',eng:'',isBlank:true}], ans:'ഇല്ല', opts:['ഇല്ല','ഉണ്ട്','ആണ്','അല്ല'], q:'Complete: "I don\'t have time"', hint:'Negate ഉണ്ട് with this word'},
+    {t:'BUILD', eng:'I have water', correct:['എനിക്ക്','വെള്ളം','ഉണ്ട്'], tiles:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'വെള്ളം',eng:'water'},{ml:'ഉണ്ട്',eng:'there is / I have'},{ml:'ഇല്ല',eng:'there is no'}], hint:'Dative · Object · ഉണ്ട് — "to me water exists" = I have water'},
+    {t:'FREE', q:'How do you say "I don\'t have time"? (romanization)', ans:'enikku samayam illa', hint:'Dative I + time + negation of ഉണ്ട്'},
+  ]},
+];
+LESSONS.push(...GRAMMAR_LESSONS_2);
+
+// ── GRAMMAR UNIT 3 ───────────────────────────────────────────────────
+const GRAMMAR_LESSONS_3 = [
+
+  // Lesson 31: Present Tense Verbs
+  { id:31, title:'Present Tense', sub:'Goes · Comes · Eats · Sees · -ഉന്നു', xp:25, emoji:'▶️', ex:[
+    {t:'VOCAB', ml:'-ഉന്നു', rom:'-unnu', eng:'present tense suffix', note:'Add -ഉന്നു to the verb stem for present tense. Works for all subjects in colloquial speech! "to go" = പോകുക → "goes/going" = പോകുന്നു. Malayalam is Subject · Object · VERB (SOV).'},
+    {t:'INTRO', ml:'പോകുന്നു', rom:'pokunnu', hint:'goes / is going — from infinitive പോകുക (to go)', eg:'ഞാൻ പോകുന്നു · njaan pokunnu · I am going'},
+    {t:'INTRO', ml:'വരുന്നു', rom:'varunnu', hint:'comes / is coming — from infinitive വരിക (to come)', eg:'അവൾ വരുന്നു · avaL varunnu · She is coming'},
+    {t:'MC', q:'What does പോകുന്നു mean?', ans:'goes / is going', opts:['goes / is going','comes / is coming','eats','sees']},
+    {t:'INTRO', ml:'കഴിക്കുന്നു', rom:'kazhikkunnu', hint:'eats / is eating — from infinitive കഴിക്കുക', eg:'ഞാൻ ചോറ് കഴിക്കുന്നു · njaan choru kazhikkunnu · I am eating rice'},
+    {t:'INTRO', ml:'കുടിക്കുന്നു', rom:'kudikkunnu', hint:'drinks / is drinking — from infinitive കുടിക്കുക', eg:'അവൻ ചായ കുടിക്കുന്നു · avan chaaya kudikkunnu · He is drinking tea'},
+    {t:'INTRO', ml:'കാണുന്നു', rom:'kaanunnu', hint:'sees / meets / is seeing — from infinitive കാണുക', eg:'ഞാൻ ആനയെ കാണുന്നു · njaan aanaye kaanunnu · I see an elephant'},
+    {t:'INTRO', ml:'പറയുന്നു', rom:'parayunnu', hint:'says / speaks / is saying — from infinitive പറയുക', eg:'അവൾ മലയാളം പറയുന്നു · avaL malayaLam parayunnu · She speaks Malayalam'},
+    {t:'MC', q:'How do you say "She is coming"?', ans:'അവൾ വരുന്നു', opts:['അവൾ വരുന്നു','അവൾ പോകുന്നു','അവൾ കഴിക്കുന്നു','അവൾ കുടിക്കുന്നു']},
+    {t:'MATCH', pairs:[{ml:'പോകുന്നു',rom:'goes'},{ml:'വരുന്നു',rom:'comes'},{ml:'കഴിക്കുന്നു',rom:'eats'},{ml:'കുടിക്കുന്നു',rom:'drinks'}]},
+    {t:'SENT', ml:'ഞാൻ ചോറ് കഴിക്കുന്നു', rom:'njaan choru kazhikkunnu', eng:'I am eating rice', words:[{ml:'ഞാൻ',eng:'I'},{ml:'ചോറ്',eng:'rice'},{ml:'കഴിക്കുന്നു',eng:'am eating'}]},
+    {t:'SENT', ml:'അവൾ മലയാളം പറയുന്നു', rom:'avaL malayaLam parayunnu', eng:'She speaks Malayalam', words:[{ml:'അവൾ',eng:'she'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പറയുന്നു',eng:'speaks'}]},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ചായ',eng:'tea'},{ml:'___',eng:'',isBlank:true}], ans:'കുടിക്കുന്നു', opts:['കുടിക്കുന്നു','കഴിക്കുന്നു','പോകുന്നു','വരുന്നു'], q:'Complete: "I am drinking tea"', hint:'Subject · Object · Verb — which verb means "drink"?'},
+    {t:'BUILD', eng:'She is coming', correct:['അവൾ','വരുന്നു'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'വരുന്നു',eng:'is coming'},{ml:'പോകുന്നു',eng:'is going'},{ml:'ഞാൻ',eng:'I'}], hint:'Subject · Verb — just two words needed'},
+    {t:'FREE', q:'How do you say "I am going"? (romanization)', ans:'njaan pokunnu', hint:'Subject + present tense of പോകുക'},
+  ]},
+
+  // Lesson 32: Accusative + Locative + Full Sentences
+  { id:32, title:'Cases in Action', sub:'Accusative · Locative · Full sentences', xp:30, emoji:'📐', ex:[
+    {t:'VOCAB', ml:'Accusative · (-നെ / -എ)', rom:'object case', eng:'marks the object — what the verb acts ON', note:'I see HIM — "him" is the object (accusative). Forms: അവൻ → അവനെ (him) · അവൾ → അവളെ (her) · ആന → ആനയെ (elephant). In colloquial speech, inanimate objects often skip this suffix.'},
+    {t:'SENT', ml:'ഞാൻ അവനെ കാണുന്നു', rom:'njaan avane kaanunnu', eng:'I see him', words:[{ml:'ഞാൻ',eng:'I'},{ml:'അവനെ',eng:'him (accusative)'},{ml:'കാണുന്നു',eng:'see'}]},
+    {t:'SENT', ml:'ഞാൻ അവളെ കാണുന്നു', rom:'njaan avaLe kaanunnu', eng:'I see her', words:[{ml:'ഞാൻ',eng:'I'},{ml:'അവളെ',eng:'her (accusative)'},{ml:'കാണുന്നു',eng:'see'}]},
+    {t:'MC', q:'What is the accusative (object) form of അവൾ?', ans:'അവളെ', opts:['അവൾ','അവളെ','അവളുടെ','അവൾക്ക്']},
+    {t:'VOCAB', ml:'Locative · (-ഇൽ / -ൽ)', rom:'place case', eng:'at / in — shows WHERE something is', note:'Add -ഇൽ to show location. "Home" = വീട് → "at home" = വീട്ടിൽ. "Kerala" = കേരളം → "in Kerala" = കേരളത്തിൽ. The spelling shifts slightly at the join — this is normal in Malayalam!'},
+    {t:'SENT', ml:'ഞാൻ വീട്ടിൽ ഉണ്ട്', rom:'njaan veetil undu', eng:'I am at home', words:[{ml:'ഞാൻ',eng:'I'},{ml:'വീട്ടിൽ',eng:'at home (locative)'},{ml:'ഉണ്ട്',eng:'am / there is'}]},
+    {t:'SENT', ml:'അവൻ കേരളത്തിൽ ഉണ്ട്', rom:'avan keralatthil undu', eng:'He is in Kerala', words:[{ml:'അവൻ',eng:'he'},{ml:'കേരളത്തിൽ',eng:'in Kerala (locative)'},{ml:'ഉണ്ട്',eng:'is'}]},
+    {t:'MC', q:'How do you say "at home" in Malayalam?', ans:'വീട്ടിൽ', opts:['വീടു','വീട്ടിൽ','വീട്','വീടൻ']},
+    {t:'MATCH', pairs:[{ml:'അവനെ',rom:'him (object)'},{ml:'അവളെ',rom:'her (object)'},{ml:'വീട്ടിൽ',rom:'at home'},{ml:'കേരളത്തിൽ',rom:'in Kerala'}]},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'___',eng:'',isBlank:true},{ml:'ഉണ്ട്',eng:'am'}], ans:'വീട്ടിൽ', opts:['വീട്ടിൽ','കേരളത്തിൽ','ഇവിടെ','അവിടെ'], q:'Complete: "I am at home"', hint:'Locative case of വീട്'},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'___',eng:'',isBlank:true},{ml:'കാണുന്നു',eng:'see'}], ans:'അവളെ', opts:['അവളെ','അവൾ','അവളുടെ','അവൾക്ക്'], q:'Complete: "I see her"', hint:'Accusative form — she becomes her when she\'s the object'},
+    {t:'BUILD', eng:'I am at home', correct:['ഞാൻ','വീട്ടിൽ','ഉണ്ട്'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'വീട്ടിൽ',eng:'at home'},{ml:'ഉണ്ട്',eng:'am/is'},{ml:'ഇല്ല',eng:'am not'}], hint:'Subject · Location · ഉണ്ട്'},
+    {t:'BUILD', eng:'I see her', correct:['ഞാൻ','അവളെ','കാണുന്നു'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'അവളെ',eng:'her (object)'},{ml:'കാണുന്നു',eng:'see'},{ml:'അവൾ',eng:'she (subject)'}], hint:'Subject · Object(accusative) · Verb'},
+    {t:'FREE', q:'How do you say "I see her"? (romanization)', ans:'njaan avaLe kaanunnu', hint:'Subject · accusative object · present tense verb'},
+  ]},
+];
+LESSONS.push(...GRAMMAR_LESSONS_3);
+
+// ── GRAMMAR UNIT 4 ───────────────────────────────────────────────────
+const GRAMMAR_LESSONS_4 = [
+
+  // Lesson 33: Past Tense Verbs
+  { id:33, title:'Past Tense', sub:'Went · Came · Ate · Saw', xp:25, emoji:'⏪', ex:[
+    {t:'VOCAB', ml:'Past Tense', rom:'irregular forms', eng:'Unlike present tense, each verb has its own past form', note:'Present: all verbs use -ഉന്നു. Past: each verb is different! You need to learn them individually. The good news — they\'re all very common and you\'ll quickly feel them naturally.'},
+    {t:'INTRO', ml:'പോയി', rom:'pooyi', hint:'went — past tense of പോകുക (to go)', eg:'ഞാൻ പോയി · njaan pooyi · I went'},
+    {t:'INTRO', ml:'വന്നു', rom:'vannu', hint:'came — past tense of വരിക (to come)', eg:'അവൾ വന്നു · avaL vannu · She came'},
+    {t:'MC', q:'Past tense of "to go" (പോകുക)?', ans:'പോയി', opts:['പോകുന്നു','പോകും','പോയി','പോകി']},
+    {t:'INTRO', ml:'കഴിച്ചു', rom:'kazhichu', hint:'ate — past tense of കഴിക്കുക (to eat)', eg:'ഞാൻ ചോറ് കഴിച്ചു · njaan choru kazhichu · I ate rice'},
+    {t:'INTRO', ml:'കുടിച്ചു', rom:'kudichu', hint:'drank — past tense of കുടിക്കുക (to drink)', eg:'അവൻ ചായ കുടിച്ചു · avan chaaya kudichu · He drank tea'},
+    {t:'MC', q:'Past tense of "to eat" (കഴിക്കുക)?', ans:'കഴിച്ചു', opts:['കഴിക്കുന്നു','കഴിച്ചു','കഴിക്കും','കഴിച്ചില്ല']},
+    {t:'INTRO', ml:'കണ്ടു', rom:'kandu', hint:'saw — past tense of കാണുക (to see)', eg:'ഞാൻ ആനയെ കണ്ടു · njaan aanaye kandu · I saw an elephant'},
+    {t:'INTRO', ml:'പറഞ്ഞു', rom:'paranju', hint:'said / spoke — past tense of പറയുക (to say/speak)', eg:'അവൾ ഇത് പറഞ്ഞു · avaL ithu paranju · She said this'},
+    {t:'MC', q:'Past tense of "to see" (കാണുക)?', ans:'കണ്ടു', opts:['കണ്ടു','കണ്ടില്ല','കാണുന്നു','കാണും']},
+    {t:'INTRO', ml:'ചെയ്തു', rom:'cheytu', hint:'did — past tense of ചെയ്യുക (to do)', eg:'ഞാൻ ചെയ്തു · njaan cheytu · I did it'},
+    {t:'MATCH', pairs:[{ml:'പോയി',rom:'went'},{ml:'വന്നു',rom:'came'},{ml:'കഴിച്ചു',rom:'ate'},{ml:'കണ്ടു',rom:'saw'}]},
+    {t:'SENT', ml:'ഞാൻ ചോറ് കഴിച്ചു', rom:'njaan choru kazhichu', eng:'I ate rice', words:[{ml:'ഞാൻ',eng:'I'},{ml:'ചോറ്',eng:'rice'},{ml:'കഴിച്ചു',eng:'ate'}]},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ചായ',eng:'tea'},{ml:'___',eng:'',isBlank:true}], ans:'കുടിച്ചു', opts:['കുടിച്ചു','കഴിച്ചു','പോയി','വന്നു'], q:'Complete: "I drank tea"', hint:'Past tense of "to drink"'},
+    {t:'BUILD', eng:'She came', correct:['അവൾ','വന്നു'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'വന്നു',eng:'came'},{ml:'പോയി',eng:'went'},{ml:'ഞാൻ',eng:'I'}], hint:'Subject · past tense verb'},
+    {t:'FREE', q:'How do you say "I ate rice"? (romanization)', ans:'njaan choru kazhichu', hint:'Subject · Object · past tense of eat'},
+  ]},
+
+  // Lesson 34: Past Tense in Context + Negation
+  { id:34, title:'Past in Context', sub:'Yesterday · Didn\'t · Full sentences', xp:30, emoji:'🗓️', ex:[
+    {t:'VOCAB', ml:'ഇന്നലെ', rom:'innale', eng:'yesterday', note:'Time words go at the start or near the front of the sentence. ഇന്ന് (innu) = today · ഇന്നലെ (innale) = yesterday · രാവിലെ (raavile) = in the morning'},
+    {t:'SENT', ml:'ഇന്നലെ ഞാൻ കേരളത്തിൽ പോയി', rom:'innale njaan keralatthil pooyi', eng:'Yesterday I went to Kerala', words:[{ml:'ഇന്നലെ',eng:'yesterday'},{ml:'ഞാൻ',eng:'I'},{ml:'കേരളത്തിൽ',eng:'to Kerala (locative)'},{ml:'പോയി',eng:'went'}]},
+    {t:'SENT', ml:'ഞാൻ അവനെ കണ്ടു', rom:'njaan avane kandu', eng:'I saw him', words:[{ml:'ഞാൻ',eng:'I'},{ml:'അവനെ',eng:'him (accusative)'},{ml:'കണ്ടു',eng:'saw'}]},
+    {t:'MC', q:'How do you say "She came yesterday"?', ans:'ഇന്നലെ അവൾ വന്നു', opts:['ഇന്നലെ അവൾ വന്നു','അവൾ ഇന്നലെ വരുന്നു','ഇന്നലെ അവൾ വരും','അവൾ വന്നു ഇന്നലെ']},
+    {t:'VOCAB', ml:'Past Negation · +ഇല്ല', rom:'past stem + illa', eng:'didn\'t — negate past tense', note:'Add ഇല്ല to the past stem (the final vowel merges). കഴിച്ചു → കഴിച്ചില്ല (didn\'t eat) · പോയി → പോയില്ല (didn\'t go) · വന്നു → വന്നില്ല (didn\'t come) · കണ്ടു → കണ്ടില്ല (didn\'t see)'},
+    {t:'SENT', ml:'ഞാൻ പോയില്ല', rom:'njaan pooyilla', eng:'I didn\'t go', words:[{ml:'ഞാൻ',eng:'I'},{ml:'പോയില്ല',eng:'didn\'t go'}]},
+    {t:'SENT', ml:'അവൾ ചോറ് കഴിച്ചില്ല', rom:'avaL choru kazhichilla', eng:'She didn\'t eat rice', words:[{ml:'അവൾ',eng:'she'},{ml:'ചോറ്',eng:'rice'},{ml:'കഴിച്ചില്ല',eng:'didn\'t eat'}]},
+    {t:'MC', q:'How do you negate the past tense?', ans:'add ഇല്ല to the past stem', opts:['add ഇല്ല to the past stem','use അല്ല','use ഉണ്ടായില്ല','change the suffix to -ഇ']},
+    {t:'MC', q:'Past negative of കഴിച്ചു (ate)?', ans:'കഴിച്ചില്ല', opts:['കഴിച്ചില്ല','കഴിക്കില്ല','കഴിക്കുന്നില്ല','കഴിക്കരുത്']},
+    {t:'MATCH', pairs:[{ml:'കഴിച്ചു',rom:'ate'},{ml:'കഴിച്ചില്ല',rom:'didn\'t eat'},{ml:'പോയി',rom:'went'},{ml:'പോയില്ല',rom:'didn\'t go'}]},
+    {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'___',eng:'',isBlank:true},{ml:'പോയി',eng:'went'}], ans:'ഇന്നലെ', opts:['ഇന്നലെ','ഇന്ന്','ഇവിടെ','അപ്പോൾ'], q:'Complete: "___ I went" (Yesterday I went)', hint:'Time word for the day before today'},
+    {t:'FITB', parts:[{ml:'അവൾ',eng:'she'},{ml:'ചോറ്',eng:'rice'},{ml:'___',eng:'',isBlank:true}], ans:'കഴിച്ചില്ല', opts:['കഴിച്ചില്ല','കഴിച്ചു','കഴിക്കുന്നു','കഴിക്കുന്നില്ല'], q:'Complete: "She didn\'t eat rice"', hint:'Past tense + ഇല്ല'},
+    {t:'BUILD', eng:'I didn\'t go', correct:['ഞാൻ','പോയില്ല'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'പോയില്ല',eng:'didn\'t go'},{ml:'പോയി',eng:'went'},{ml:'ഇന്നലെ',eng:'yesterday'}], hint:'Subject · negative past verb'},
+    {t:'BUILD', eng:'Yesterday I saw him', correct:['ഇന്നലെ','ഞാൻ','അവനെ','കണ്ടു'], tiles:[{ml:'ഇന്നലെ',eng:'yesterday'},{ml:'ഞാൻ',eng:'I'},{ml:'അവനെ',eng:'him (object)'},{ml:'കണ്ടു',eng:'saw'},{ml:'കണ്ടില്ല',eng:'didn\'t see'}], hint:'Time · Subject · Object(acc.) · Verb'},
+    {t:'FREE', q:'How do you say "I didn\'t go"? (romanization)', ans:'njaan pooyilla', hint:'Past tense of go + ഇല്ല negation'},
+  ]},
+];
+LESSONS.push(...GRAMMAR_LESSONS_4);
+
 const UNITS = [
   {id:1, title:'Vowels',              sub:'13 vowel sounds',             icon:'🌊', color:'#0D5C39', lessonIds:[1,2,3]},
   {id:8, title:'Vowel Checkpoint',    sub:'Review before consonants',    icon:'🎯', color:'#6B7280', lessonIds:[16]},
@@ -405,13 +570,7 @@ const UNITS = [
   {id:9, title:'Consonant Checkpoint',sub:'Review midway',               icon:'🎯', color:'#6B7280', lessonIds:[17]},
   {id:4, title:'Labials & Glides',    sub:'Lips and semivowels',         icon:'🟢', color:'#065F46', lessonIds:[9,10]},
   {id:5, title:'Sibilants & Special', sub:'Unique Malayalam sounds',     icon:'⭐', color:'#4C1D95', lessonIds:[11,12]},
-  {id:6, title:'Phrases',             sub:'Greetings & essentials',      icon:'🙏', color:'#7C2D12', lessonIds:[4]},
-  {id:10,title:'Full Review',         sub:'Complete alphabet + vocab',   icon:'🏆', color:'#92400E', lessonIds:[18]},
-  {id:11,title:'Matras',              sub:'Vowel signs on consonants',   icon:'✍️', color:'#0E7490', lessonIds:[19,20]},
-  {id:12,title:'Chillu Letters',      sub:'Final consonant forms',       icon:'🔚', color:'#4C1D95', lessonIds:[21]},
-  {id:7, title:'Numbers',             sub:'1 through 20',                icon:'🔢', color:'#B45309', lessonIds:[13,14,15]},
-  {id:13,title:'Everyday Words',      sub:'Food · Colors · Family',      icon:'🏡', color:'#0891B2', lessonIds:[22,23,24]},
-  {id:14,title:'Days & Conversation', sub:'Days of the week · Introductions', icon:'💬', color:'#7C3AED', lessonIds:[26,25]},
+  // Units 6+ hidden pending content review — all lesson data preserved
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -464,24 +623,69 @@ const CHAR_EGS = {
   'കേ':['കേൾക്കൂ · keelkkoo · please listen','കേടൻ · keetan · corrupt (colloquial)'],
   'കൊ':['കൊടി · kodi · flag','കൊല്ലം · kollam · Kollam (city) / year'],
   'കോ':['കോഴി · koozhi · chicken','കോട്ടം · koottam · gathering / harm'],
+  // Pronouns (nominative)
+  'ഞാൻ':  ['ഞാൻ പോകുന്നു · njaan pokunnu · I am going','ഞാൻ ഇവിടെ ഉണ്ട് · njaan ivide undu · I am here','ഞാൻ മലയാളം പഠിക്കുന്നു · njaan malayaLam padikkunnu · I am learning Malayalam'],
+  'നിങ്ങൾ':['നിങ്ങൾ എവിടെ? · ningaL evide? · Where are you?','നിങ്ങൾ വരുന്നോ? · ningaL varunno? · Are you coming?'],
+  'നീ':    ['നീ എവിടെ? · nee evide? · Where are you?','നീ നന്നായി · nee nannaayi · You\'re doing well'],
+  'അവൻ':  ['അവൻ വരുന്നു · avan varunnu · He is coming','അവൻ ഇവിടെ ഇല്ല · avan ivide illa · He is not here'],
+  'അവൾ':  ['അവൾ പോകുന്നു · avaL pokunnu · She is going','അവൾ ടീച്ചർ ആണ് · avaL teacher aanu · She is a teacher'],
+  'ഞങ്ങൾ': ['ഞങ്ങൾ കേരളത്തിൽ നിന്ന് · njangaL keralatthil ninnu · We are from Kerala','ഞങ്ങൾ പോകുന്നു · njangaL pokunnu · We are going'],
+  'നമ്മൾ': ['നമ്മൾ പോകാം · nammaL pokaam · Let\'s go','നമ്മൾ ഒരുമിച്ചാണ് · nammaL orumichaanu · We are together'],
+  'അവർ':  ['അവർ വരുന്നു · avar varunnu · They are coming','അവർ ഇവിടെ ഉണ്ടോ? · avar ivide undo? · Are they here?'],
+  // Dative pronouns
+  'എനിക്ക്':    ['എനിക്ക് വേണം · enikku venam · I want/need','എനിക്ക് അറിയാം · enikku ariyaam · I know','എനിക്ക് ഇഷ്ടം · enikku ishtam · I like it'],
+  // Genitive pronouns
+  'എന്റെ':      ['എന്റെ പേര് · ente peru · my name','എന്റെ അമ്മ · ente amma · my mother','എന്റെ വീട് · ente veedu · my house'],
+  'നിങ്ങളുടെ':  ['നിങ്ങളുടെ പേര് · ningaLude peru · your name','നിങ്ങളുടെ വീട് · ningaLude veedu · your house'],
+  'അവന്റെ':    ['അവന്റെ പേര് · avante peru · his name','അവന്റെ വീട് · avante veedu · his house'],
+  'അവളുടെ':    ['അവളുടെ പേര് · avaLude peru · her name','അവളുടെ അമ്മ · avaLude amma · her mother'],
+  // To be system
+  'ആണ്':  ['ഞാൻ മലയാളി ആണ് · njaan malayaaLi aanu · I am Malayali','ഇത് നല്ലതാണ് · ithu nallathanu · this is good'],
+  'ഉണ്ട്': ['വെള്ളം ഉണ്ട് · vellam undu · there is water','ഞാൻ ഇവിടെ ഉണ്ട് · njaan ivide undu · I am here'],
+  'ഇല്ല':  ['വെള്ളം ഇല്ല · vellam illa · there is no water','സമയം ഇല്ല · samayam illa · no time'],
+  'അല്ല':  ['ഞാൻ ഡോക്ടർ അല്ല · njaan doctor alla · I am not a doctor'],
+  'ഇവിടെ': ['ഞാൻ ഇവിടെ ഉണ്ട് · njaan ivide undu · I am here','അവൻ ഇവിടെ ഇല്ല · avan ivide illa · He is not here'],
+  'സമയം': ['സമയം ഉണ്ട് · samayam undu · there is time','സമയം ഇല്ല · samayam illa · no time'],
+  // Present tense verbs
+  'പോകുന്നു':    ['ഞാൻ പോകുന്നു · njaan pokunnu · I am going','അവൻ പോകുന്നു · avan pokunnu · He is going'],
+  'വരുന്നു':     ['അവൾ വരുന്നു · avaL varunnu · She is coming','ഞങ്ങൾ വരുന്നു · njangaL varunnu · We are coming'],
+  'കഴിക്കുന്നു': ['ഞാൻ ചോറ് കഴിക്കുന്നു · njaan choru kazhikkunnu · I am eating rice'],
+  'കുടിക്കുന്നു': ['അവൻ ചായ കുടിക്കുന്നു · avan chaaya kudikkunnu · He is drinking tea'],
+  'കാണുന്നു':    ['ഞാൻ ആനയെ കാണുന്നു · njaan aanaye kaanunnu · I see an elephant'],
+  'പറയുന്നു':    ['അവൾ മലയാളം പറയുന്നു · avaL malayaLam parayunnu · She speaks Malayalam'],
+  // Accusative and locative
+  'അവനെ':     ['ഞാൻ അവനെ കാണുന്നു · njaan avane kaanunnu · I see him'],
+  'അവളെ':     ['ഞാൻ അവളെ കാണുന്നു · njaan avaLe kaanunnu · I see her'],
+  'വീട്ടിൽ':   ['ഞാൻ വീട്ടിൽ ഉണ്ട് · njaan veetil undu · I am at home'],
+  'കേരളത്തിൽ':['ഞങ്ങൾ കേരളത്തിൽ ഉണ്ട് · njangaL keralatthil undu · We are in Kerala'],
+  // Past tense verbs
+  'പോയി':    ['ഞാൻ പോയി · njaan pooyi · I went','അവൾ പോയി · avaL pooyi · She went'],
+  'വന്നു':   ['അവൻ വന്നു · avan vannu · He came','ഞങ്ങൾ വന്നു · njangaL vannu · We came'],
+  'കഴിച്ചു': ['ഞാൻ ചോറ് കഴിച്ചു · njaan choru kazhichu · I ate rice'],
+  'കുടിച്ചു': ['അവൻ ചായ കുടിച്ചു · avan chaaya kudichu · He drank tea'],
+  'കണ്ടു':   ['ഞാൻ ആനയെ കണ്ടു · njaan aanaye kandu · I saw an elephant','ഞാൻ അവനെ കണ്ടു · njaan avane kandu · I saw him'],
+  'പറഞ്ഞു':  ['അവൾ ഇത് പറഞ്ഞു · avaL ithu paranju · She said this'],
+  'ചെയ്തു':  ['ഞാൻ ചെയ്തു · njaan cheytu · I did it'],
+  'ഇന്നലെ':  ['ഇന്നലെ ഞാൻ പോയി · innale njaan pooyi · Yesterday I went'],
+  'ഇന്ന്':   ['ഇന്ന് ഞാൻ ഇവിടെ ഉണ്ട് · innu njaan ivide undu · Today I am here'],
 };
 
 // Alternative FREE questions per lesson (pick one randomly on replay)
 const LESSON_FREE_POOLS = {
   1:[
-    {q:'What does അമ്മ (amma) mean in English?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
-    {q:'What does ഇല (ila) mean in English?',ans:'leaf',hint:'🍃 Found on trees'},
-    {q:'How do you write the long "aa" vowel?',ans:'ആ',hint:'The longer version of അ'},
+    {q:'What does അമ്മ (amma) mean?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
+    {q:'What does ഇല (ila) mean?',ans:'leaf',hint:'🍃 Found on trees'},
+    {q:'What does ആകാശം (aakasham) mean?',ans:'sky',hint:'☁️ Look up — it\'s above you'},
   ],
   2:[
     {q:'What does ഊണ് (uunu) mean?',ans:'meal',alts:['food','lunch','dinner','a meal'],hint:'🍽️ A time to eat'},
     {q:'What does ആന (aana) mean?',ans:'elephant',hint:'🐘 Kerala\'s iconic animal'},
-    {q:'Which vowel makes the long "uu" sound?',ans:'ഊ',hint:'Longer version of ഉ'},
+    {q:'What does ഏഴ് (eezhu) mean?',ans:'seven',alts:['7','seven'],hint:'7️⃣ A number'},
   ],
   3:[
     {q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Desert animal'},
     {q:'How do you say "a/an" in Malayalam? (romanization)',ans:'oru',hint:'ഒരു — used before nouns'},
-    {q:'What sound does ഔ make?',ans:'au',hint:'Like "ow" in cow'},
+    {q:'What does ഓർമ്മ (orma) mean?',ans:'memory',alts:['memory','remembrance'],hint:'🧠 Something you recall from the past'},
   ],
   4:[
     {q:'How do you say "hello" in Malayalam? (romanization)',ans:'namaskaram',hint:'🙏 The all-purpose greeting'},
@@ -490,23 +694,23 @@ const LESSON_FREE_POOLS = {
   ],
   5:[
     {q:'What does കടൽ (kadal) mean?',ans:'sea',alts:['ocean','the sea'],hint:'🌊 Large body of salt water'},
-    {q:'What sound does ഗ make?',ans:'ga',hint:'Like g in "go"'},
-    {q:'What does the nasal letter ങ sound like?',ans:'nga',hint:'Like ng in "sing"'},
+    {q:'What does ഗ്രാമം (graamam) mean?',ans:'village',hint:'🏡 A small settlement — Kerala has thousands'},
+    {q:'What does ഞണ്ട് (njandu) mean?',ans:'crab',hint:'🦀 A sea creature — common in Kerala cuisine!'},
   ],
   6:[
     {q:'What does ജലം (jalam) mean?',ans:'water',hint:'💧 Essential for life'},
     {q:'What does ഞാൻ (njaan) mean?',ans:'I',alts:['I/me','me','myself'],hint:'🙋 The Malayalam word for yourself'},
-    {q:'What sound does ച make?',ans:'cha',hint:'Like ch in "chair"'},
+    {q:'What does ചായ (chaaya) mean?',ans:'tea',hint:'☕ Kerala\'s favourite drink'},
   ],
   7:[
     {q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'},
-    {q:'What sound does ണ make?',ans:'nn',hint:'Retroflex n — tongue curves back'},
-    {q:'What makes retroflex consonants different from dental ones?',ans:'tongue curls back',alts:['tongue position','curl tongue back','tongue curves back','retroflex'],hint:'It\'s all about tongue position'},
+    {q:'What does ഡോക്ടർ (dokttar) mean?',ans:'doctor',hint:'🩺 A medical professional'},
+    {q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Has a double-tt sound in the middle'},
   ],
   8:[
     {q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'},
-    {q:'What does തേൻ (then) mean?',ans:'honey',hint:'🍯 Sweet golden liquid'},
-    {q:'What sound does ദ make?',ans:'dha',hint:'Dental d — tongue behind teeth'},
+    {q:'What does തേൻ (then) mean?',ans:'honey',hint:'🍯 Sweet golden liquid from bees'},
+    {q:'What does നദി (nadi) mean?',ans:'river',hint:'🌊 Flows through the land — Kerala has many!'},
   ],
   9:[
     {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'},
@@ -516,26 +720,26 @@ const LESSON_FREE_POOLS = {
   10:[
     {q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'},
     {q:'What does വഴി (vazhi) mean?',ans:'road',alts:['road','way','path','road/way'],hint:'🛣️ You walk or drive on it'},
-    {q:'What sound does ര make?',ans:'ra',hint:'A rolled r — like Spanish r'},
+    {q:'What does രാത്രി (raatri) mean?',ans:'night',hint:'🌙 The dark part of the day'},
   ],
   11:[
     {q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'},
     {q:'What does ശബ്ദം (shabdam) mean?',ans:'sound',alts:['word','sound','sound/word'],hint:'👂 Something you hear'},
-    {q:'What sound does സ make?',ans:'sa',hint:'Like s in "sun"'},
+    {q:'What does ഹൃദയം (hrudayam) mean?',ans:'heart',hint:'❤️ The organ that pumps blood — also means "heart" emotionally'},
   ],
   12:[
     {q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when chopped!'},
-    {q:'What sound does ള make?',ans:'ll',hint:'Retroflex lateral — unique to Dravidian languages'},
-    {q:'What makes ഴ special about Malayalam?',ans:'unique sound',alts:['no english equivalent','unique','unique dravidian sound','only in malayalam'],hint:'No equivalent exists in English!'},
+    {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Contains the unique ഴ sound'},
+    {q:'How do you say "onion" in Malayalam? (romanization)',ans:'ulli',hint:'ഉള്ളി — contains the retroflex ള sound'},
   ],
   13:[
     {q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
-    {q:'What is ഒന്ന് (onnu) in English?',ans:'one',alts:['1','one','1/one'],hint:'The first number'},
+    {q:'What does ഒന്ന് (onnu) mean?',ans:'one',alts:['1','one','1/one'],hint:'The first number'},
     {q:'How do you say 5 in Malayalam? (romanization)',ans:'anchu',hint:'5️⃣ Five fingers on a hand'},
   ],
   14:[
     {q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
-    {q:'What is പത്ത് (pathu) in English?',ans:'ten',alts:['10','ten'],hint:'10 — two hands worth of fingers'},
+    {q:'What does പത്ത് (pathu) mean?',ans:'ten',alts:['10','ten'],hint:'10 — two hands worth of fingers'},
     {q:'How do you say 8 in Malayalam? (romanization)',ans:'ettu',hint:'8️⃣ Eight'},
   ],
   15:[
@@ -545,13 +749,13 @@ const LESSON_FREE_POOLS = {
   ],
   16:[
     {q:'What does ഒരു (oru) mean?',ans:'a',alts:['an','one','a/an','one/a/an'],hint:'Used before nouns — like "a" or "an"'},
-    {q:'What sound does ഐ make?',ans:'ai',hint:'Like the "i" in ice'},
+    {q:'What does ഐക്യം (aikyam) mean?',ans:'unity',hint:'🤝 Coming together as one'},
     {q:'How do you say "an elephant"? (romanization)',ans:'oru aana',alts:['oru aana'],hint:'ഒരു + ആന'},
   ],
   17:[
     {q:'What does കടൽ (kadal) mean?',ans:'sea',alts:['ocean'],hint:'🌊 Large saltwater body'},
     {q:'What does ജലം (jalam) mean?',ans:'water',hint:'💧 Essential for life'},
-    {q:'What is the difference between ത and ട?',ans:'tongue position',alts:['dental vs retroflex','tongue position','different tongue placement'],hint:'One is dental, one is retroflex'},
+    {q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'},
   ],
   18:[
     {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'},
@@ -559,14 +763,14 @@ const LESSON_FREE_POOLS = {
     {q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'},
   ],
   19:[
-    {q:'If ക = ka, what does കാ sound like? (romanization)',ans:'kaa',hint:'ക + ാ — add the long aa vowel sign'},
-    {q:'What matra gives the short "i" sound?',ans:'ി',hint:'Makes kaaaa → ki when added to ക'},
-    {q:'What does കൂ sound like? (romanization)',ans:'kuu',hint:'ക + ൂ — long uu sound'},
+    {q:'What does കിളി (kili) mean?',ans:'bird',hint:'🐦 Flies through the sky — has the കി matra'},
+    {q:'What does കുട (kuda) mean?',ans:'umbrella',hint:'☂️ Useful in Kerala\'s rain — has the കു matra'},
+    {q:'What does കൂട് (kuudu) mean?',ans:'nest',alts:['nest','cage','nest/cage'],hint:'🐦 Where birds live — has the കൂ matra'},
   ],
   20:[
-    {q:'What does ് (virama) do to a consonant?',ans:'removes the vowel',alts:['removes vowel','no vowel','kills the vowel','pure consonant','removes inherent a'],hint:'ക = ka but ക് = k (no vowel)'},
-    {q:'What does കോ sound like? (romanization)',ans:'koo',hint:'ക + ോ — long oo sound'},
-    {q:'What does കൊ sound like? (romanization)',ans:'ko',hint:'ക + ൊ — short o sound'},
+    {q:'What does കോഴി (koozhi) mean?',ans:'chicken',hint:'🐔 Common Kerala food — has the കോ matra'},
+    {q:'What does കൊടി (kodi) mean?',ans:'flag',hint:'🚩 Flies in the wind — has the കൊ matra'},
+    {q:'What does കെട്ട് (kettu) mean?',ans:'bundle',alts:['bundle','tied','bundle/tied'],hint:'Has the കെ matra — things tied together'},
   ],
   21:[
     {q:'What does അവൾ (avaL) mean?',ans:'she',alts:['her','she/her'],hint:'👩 Feminine pronoun'},
@@ -587,6 +791,7 @@ const LESSON_FREE_POOLS = {
     {q:'What does ചേട്ടൻ (chettan) mean?',ans:'older brother',alts:['elder brother','big brother','older bro'],hint:'👦 The elder male sibling'},
     {q:'What does അനിയത്തി (aniyathi) mean?',ans:'younger sister',alts:['little sister','young sister'],hint:'👧 The younger female sibling'},
     {q:'How do you say "grandmother" in Malayalam? (romanization)',ans:'muthashi',hint:'👵 The mother of your parent'},
+    {q:'What does അച്ഛൻ (achan) mean?',ans:'father',alts:['dad','appa','achan'],hint:'👨 Also commonly said as "appa" in daily speech'},
   ],
   25:[
     {q:'What does മനസ്സിലായി (manassilayi) mean?',ans:'I understand',alts:['understood','i got it','got it'],hint:'💡 Literally "it entered my mind"'},
@@ -597,6 +802,46 @@ const LESSON_FREE_POOLS = {
     {q:'How do you say "Sunday" in Malayalam? (romanization)',ans:'njaayar',hint:'☀️ Named after the sun'},
     {q:'Which day is വ്യാഴം (vyaazham)?',ans:'Thursday',hint:'Named after Jupiter (Vyazha = Jupiter)'},
     {q:'How do you say "Friday" in Malayalam? (romanization)',ans:'veLLi',hint:'Named after Venus — also means silver!'},
+  ],
+  27:[
+    {q:'What does ഞങ്ങൾ (njangaL) mean?',ans:'we',alts:['we (exclusive)','we excl','we not including you'],hint:'The "we" that doesn\'t include the listener'},
+    {q:'What is the dative form of ഞാൻ? (romanization)',ans:'enikku',alts:['എനിക്ക്'],hint:'Used for "I want", "I need", "I know"'},
+    {q:'How do you say "I don\'t know" in Malayalam? (romanization)',ans:'enikku ariyilla',hint:'Dative I + don\'t know'},
+  ],
+  28:[
+    {q:'What does എന്റെ (ente) mean?',ans:'my',hint:'Genitive form of ഞാൻ'},
+    {q:'What does നിങ്ങളുടെ (ningaLude) mean?',ans:'your',alts:['your (formal)'],hint:'Genitive form of നിങ്ങൾ'},
+    {q:'How do you say "my name" in Malayalam? (romanization)',ans:'ente peru',hint:'Genitive ഞാൻ + name'},
+  ],
+  29:[
+    {q:'What does ആണ് (aanu) mean?',ans:'is',alts:['am','are','is/am/are'],hint:'Used for identity and classification'},
+    {q:'How do you negate ആണ്? (romanization)',ans:'alla',alts:['അല്ല'],hint:'Not "illa" — ആണ് has its own negation!'},
+    {q:'How do you say "She is a teacher"? (romanization)',ans:'avaL teacher aanu',hint:'Subject + Predicate + ആണ്'},
+  ],
+  30:[
+    {q:'What does ഉണ്ട് (undu) mean?',ans:'there is',alts:['exists','is present','i have','there is/i have'],hint:'Existence and possession'},
+    {q:'How do you say "I don\'t have time"? (romanization)',ans:'enikku samayam illa',hint:'Dative I + time + ഇല്ല'},
+    {q:'What is the key difference between അല്ല and ഇല്ല?',ans:'alla negates aanu illa negates undu',alts:['different negations','alla for identity illa for existence','alla for is-not illa for there-is-no'],hint:'Each positive verb has its own negation!'},
+  ],
+  31:[
+    {q:'How do you say "I am going"? (romanization)',ans:'njaan pokunnu',hint:'Subject + present tense verb'},
+    {q:'What is the present tense of കഴിക്കുക (to eat)? (romanization)',ans:'kazhikkunnu',hint:'Drop -ക, add -ഉന്നു to stem'},
+    {q:'How do you say "She speaks Malayalam"? (romanization)',ans:'avaL malayaLam parayunnu',hint:'Subject · Object · Verb (SOV order)'},
+  ],
+  32:[
+    {q:'What is the accusative (object) form of അവൾ? (romanization)',ans:'avaLe',alts:['അവളെ'],hint:'She → her — add -എ'},
+    {q:'How do you say "at home" in Malayalam? (romanization)',ans:'veetil',alts:['veetil','വീട്ടിൽ'],hint:'വീട് + ഇൽ with a spelling change'},
+    {q:'How do you say "I see her"? (romanization)',ans:'njaan avaLe kaanunnu',hint:'Subject · Object(accusative) · Verb'},
+  ],
+  33:[
+    {q:'What is the past tense of പോകുക (to go)? (romanization)',ans:'pooyi',alts:['poyi','പോയി'],hint:'went — irregular!'},
+    {q:'What is the past tense of കാണുക (to see)? (romanization)',ans:'kandu',alts:['കണ്ടു'],hint:'saw — irregular!'},
+    {q:'How do you say "I ate rice"? (romanization)',ans:'njaan choru kazhichu',hint:'Subject · Object · past tense of eat'},
+  ],
+  34:[
+    {q:'How do you say "I didn\'t go"? (romanization)',ans:'njaan pooyilla',hint:'Past tense of go + ഇല്ല negation'},
+    {q:'How do you say "yesterday"? (romanization)',ans:'innale',alts:['ഇന്നലെ'],hint:'The day before today'},
+    {q:'How do you negate the past tense in Malayalam?',ans:'add illa',alts:['add ഇല്ല','suffix illa','plus illa','past stem plus illa'],hint:'Same pattern as ഉണ്ട് negation!'},
   ],
 };
 
@@ -625,10 +870,11 @@ function loadProgress() {
       S.done              = new Set(Array.isArray(p.done) ? p.done : []);
       S.streak            = p.streak            ?? 0;
       S.lastDay           = p.lastDay           ?? null;
-      S.stats             = p.stats             ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{} };
-      if (!S.stats.lessonAcc)  S.stats.lessonAcc  = {};
-      if (!S.stats.wrongItems) S.stats.wrongItems = {};
-      if (!S.stats.xpByDay)    S.stats.xpByDay    = {};
+      S.stats        = p.stats        ?? { lessonAcc:{}, wrongItems:{}, xpByDay:{}, wrongItemsRecent:{} };
+      if (!S.stats.lessonAcc)        S.stats.lessonAcc        = {};
+      if (!S.stats.wrongItems)       S.stats.wrongItems       = {};
+      if (!S.stats.xpByDay)          S.stats.xpByDay          = {};
+      if (!S.stats.wrongItemsRecent) S.stats.wrongItemsRecent = {};
       S.onboarded         = p.onboarded         ?? false;
       S.mode              = p.mode              ?? 'full';
       S.dailyGoal         = p.dailyGoal         ?? 1;
@@ -656,18 +902,24 @@ let S = {
   mSel:null, mDone:[], mWrong:null, shuffled:[],
   ft:'', grading:false, mcPicked:null, speaking:false,
   streak:0, lastDay:null,
-  stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{} },
+  stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{}, wrongItemsRecent:{} },
   // onboarding
   onboarded: false, onboardStep: 0,
   mode: 'full', dailyGoal: 1, reminderTime: null,
   // practice / spaced repetition
   practiceQueue: [], practiceEi: 0, practiceScore: 0,
+  // retry queue (wrong answers repeat until correct)
+  retryQueue: [],
   // daily goal tracking
   lessonsTodayCount: 0,
   // learn tab
   learnTab: 'script',
   // resolved exercises (variability)
   resolvedEx: [],
+  // tooltip (tap-for-translation)
+  tooltip: null,
+  // drag-and-drop build state
+  buildPlaced: [], buildAvailable: [],
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -675,7 +927,7 @@ let S = {
 // ═══════════════════════════════════════════════════════════════════
 
 function speak(text) {
-  if (!window.speechSynthesis) return;
+  if (!text || !window.speechSynthesis) return;
   speechSynthesis.cancel();
   const doSpeak = () => {
     const utt = new SpeechSynthesisUtterance(text);
@@ -689,8 +941,27 @@ function speak(text) {
   if (speechSynthesis.getVoices().length > 0) {
     doSpeak();
   } else {
-    speechSynthesis.onvoiceschanged = () => { speechSynthesis.onvoiceschanged = null; doSpeak(); };
+    let fired = false;
+    speechSynthesis.onvoiceschanged = () => {
+      if (fired) return; fired = true;
+      speechSynthesis.onvoiceschanged = null; doSpeak();
+    };
+    setTimeout(() => { if (!fired) { fired = true; doSpeak(); } }, 500);
   }
+}
+
+// Detect Malayalam voice availability
+let S_hasMLVoice = null;
+function checkMLVoice() {
+  if (S_hasMLVoice !== null) return;
+  const voices = window.speechSynthesis?.getVoices() || [];
+  if (voices.length > 0) {
+    S_hasMLVoice = voices.some(v => v.lang.startsWith('ml'));
+  }
+}
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => { checkMLVoice(); speechSynthesis.onvoiceschanged = null; };
+  setTimeout(checkMLVoice, 1000);
 }
 
 function playSound(type) {
@@ -753,7 +1024,7 @@ const getEx      = () => S.screen === 'practice-session'
 const lessonOrder = UNITS.flatMap(u => u.lessonIds);
 
 // Language-first mode: only these units are shown
-const LF_UNIT_IDS   = [6, 7, 13, 14];  // Phrases, Numbers, Everyday Words, Days & Conversation
+const LF_UNIT_IDS   = [6, 7, 13, 14, 15, 16, 17];  // Phrases, Numbers, Everyday Words, Days, Pronouns, To Be, Present Tense
 const LF_LESSON_IDS = UNITS.filter(u=>LF_UNIT_IDS.includes(u.id)).flatMap(u=>u.lessonIds);
 
 const isLocked = id => {
@@ -782,7 +1053,17 @@ function resolveEx(e) {
 }
 
 function resolveLesson(lesson, isReplay) {
-  let exs = lesson.ex.map(resolveEx);
+  let exs = lesson.ex.map(e => {
+    // Randomly flip letter MCs between letter→rom and rom→letter
+    if (e.t === 'MC' && e._canFlip && e._flipOpts) {
+      if (Math.random() < 0.5) {
+        return {t:'MC', flip:true, flabel:e._flipLabel, ml:e.ml,
+          q:`Which letter makes the '${e._flipLabel}' sound?`,
+          ans:e.ml, opts:e._flipOpts};
+      }
+    }
+    return resolveEx(e);
+  });
 
   // On replay: shuffle exercise groups (keep INTRO→MC pairs together, MATCH/FREE at end)
   if (isReplay) {
@@ -818,13 +1099,17 @@ function resolveLesson(lesson, isReplay) {
 
 function startLesson(id) {
   if (isLocked(id)) return;
-  const lesson = LESSONS.find(l=>l.id===id);
   const isReplay = S.done.has(id);
+  // Block new lessons when out of hearts
+  if (S.hearts === 0 && !isReplay) return;
+  const lesson = LESSONS.find(l=>l.id===id);
   const resolvedEx = resolveLesson(lesson, isReplay);
   const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
     mSel:null, mDone:[], mWrong:null, ft:'', lxp:0, screen:'lesson',
-    resolvedEx,
+    resolvedEx, retryQueue:[], tooltip:null,
+    buildPlaced: firstEx?.t==='BUILD' ? [] : [],
+    buildAvailable: firstEx?.t==='BUILD' ? [...firstEx.tiles].sort(()=>Math.random()-0.5) : [],
     shuffled: firstEx?.t==='MATCH' ? [...firstEx.pairs].sort(()=>Math.random()-0.5) : []};
   render();
   if (firstEx?.t==='INTRO' || firstEx?.t==='MATRA') setTimeout(()=>speak(firstEx.ml || firstEx.result), 400);
@@ -834,21 +1119,33 @@ function nextEx() {
   if (S.screen === 'practice-session') { nextPracticeEx(); return; }
   const newEi = S.ei + 1;
   if (newEi >= S.resolvedEx.length) {
+    // Append any remaining retry items before finishing
+    if (S.retryQueue.length > 0) {
+      S = {...S, resolvedEx:[...S.resolvedEx, ...S.retryQueue], retryQueue:[], ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null};
+      render();
+      return;
+    }
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     const newStreak = S.lastDay === today ? S.streak
       : S.lastDay === yesterday ? S.streak + 1 : 1;
     const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp};
+    // Replaying a completed lesson restores +1 heart
+    const wasReplay = S.done.has(S.lid);
+    const newHearts = wasReplay ? Math.min(5, S.hearts + 1) : S.hearts;
     S = {...S, xp:S.xp+S.lxp, done:new Set([...S.done, S.lid]), screen:'results',
       fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
-      streak:newStreak, lastDay:today,
+      hearts:newHearts, streak:newStreak, lastDay:today,
       lessonsTodayCount: S.lessonsTodayCount + 1,
       stats:{...S.stats, xpByDay:newXpByDay}};
     saveProgress(); render();
     setTimeout(launchConfetti, 100);
   } else {
     const nextE = S.resolvedEx[newEi];
+    const newBuildAvail = nextE?.t==='BUILD' ? [...nextE.tiles].sort(()=>Math.random()-0.5) : S.buildAvailable;
+    const newBuildPlaced = nextE?.t==='BUILD' ? [] : S.buildPlaced;
     S = {...S, ei:newEi, fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
+      buildAvailable:newBuildAvail, buildPlaced:newBuildPlaced,
       shuffled: nextE?.t==='MATCH' ? [...nextE.pairs].sort(()=>Math.random()-0.5) : S.shuffled};
     render();
     if (nextE?.t==='INTRO' || nextE?.t==='MATRA') setTimeout(()=>speak(nextE.ml || nextE.result), 400);
@@ -862,21 +1159,30 @@ function buildPracticeQueue() {
   for (const lesson of LESSONS) {
     if (!S.done.has(lesson.id)) continue;
     for (const ex of lesson.ex) {
-      if (ex.t==='INTRO' && ex.ml)   itemMap.set(ex.ml, {ml:ex.ml, rom:ex.rom, hint:ex.hint, eg:ex.eg, type:'letter'});
+      if (ex.t==='INTRO' && ex.ml)     itemMap.set(ex.ml,     {ml:ex.ml, rom:ex.rom, hint:ex.hint, eg:ex.eg, type:'letter'});
       if (ex.t==='MATRA' && ex.result) itemMap.set(ex.result, {ml:ex.result, rom:ex.rom, hint:ex.hint, eg:ex.eg, type:'matra'});
-      if (ex.t==='VOCAB' && ex.ml)   itemMap.set(ex.ml, {ml:ex.ml, rom:ex.rom, eng:ex.eng, type:'vocab'});
+      if (ex.t==='VOCAB' && ex.ml)     itemMap.set(ex.ml,     {ml:ex.ml, rom:ex.rom, eng:ex.eng, type:'vocab'});
     }
   }
   const items = [...itemMap.values()];
   if (items.length === 0) return [];
 
-  // Weight by error frequency — more errors = more likely to appear
-  const weighted = items.map(item => ({ item, weight: 1 + (S.stats.wrongItems[item.ml]||0) * 3 }));
+  // Hybrid weighting: recent errors 4x, older errors 2x, clean 1x
+  const now = Date.now();
+  const recentMs = 3 * 24 * 60 * 60 * 1000; // 3 days
+  const weighted = items.map(item => {
+    const errors   = S.stats.wrongItems[item.ml] || 0;
+    const lastWrong = S.stats.wrongItemsRecent[item.ml] || 0;
+    const isRecent  = lastWrong && (now - lastWrong) < recentMs;
+    const weight    = errors === 0 ? 1 : isRecent ? errors * 4 : errors * 2;
+    return { item, weight };
+  });
   const total = weighted.reduce((s,w) => s+w.weight, 0);
 
+  // 5-7 questions
+  const target  = Math.min(5 + Math.floor(Math.random() * 3), items.length);
   const selected = new Set();
-  const queue = [];
-  const target = Math.min(8, items.length);
+  const queue   = [];
   let tries = 0;
   while (queue.length < target && tries < 200) {
     tries++;
@@ -897,13 +1203,11 @@ function buildPracticeQueue() {
 function makePracticeEx(item, allItems) {
   const shuffle = a => [...a].sort(()=>Math.random()-0.5);
   const others = allItems.filter(i => i.ml !== item.ml);
-
   if (item.type==='letter' || item.type==='matra') {
     const wrongRoms = shuffle(others.filter(i=>i.rom!==item.rom)).slice(0,3).map(i=>i.rom);
     if (wrongRoms.length < 3) return null;
     return {t:'MC', ml:item.ml, q:`What sound does ${item.ml} make?`, ans:item.rom, opts:shuffle([item.rom,...wrongRoms]), isPractice:true};
   }
-
   if (item.type==='vocab') {
     const vocabOthers = others.filter(i=>i.eng && i.eng!==item.eng);
     if (Math.random()>0.5 && vocabOthers.length>=3) {
@@ -918,25 +1222,26 @@ function makePracticeEx(item, allItems) {
 function startPractice() {
   const queue = buildPracticeQueue();
   if (queue.length === 0) return;
-  S = {...S, screen:'practice-session', practiceQueue:queue, practiceEi:0, practiceScore:0, lxp:0, fb:null, ft:'', mcPicked:null};
+  S = {...S, screen:'practice-session', practiceQueue:queue, practiceEi:0, practiceScore:0, lxp:0, fb:null, ft:'', mcPicked:null, retryQueue:[]};
   render();
 }
 
 function nextPracticeEx() {
   const newIdx = S.practiceEi + 1;
   if (newIdx >= S.practiceQueue.length) {
-    // Practice complete — restore +3 hearts (capped at 5) + XP
+    // Append retry items before finishing
+    if (S.retryQueue.length > 0) {
+      S = {...S, practiceQueue:[...S.practiceQueue, ...S.retryQueue], retryQueue:[], practiceEi:newIdx, fb:null, ft:'', mcPicked:null};
+      render(); return;
+    }
+    // Practice complete — restore +3 hearts + XP
     const newHearts = Math.min(5, S.hearts + 3);
-    const bonusXp = S.practiceScore * 3;
-    const today = new Date().toDateString();
+    const bonusXp   = S.practiceScore * 3;
+    const today     = new Date().toDateString();
     const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp + bonusXp};
-    S = {...S,
-      screen: 'practice-results',
-      hearts: newHearts,
-      xp: S.xp + S.lxp + bonusXp,
-      fb:null, ft:'', mcPicked:null,
-      stats: {...S.stats, xpByDay:newXpByDay},
-    };
+    S = {...S, screen:'practice-results', hearts:newHearts,
+      xp:S.xp+S.lxp+bonusXp, fb:null, ft:'', mcPicked:null,
+      stats:{...S.stats, xpByDay:newXpByDay}};
     saveProgress(); render();
     setTimeout(launchConfetti, 100);
   } else {
@@ -947,13 +1252,17 @@ function nextPracticeEx() {
 
 function recordStat(correct) {
   const e = getEx();
-  const lid = S.lid;
-  if (!S.stats.lessonAcc[lid]) S.stats.lessonAcc[lid] = { correct:0, total:0 };
-  S.stats.lessonAcc[lid].total++;
-  if (correct) S.stats.lessonAcc[lid].correct++;
+  const lid = S.screen === 'practice-session' ? null : S.lid;
+  if (lid) {
+    if (!S.stats.lessonAcc[lid]) S.stats.lessonAcc[lid] = { correct:0, total:0 };
+    S.stats.lessonAcc[lid].total++;
+    if (correct) S.stats.lessonAcc[lid].correct++;
+  }
   if (!correct && e) {
     const label = e.ml || e.result || (e.q||'').slice(0,30);
     S.stats.wrongItems[label] = (S.stats.wrongItems[label] || 0) + 1;
+    // Track recency — store timestamp of last wrong answer
+    S.stats.wrongItemsRecent[label] = Date.now();
   }
 }
 
@@ -961,7 +1270,10 @@ function good(pts=5, msg='Correct! 🎉') {
   playSound('correct'); recordStat(true);
   const inP = S.screen === 'practice-session';
   if (inP) { S.practiceScore++; pts = 3; }
-  S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}};
+  // Remove from retry queue if it was there
+  const e = getEx();
+  const newRetry = S.retryQueue.filter(r => JSON.stringify(r) !== JSON.stringify(e));
+  S = {...S, lxp:S.lxp+pts, fb:{ok:true,msg}, retryQueue:newRetry};
   render();
 }
 function bad(msg) {
@@ -969,16 +1281,27 @@ function bad(msg) {
   const inP = S.screen === 'practice-session';
   const newHearts = inP ? S.hearts : Math.max(0, S.hearts - 1);
   const noHeartsMsg = !inP && newHearts === 0 ? ' No hearts left — finish this lesson, then practice to continue ❤️' : '';
-  S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}};
+  // Add current exercise to retry queue (avoid duplicates)
+  const e = getEx();
+  const alreadyQueued = S.retryQueue.some(r => JSON.stringify(r) === JSON.stringify(e));
+  const newRetry = e && !alreadyQueued ? [...S.retryQueue, e] : S.retryQueue;
+  S = {...S, hearts:newHearts, fb:{ok:false, msg: msg + noHeartsMsg}, retryQueue:newRetry};
   if (!inP) saveProgress();
   render();
 }
 
 function handleMC(opt, ans) {
   if (S.fb) return;
+  // Only play audio in flip mode (options are Malayalam letters)
+  const e = getEx();
+  if (e && e.flip) speak(opt);
   S.mcPicked = opt;
   render();
-  setTimeout(() => { opt===ans ? good() : bad(`The answer is "${ans}"`); }, 120);
+}
+
+function submitMC(opt, ans) {
+  if (S.fb || !opt) return;
+  opt === ans ? good() : bad(`The answer is "${ans}"`);
 }
 
 async function handleFree() {
@@ -1155,7 +1478,7 @@ function buildHome() {
       const xpBg     = isDone?'#D1FAE5':noHearts?'#FEE2E2':'#FEF3C7';
       const xpCol    = isDone?'#059669':noHearts?'#DC2626':'#d4891e';
       const icon     = locked?(noHearts?'💔':'🔒'):isDone?'✅':l.emoji;
-      const xpLabel  = isDone?'DONE ✓':noHearts?'Practice needed':'+ '+l.xp+' XP';
+      const xpLabel  = isDone?'REPLAY +❤️':noHearts?'Practice needed':'+ '+l.xp+' XP';
       lessonsHTML += `
         <button data-action="start-lesson" data-id="${l.id}" style="background:#fff;border:2px solid ${bBorder};border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:${locked?'not-allowed':'pointer'};text-align:left;opacity:${locked?0.45:1};box-shadow:${locked?'none':'0 2px 14px rgba(0,0,0,0.10)'};width:100%;margin:0">
           <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${icon}</div>
@@ -1220,9 +1543,9 @@ function buildHome() {
             </div>
           </div>
           <div style="margin-top:16px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;font-weight:800;opacity:0.7">
-              <span>${trackDone} / ${trackLessons.length} lessons complete</span>
-              <span>${Math.round(trackDone/trackLessons.length*100)}%</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:11px;font-weight:800;opacity:0.7">${trackDone} / ${trackLessons.length} lessons complete</span>
+              <span style="font-size:13px;border:1px solid ${S.hearts===0?'rgba(220,38,38,0.5)':'rgba(255,255,255,0.2)'};border-radius:8px;padding:2px 8px;background:rgba(255,255,255,0.08)">${Array.from({length:5}).map((_,i)=>`<span style="opacity:${i<S.hearts?1:0.2}">❤️</span>`).join('')}</span>
             </div>
             <div style="height:6px;background:rgba(255,255,255,0.15);border-radius:999px;margin-bottom:12px">
               <div style="height:100%;border-radius:999px;background:#F5A623;width:${Math.round(trackDone/trackLessons.length*100)}%;transition:width 0.5s"></div>
@@ -1247,12 +1570,21 @@ function buildHome() {
           <span style="font-size:24px">💔</span>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:900;color:#DC2626">No hearts remaining</div>
-            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Complete a practice session to unlock new lessons. 1 session = 3 hearts, 2 sessions = 5 hearts.</div>
+            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Practice to unlock new lessons (+3 hearts), or replay a completed lesson (+1 heart).</div>
           </div>
           <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0">Practice 🎯</button>
         </div>` : ''}
         ${modeBanner}
+        ${S_hasMLVoice === false ? `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">🔈</span>
+          <div style="font-size:12px;font-weight:700;color:#92400E;line-height:1.5">No Malayalam voice detected — audio won't work on this device. For the full experience, open the app on your phone.</div>
+        </div>` : ''}
         ${unitsHTML}
+        <div style="border:2px dashed #D1D5DB;border-radius:18px;padding:24px 20px;text-align:center;margin-top:8px;margin-bottom:8px">
+          <div style="font-size:28px">🌴</div>
+          <div style="font-size:15px;font-weight:900;color:#78716C;margin-top:8px">More coming soon</div>
+          <div style="font-size:12px;color:#A8A29E;font-weight:700;margin-top:4px">Phrases · Matras · Numbers · Grammar · Vocabulary</div>
+        </div>
       </div>
     </div>
     ${buildNav('home')}`;
@@ -1301,6 +1633,8 @@ function buildLesson() {
   if (e.t==='FREE')  exHTML = buildFree(e);
   if (e.t==='VOCAB' || e.t==='SENT')  exHTML = buildVocab(e);
   if (e.t==='MATRA') exHTML = buildMatra(e);
+  if (e.t==='FITB')  exHTML = buildFITB(e);
+  if (e.t==='BUILD') exHTML = buildBUILDEx(e);
 
   const fbHTML = S.fb ? `
     <div style="position:sticky;bottom:0;background:${S.fb.ok?'#059669':'#DC2626'};padding:18px 22px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.14)">
@@ -1329,7 +1663,8 @@ function buildLesson() {
         ${exHTML}
       </div>
       ${fbHTML}
-    </div>`;
+    </div>
+    ${buildTooltipOverlay()}`;
 }
 
 function buildIntro(e) {
@@ -1374,20 +1709,29 @@ function buildMC(e) {
     const fs = e.flip ? 24 : 15;
     optsHTML += `<button data-action="mc-pick" data-opt="${esc(opt)}" data-ans="${esc(e.ans)}" style="background:${bg};border:${bdr};border-radius:14px;padding:15px 10px;font-size:${fs}px;font-weight:800;cursor:${S.fb?'default':'pointer'};color:${col};font-family:${ff};box-shadow:0 2px 14px rgba(0,0,0,0.10)">${opt}</button>`;
   }
+
+  // If the word is shown in the card, simplify the question label
+  const isTranslation = e.ml && !e.flip && /^What does .+ mean\?|^What color is/i.test(e.q);
+  const qLabel = isTranslation ? 'What does this mean?' : e.q;
+
   const display = !e.flip
     ? `<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-         <div class="ml" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39">${e.ml}</div>
+         <div class="ml" data-action="show-tooltip" data-ml="${esc(e.ml)}" data-eng="${esc(e.ans)}" style="font-size:${mlSize(e.ml||'')}px;font-weight:700;color:#0D5C39;cursor:pointer;border-bottom:2px dashed rgba(13,92,57,0.25);padding-bottom:2px" title="Tap to peek">${e.ml}</div>
          <button data-action="speak" data-text="${esc(e.ml)}" style="background:#FEF3C7;border:2px solid #F5A623;border-radius:50px;padding:5px 16px;font-size:13px;font-weight:900;cursor:pointer;color:#d4891e;display:inline-flex;align-items:center;gap:5px">🔈 hear it</button>
+         <div style="font-size:10px;color:#A8A29E;font-weight:700">tap word to peek</div>
        </div>`
     : `<div style="font-size:34px;font-weight:900;color:#0D5C39">"${e.flabel}"</div>`;
   return `
     <div style="flex:1;display:flex;flex-direction:column">
-      <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:16px">${e.q}</div>
+      <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:16px">${qLabel}</div>
       <div style="background:#fff;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);margin-bottom:18px">
         ${display}
-        <div style="font-size:12px;color:#78716C;margin-top:10px;font-weight:800">${e.flip?'→ Tap the matching letter':'→ Tap the correct answer'}</div>
+        <div style="font-size:12px;color:#78716C;margin-top:10px;font-weight:800">${e.flip?'→ Tap each letter to hear it':'→ Tap the correct answer'}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${optsHTML}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">${optsHTML}</div>
+      ${!S.fb ? `<button data-action="mc-check" data-opt="${esc(S.mcPicked||'')}" data-ans="${esc(e.ans)}"
+        style="background:${S.mcPicked?'#0D5C39':'#E7E5E4'};color:${S.mcPicked?'white':'#A8A29E'};border:none;border-radius:16px;padding:16px;font-size:15px;font-weight:900;cursor:${S.mcPicked?'pointer':'default'};letter-spacing:0.5px">
+        CHECK ✓</button>` : ''}
     </div>`;
 }
 
@@ -1396,8 +1740,8 @@ function buildMatch(e) {
   let lHTML='', rHTML='';
   for (const p of e.pairs) {
     const done=S.mDone.includes(p.ml),sel=S.mSel?.side==='L'&&S.mSel.val===p.ml,wrg=S.mWrong?.includes(p.ml);
-    lHTML+=`<button data-action="match-l" data-val="${esc(p.ml)}" style="flex:1;background:${done?'#D1FAE5':wrg?'#FEE2E2':sel?'#FEF3C7':'#fff'};border:2px solid ${done?'#059669':wrg?'#DC2626':sel?'#F5A623':'#E7E5E4'};border-radius:14px;padding:8px 6px;font-family:'Noto Serif Malayalam',serif;font-size:${mlSize(p.ml)}px;font-weight:700;color:${done?'#059669':wrg?'#DC2626':sel?'#d4891e':'#1C1917'};cursor:${done?'default':'pointer'};opacity:${done?0.5:1};line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:58px">
-      ${p.ml}<span data-action="speak" data-text="${esc(p.ml)}" style="font-size:10px;font-family:'Nunito',sans-serif;opacity:0.55">🔈</span>
+    lHTML+=`<button data-action="match-l" data-val="${esc(p.ml)}" data-speak="${esc(p.ml)}" style="flex:1;background:${done?'#D1FAE5':wrg?'#FEE2E2':sel?'#FEF3C7':'#fff'};border:2px solid ${done?'#059669':wrg?'#DC2626':sel?'#F5A623':'#E7E5E4'};border-radius:14px;padding:8px 6px;font-family:'Noto Serif Malayalam',serif;font-size:${mlSize(p.ml)}px;font-weight:700;color:${done?'#059669':wrg?'#DC2626':sel?'#d4891e':'#1C1917'};cursor:${done?'default':'pointer'};opacity:${done?0.5:1};line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:58px">
+      ${p.ml}
     </button>`;
   }
   for (const p of rs) {
@@ -1421,7 +1765,7 @@ function buildFree(e) {
   const bBg  = S.ft.trim()&&!S.grading?'#0D5C39':'#E7E5E4';
   return `
     <div style="flex:1;display:flex;flex-direction:column">
-      <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:14px">Translate this</div>
+      <div style="font-size:10px;font-weight:900;color:#7C3AED;letter-spacing:2px;margin-bottom:14px">FREE RESPONSE</div>
       <div style="background:#fff;border-radius:20px;padding:24px 22px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);margin-bottom:18px">
         <div style="font-size:17px;font-weight:800;color:#1C1917;line-height:1.45">${e.q}</div>
         <div style="font-size:13px;color:#78716C;margin-top:12px;font-weight:700">Hint: ${e.hint}</div>
@@ -1434,12 +1778,14 @@ function buildFree(e) {
 
 function buildVocab(e) {
   const isSent = e.t === 'SENT';
+  // SENT: word chips are tappable for tooltip
   const wordsHTML = isSent && e.words
     ? e.words.map(w => `
-        <div style="background:#F7F2EB;border-radius:8px;padding:6px 12px;text-align:center">
+        <button data-action="show-tooltip" data-ml="${esc(w.ml)}" data-eng="${esc(w.eng)}"
+          style="background:#F7F2EB;border-radius:8px;padding:6px 12px;text-align:center;cursor:pointer;border:1px solid transparent">
           <div class="ml" style="font-size:15px;color:#0D5C39;font-weight:700">${w.ml}</div>
-          <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:1px">${w.eng}</div>
-        </div>`).join('')
+          <div style="font-size:10px;color:#78716C;font-weight:700;margin-top:1px">${w.eng} 👆</div>
+        </button>`).join('')
     : '';
   return `
     <div style="flex:1;display:flex;flex-direction:column">
@@ -1450,10 +1796,90 @@ function buildVocab(e) {
           🔈 <span>${e.rom}</span>
         </button>
         <div style="font-size:17px;font-weight:900;color:#1C1917">${e.eng}</div>
-        ${isSent && e.words ? `<div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:4px">${wordsHTML}</div>` : ''}
+        ${isSent && e.words ? `
+          <div style="font-size:11px;color:#78716C;font-weight:700">Tap any word to see its meaning 👆</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:4px">${wordsHTML}</div>` : ''}
         ${!isSent && e.note ? `<div style="background:#F0FDF4;border-radius:12px;padding:9px 16px;font-size:12px;font-weight:800;color:#065F46;max-width:290px">${e.note}</div>` : ''}
       </div>
       <button data-action="next-ex" style="margin-top:16px;background:#0D5C39;color:white;border:none;border-radius:16px;padding:16px;font-size:15px;font-weight:900;cursor:pointer;width:100%">GOT IT →</button>
+    </div>`;
+}
+
+// ─── FILL IN THE BLANK ───────────────────────────────────────────────
+function buildFITB(e) {
+  const partsHTML = (e.parts||[]).map(p => {
+    if (p.isBlank) {
+      const filled = S.mcPicked && S.fb;
+      return `<span style="display:inline-block;min-width:80px;background:${S.fb?(S.fb.ok?'#D1FAE5':'#FEE2E2'):'#FEF3C7'};border-radius:8px;padding:5px 12px;font-family:'Noto Serif Malayalam',serif;font-size:20px;color:${S.fb?(S.fb.ok?'#059669':'#DC2626'):'#d4891e'};font-weight:700;text-align:center;border:2px solid ${S.fb?(S.fb.ok?'#059669':'#DC2626'):'#F5A623'}">${filled?S.mcPicked:'___'}</span>`;
+    }
+    if (!p.ml || p.ml===',' || p.ml==='.') return `<span class="ml" style="font-size:22px;color:#1C1917">${p.ml}</span>`;
+    return `<button data-action="show-tooltip" data-ml="${esc(p.ml)}" data-eng="${esc(p.eng)}"
+      style="background:none;border:none;cursor:pointer;font-family:'Noto Serif Malayalam',serif;font-size:22px;color:#0D5C39;font-weight:700;padding:2px 4px;border-bottom:1px dotted #A8A29E">${p.ml}</button>`;
+  }).join(' ');
+
+  const optsHTML = (e.opts||[]).map(opt => {
+    let bg='#fff', bdr='2px solid #E7E5E4', col='#1C1917';
+    if (S.fb&&opt===e.ans)          {bg='#D1FAE5';bdr='2px solid #059669';col='#059669';}
+    else if (S.mcPicked===opt&&!S.fb){bg='#FEF3C7';bdr='2px solid #F5A623';col='#d4891e';}
+    return `<button data-action="mc-pick" data-opt="${esc(opt)}" data-ans="${esc(e.ans)}"
+      style="background:${bg};border:${bdr};border-radius:14px;padding:14px 8px;font-family:'Noto Serif Malayalam',serif;font-size:20px;font-weight:700;cursor:${S.fb?'default':'pointer'};color:${col};box-shadow:0 2px 10px rgba(0,0,0,0.08)">${opt}</button>`;
+  }).join('');
+
+  return `
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="font-size:10px;font-weight:900;color:#7C3AED;letter-spacing:2px;margin-bottom:14px">FILL IN THE BLANK</div>
+      <div style="background:#fff;border-radius:22px;padding:22px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:#78716C;margin-bottom:12px">${e.q||'Fill in the blank'} <span style="opacity:0.6">(tap words to translate)</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;line-height:2">${partsHTML}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${optsHTML}</div>
+      ${e.hint&&!S.fb?`<div style="font-size:12px;color:#78716C;font-weight:700;text-align:center;margin-top:12px">💡 ${e.hint}</div>`:''}
+    </div>`;
+}
+
+// ─── DRAG & DROP SENTENCE BUILDER ────────────────────────────────────
+function buildBUILDEx(e) {
+  const placedHTML = S.buildPlaced.map((tile,i) => `
+    <button data-action="build-remove" data-idx="${i}"
+      style="background:#EFF6FF;border:2px solid #3B82F6;border-radius:10px;padding:8px 14px;font-family:'Noto Serif Malayalam',serif;font-size:18px;cursor:pointer;color:#1E40AF;font-weight:700;display:flex;align-items:center;gap:6px">
+      ${tile.ml}<span style="font-size:10px;opacity:0.5">✕</span>
+    </button>`).join('');
+
+  const availHTML = S.buildAvailable.map((tile,i) => `
+    <button data-action="build-place" data-idx="${i}" data-eng="${esc(tile.eng)}"
+      style="background:#fff;border:2px solid #E7E5E4;border-radius:10px;padding:8px 14px;font-family:'Noto Serif Malayalam',serif;font-size:18px;cursor:pointer;color:#1C1917;font-weight:700;box-shadow:0 1px 6px rgba(0,0,0,0.08)">
+      ${tile.ml}
+    </button>`).join('');
+
+  const allPlaced = S.buildAvailable.length === 0 && S.buildPlaced.length > 0;
+
+  return `
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="font-size:10px;font-weight:900;color:#7C3AED;letter-spacing:2px;margin-bottom:14px">BUILD THE SENTENCE</div>
+      <div style="background:#fff;border-radius:20px;padding:16px 18px;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,0.10);margin-bottom:14px">
+        <div style="font-size:16px;font-weight:800;color:#1C1917">${e.eng}</div>
+        <div style="font-size:11px;color:#78716C;font-weight:700;margin-top:4px">Tap tiles to build the Malayalam sentence · Tap placed words to remove</div>
+      </div>
+      <div style="min-height:64px;background:${S.buildPlaced.length>0?'#F0F9FF':'#F7F2EB'};border:2px dashed ${S.buildPlaced.length>0?'#3B82F6':'#D1D5DB'};border-radius:14px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:14px;transition:all 0.2s">
+        ${S.buildPlaced.length>0 ? placedHTML : '<span style="font-size:13px;color:#A8A29E;font-weight:700">← Tap tiles below</span>'}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px">${availHTML}</div>
+      ${allPlaced&&!S.fb ? `<button data-action="build-check" data-correct="${esc(JSON.stringify(e.correct))}" style="background:#7C3AED;color:white;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;width:100%">CHECK ✓</button>` : ''}
+      ${e.hint ? `<div style="font-size:12px;color:#78716C;font-weight:700;text-align:center;margin-top:8px">💡 ${e.hint}</div>` : ''}
+    </div>`;
+}
+
+// ─── TOOLTIP OVERLAY ─────────────────────────────────────────────────
+function buildTooltipOverlay() {
+  if (!S.tooltip) return '';
+  return `
+    <div data-action="dismiss-tooltip" style="position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:center;padding-bottom:110px;background:rgba(0,0,0,0.15)">
+      <div style="background:#1C1917;color:white;border-radius:18px;padding:16px 24px;text-align:center;min-width:160px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.3);animation:popIn 0.15s ease">
+        <div class="ml" style="font-size:28px;font-weight:700;color:#F5A623;line-height:1">${esc(S.tooltip.ml)}</div>
+        ${S.tooltip.rom ? `<div style="font-size:13px;font-weight:700;opacity:0.6;margin-top:4px;letter-spacing:0.5px">${esc(S.tooltip.rom)}</div>` : ''}
+        <div style="font-size:15px;font-weight:700;margin-top:4px">${esc(S.tooltip.eng)}</div>
+        <div style="font-size:10px;opacity:0.45;margin-top:6px;font-weight:700">tap anywhere to close</div>
+      </div>
     </div>`;
 }
 
@@ -1614,16 +2040,6 @@ function buildStats() {
     ${buildNav('stats')}`;
 }
 
-// ─── PRACTICE PLACEHOLDER ────────────────────────────────────────────
-function buildPractice() {
-  return `
-    <div style="min-height:100vh;background:#F7F2EB;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;padding-bottom:80px">
-      <div style="font-size:64px">🎯</div>
-      <div style="font-size:22px;font-weight:900;color:#1C1917;margin-top:16px">Practice Mode</div>
-      <div style="font-size:14px;color:#78716C;font-weight:700;margin-top:8px;max-width:280px;line-height:1.6">Spaced repetition drills and heart refills — coming soon in the next update! 🌴</div>
-    </div>
-    ${buildNav('practice')}`;
-}
 
 // ─── LEARN TAB ──────────────────────────────────────────────────────
 // Coverage maps: which lessons unlock which sections
@@ -1635,12 +2051,12 @@ const SCRIPT_COVERAGE = {
   numbers:    [13,14,15],
 };
 const GRAMMAR_COVERAGE = {
-  pronouns:   [],   // lesson IDs added as grammar units are built
-  toBe:       [],
-  presentTense: [],
-  pastTense:  [],
-  questions:  [],
-  future:     [],
+  pronouns:     [27, 28],
+  toBe:         [29, 30],
+  presentTense: [31, 32],
+  pastTense:    [],   // hidden pending review
+  questions:    [],
+  future:       [],
 };
 const sectionDone = ids => ids.length === 0 ? false : ids.some(id => S.done.has(id));
 
@@ -1881,7 +2297,7 @@ function buildPractice() {
 
         <div style="background:#FEF3C7;border:1px solid #F5A623;border-radius:16px;padding:14px 16px;margin-bottom:20px">
           <div style="font-size:12px;font-weight:900;color:#92400E;margin-bottom:4px">❤️ How hearts work</div>
-          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Wrong answers in lessons cost a heart. Complete a practice session to restore 3 hearts — do two sessions to restore fully to 5.</div>
+          <div style="font-size:12px;color:#B45309;font-weight:700;line-height:1.5">Hearts refill to 5 every day. Wrong answers in lessons cost a heart. Complete a practice session to restore 3 hearts — do two sessions to restore fully to 5. Replaying a completed lesson restores +1 heart.</div>
         </div>
 
         ${needsWork.length > 0 ? `
@@ -1908,7 +2324,7 @@ function buildPracticeSession() {
     <div style="position:sticky;bottom:0;background:${S.fb.ok?'#059669':'#DC2626'};padding:18px 22px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.14)">
       <div>
         <div style="font-size:17px;font-weight:900;color:white">${S.fb.msg}</div>
-        ${!S.fb.ok?'<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700">Added to your review queue 📚</div>':''}
+        ${!S.fb.ok?'<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700">Added to retry — you\'ll see it again this session 🔄</div>':''}
       </div>
       <button data-action="next-ex" style="background:white;border:none;border-radius:14px;padding:12px 24px;font-size:14px;font-weight:900;cursor:pointer;color:${S.fb.ok?'#059669':'#DC2626'};white-space:nowrap;flex-shrink:0">CONTINUE →</button>
     </div>` : '';
@@ -1929,7 +2345,8 @@ function buildPracticeSession() {
         ${exHTML}
       </div>
       ${fbHTML}
-    </div>`;
+    </div>
+    ${buildTooltipOverlay()}`;
 }
 
 // ─── PRACTICE RESULTS ────────────────────────────────────────────────
@@ -2016,8 +2433,41 @@ document.addEventListener('click', e => {
   else if (action==='check-free')   { handleFree(); }
   else if (action==='speak')  { e.stopPropagation(); speak(el.dataset.text); }
   else if (action==='mc-pick'){ handleMC(el.dataset.opt, el.dataset.ans); }
-  else if (action==='match-l'){ handleMatch('L', el.dataset.val); }
+  else if (action==='mc-check'){ submitMC(el.dataset.opt, el.dataset.ans); }
+  else if (action==='match-l'){ if(el.dataset.speak) speak(el.dataset.speak); handleMatch('L', el.dataset.val); }
   else if (action==='match-r'){ handleMatch('R', el.dataset.val); }
+  // Tooltip
+  else if (action==='show-tooltip') {
+    e.stopPropagation();
+    S.tooltip = {ml: el.dataset.ml, eng: el.dataset.eng, rom: el.dataset.rom||''};
+    render();
+  }
+  else if (action==='dismiss-tooltip') { S.tooltip = null; render(); }
+  // Build (drag-and-drop)
+  else if (action==='build-place') {
+    const idx = parseInt(el.dataset.idx);
+    const tile = S.buildAvailable[idx];
+    if (!tile) return;
+    S.buildAvailable = S.buildAvailable.filter((_,i)=>i!==idx);
+    S.buildPlaced = [...S.buildPlaced, tile];
+    render();
+  }
+  else if (action==='build-remove') {
+    const idx = parseInt(el.dataset.idx);
+    const tile = S.buildPlaced[idx];
+    if (!tile) return;
+    S.buildPlaced = S.buildPlaced.filter((_,i)=>i!==idx);
+    S.buildAvailable = [...S.buildAvailable, tile];
+    render();
+  }
+  else if (action==='build-check') {
+    try {
+      const correct = JSON.parse(el.dataset.correct);
+      const placed  = S.buildPlaced.map(t=>t.ml);
+      const isOk    = correct.length === placed.length && correct.every((w,i)=>w===placed[i]);
+      isOk ? good(10, 'Perfect sentence! 🎉') : bad(`Not quite — try: ${correct.join(' ')}`);
+    } catch {}
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════
