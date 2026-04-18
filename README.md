@@ -46,38 +46,10 @@ Once installed, open the app, start any lesson, and tap **🔈 hear it** on a le
 
 No setup needed. Android and iOS both include Malayalam voices by default.
 
----
-
-## 📖 What's in the app
-
-- **Script lessons** — learn to read all 52 Malayalam letters through interactive exercises
-- **Vocabulary** — common everyday words in context
-- **Grammar** — sentence structure, verb tenses, cases *(coming soon)*
-- **Practice mode** — spaced repetition to reinforce what you've learned
-- **Hearts system** — track your accuracy; replay lessons to restore hearts
-
----
-
-## 🌴 Content status
-
-| Unit | Status |
-|------|--------|
-| Vowels (13 vowels) | ✅ Available |
-| Velar & Palatal consonants | ✅ Available |
-| Retroflex & Dental consonants | ✅ Available |
-| Labials & Semivowels | ✅ Available |
-| Sibilants & Special letters | ✅ Available |
-| Checkpoints & Reviews | ✅ Available |
-| Phrases & Greetings | 🔜 Coming soon |
-| Numbers | 🔜 Coming soon |
-| Matras (vowel signs) | 🔜 Coming soon |
-| Everyday vocabulary | 🔜 Coming soon |
-| Grammar | 🔜 Coming soon |
 
 ---
 
 ## 🗣️ Language notes
 
 - This app teaches **colloquial Kerala Malayalam** — the everyday spoken register, not formal/literary Malayalam
-- Both **അച്ഛൻ** (achan) and **അപ്പ** (appa) are accepted for "father" — regional variation is noted throughout
 - Romanization follows a practical system designed for readability, not strict academic transliteration
