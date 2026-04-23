@@ -521,20 +521,20 @@ const GRAMMAR_LESSONS_4 = [
 LESSONS.push(...GRAMMAR_LESSONS_4);
 
 const UNITS = [
-  {id:1, title:'Vowels',              sub:'13 vowel sounds',             icon:'🌊', color:'#0D5C39', lessonIds:[1,2,3]},
-  {id:8, title:'Vowel Checkpoint',    sub:'Review before consonants',    icon:'🎯', color:'#6B7280', lessonIds:[16]},
-  {id:2, title:'Velar & Palatal',     sub:'Back-of-mouth consonants',    icon:'🔵', color:'#1D4ED8', lessonIds:[5,6]},
-  {id:3, title:'Retroflex & Dental',  sub:'Tongue-position consonants',  icon:'🟠', color:'#9A3412', lessonIds:[7,8]},
-  {id:9, title:'Consonant Checkpoint',sub:'Review midway',               icon:'🎯', color:'#6B7280', lessonIds:[17]},
-  {id:4, title:'Labials & Glides',    sub:'Lips and semivowels',         icon:'🟢', color:'#065F46', lessonIds:[9,10]},
-  {id:5, title:'Sibilants & Special', sub:'Unique Malayalam sounds',     icon:'⭐', color:'#4C1D95', lessonIds:[11,12]},
-  {id:6, title:'Vowel Signs',         sub:'How vowels attach to letters', icon:'✍️', color:'#0E7490', lessonIds:[19,20]},
-  {id:7, title:'Chillu Letters',      sub:'Final consonant forms',        icon:'🔚', color:'#7C3AED', lessonIds:[21]},
-  {id:10, title:'Full Alphabet Review', sub:'All letters + vocab',        icon:'🏆', color:'#B45309', lessonIds:[18]},
-  {id:11, title:'Food & Drink',       sub:'ഭക്ഷണം · ചോറ് · ചായ',        icon:'🍛', color:'#065F46', lessonIds:[22]},
-  {id:12, title:'Colors',             sub:'ചുവപ്പ് · നീല · പച്ച',         icon:'🎨', color:'#DC2626', lessonIds:[23]},
-  {id:13, title:'Family',             sub:'കുടുംബം',                      icon:'👨‍👩‍👧', color:'#0D5C39', lessonIds:[24]},
-  {id:14, title:'Introductions',      sub:'My name is… · I\'m learning',  icon:'💬', color:'#1D4ED8', lessonIds:[25]},
+  {id:1,  title:'Vowels',               sub:'13 vowel sounds',              icon:'🌊', color:'#0D5C39', lessonIds:[1,2,3],   desc:'Malayalam has 13 vowels — more than English. Each has a short and long form. Master these first and you\'ll be able to read a huge chunk of the script.'},
+  {id:8,  title:'Vowel Checkpoint',     sub:'Review before consonants',     icon:'🎯', color:'#6B7280', lessonIds:[16],      desc:'A review of all 13 vowels before moving into consonants. Mix of letter recognition and vocabulary.'},
+  {id:2,  title:'Velar & Palatal',      sub:'Back-of-mouth consonants',     icon:'🔵', color:'#1D4ED8', lessonIds:[5,6],     desc:'These consonants are made at the back of the mouth. Velars like ക (ka) use the throat; palatals like ച (cha) use the middle of the mouth. Includes nasal sounds ങ and ഞ.'},
+  {id:3,  title:'Retroflex & Dental',   sub:'Tongue-position consonants',   icon:'🟠', color:'#9A3412', lessonIds:[7,8],     desc:'Malayalam distinguishes retroflex sounds (tongue curled back — ട, ണ) from dental sounds (tongue behind teeth — ത, ന). This distinction is unique to South Asian languages and doesn\'t exist in English.'},
+  {id:9,  title:'Consonant Checkpoint', sub:'Review midway',                icon:'🎯', color:'#6B7280', lessonIds:[17],      desc:'A mid-point review of the consonants covered so far — velars, palatals, retroflexes and dentals. Mix of letter recognition and vocabulary.'},
+  {id:4,  title:'Labials & Glides',     sub:'Lips and semivowels',          icon:'🟢', color:'#065F46', lessonIds:[9,10],    desc:'Labials (പ, ബ, മ) are made with the lips. Glides (യ, ര, ല, വ) are smooth flowing sounds — the "w" and "y" sounds of Malayalam.'},
+  {id:5,  title:'Sibilants & Special',  sub:'Unique Malayalam sounds',      icon:'⭐', color:'#4C1D95', lessonIds:[11,12],   desc:'Sibilants are the "s" and "sh" sounds (ശ, ഷ, സ, ഹ). The specials — ള, ഴ, റ — are unique to Dravidian languages and have no English equivalent. ഴ in particular is found almost nowhere else on earth.'},
+  {id:6,  title:'Vowel Signs',          sub:'How vowels attach to letters',  icon:'✍️', color:'#0E7490', lessonIds:[19,20],  desc:'In Malayalam, vowels don\'t stand alone next to consonants — they attach as signs (matras). ക becomes കാ, കി, കീ etc. Once you know these, you can read most real Malayalam words.'},
+  {id:7,  title:'Chillu Letters',       sub:'Final consonant forms',         icon:'🔚', color:'#7C3AED', lessonIds:[21],     desc:'Chillus are special forms of consonants that appear at the end of syllables — like the ൻ in അവൻ (he) or the ൾ in അവൾ (she). They\'re extremely common in everyday Malayalam.'},
+  {id:10, title:'Full Alphabet Review', sub:'All letters + vocab',           icon:'🏆', color:'#B45309', lessonIds:[18],     desc:'You now know the full Malayalam alphabet! This unit reviews all the letters and introduces some vocabulary. A big milestone — most people can\'t read a single Malayalam word. You can.'},
+  {id:11, title:'Food & Drink',         sub:'ഭക്ഷണം · ചോറ് · ചായ',         icon:'🍛', color:'#065F46', lessonIds:[22],     desc:'Essential Kerala vocabulary — rice, tea, water and more. Kerala cuisine is famous worldwide and these words come up in every meal.'},
+  {id:12, title:'Colors',               sub:'ചുവപ്പ് · നീല · പച്ച',          icon:'🎨', color:'#DC2626', lessonIds:[23],     desc:'Basic color words in Malayalam. Colors also appear in everyday phrases — like കടൽ നീലം ആണ് (the sea is blue).'},
+  {id:13, title:'Family',               sub:'കുടുംബം',                       icon:'👨‍👩‍👧', color:'#0D5C39', lessonIds:[24],  desc:'Family terms are central to Malayalam culture — and double as polite forms of address. Calling someone ചേട്ടൻ (older brother) or ചേച്ചി (older sister) is a common respectful greeting even with strangers.'},
+  {id:14, title:'Introductions',        sub:'My name is… · I\'m learning',   icon:'💬', color:'#1D4ED8', lessonIds:[25],    desc:'How to introduce yourself, say you\'re learning Malayalam, and the most useful phrase for any learner: ദയവായി പതുക്കെ പറയൂ — please speak slowly!'},
   // Units 15+ hidden pending content review — all lesson data preserved
 ];
 
@@ -896,6 +896,8 @@ let S = {
   isReplay: false,
   // match heart-loss flag (lose at most 1 heart per MATCH exercise)
   mHeartLost: false,
+  // expanded unit description
+  expandedUnit: null,
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1528,18 +1530,29 @@ function buildHome() {
           <div style="background:${xpBg};border-radius:9px;padding:4px 10px;font-size:11px;font-weight:900;color:${xpCol};white-space:nowrap">${xpLabel}</div>
         </button>`;
     }
+    const isExpanded = S.expandedUnit === u.id;
+    const descHTML = isExpanded && u.desc
+      ? `<div style="background:rgba(0,0,0,0.65);border-radius:0 0 14px 14px;padding:12px 18px;margin-bottom:11px"><div style="font-size:13px;color:rgba(255,255,255,0.9);font-weight:700;line-height:1.5">${esc(u.desc)}</div></div>`
+      : '';
+    const infoIcon = u.desc ? `<div style="font-size:12px;opacity:0.7;font-weight:900">${isExpanded ? '▲' : 'i'}</div>` : '';
+    const headerRadius = isExpanded && u.desc ? '18px 18px 0 0' : '18px';
+    const headerMargin = isExpanded && u.desc ? '0' : '11px';
     unitsHTML += `
       <div style="margin-bottom:24px">
-        <div style="background:${u.color};border-radius:18px;padding:13px 18px;color:white;margin-bottom:11px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,0.10)">
+        <div data-action="toggle-unit" data-uid="${u.id}" style="background:${u.color};border-radius:${headerRadius};padding:13px 18px;color:white;margin-bottom:${headerMargin};display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,0.10);cursor:pointer">
           <div style="font-size:24px">${u.icon}</div>
           <div style="flex:1">
             <div style="font-size:9px;font-weight:900;opacity:0.55;letter-spacing:2px;margin-bottom:2px">UNIT ${u.id}</div>
             <div style="font-size:16px;font-weight:900">${u.title}</div>
             <div style="font-size:12px;opacity:0.65;font-weight:700">${u.sub}</div>
           </div>
-          <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:4px 12px;font-size:12px;font-weight:900">${uDone}/${uLessons.length}</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:4px 12px;font-size:12px;font-weight:900">${uDone}/${uLessons.length}</div>
+            ${infoIcon}
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:8px">${lessonsHTML}</div>
+        ${descHTML}
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:${descHTML?'8px':'0'}">${lessonsHTML}</div>
       </div>`;
   }
 
@@ -2492,6 +2505,11 @@ document.addEventListener('click', e => {
     S.onboarded = true;
     S.screen = 'home';
     saveProgress();
+    render();
+  }
+  else if (action==='toggle-unit') {
+    const uid = parseInt(el.dataset.uid);
+    S.expandedUnit = S.expandedUnit === uid ? null : uid;
     render();
   }
   else if (action==='toggle-mode') {
