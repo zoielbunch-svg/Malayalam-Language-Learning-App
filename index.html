@@ -355,7 +355,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?',  ans:'water',       opts:['water','milk','juice','tea']},
     {t:'MC', ml:'ചായ',    q:'What does ചായ mean?',    ans:'tea',         opts:['tea','coffee','juice','water']},
     {t:'MC', ml:'പാൽ',    q:'What does പാൽ mean?',    ans:'milk',        opts:['milk','water','tea','juice']},
-    {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'food'},{ml:'ചോറ്',rom:'cooked rice'},{ml:'ചായ',rom:'tea'},{ml:'വെള്ളം',rom:'water'}]},
+    {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'bhakshanam',eng:'food'},{ml:'ചോറ്',rom:'choru',eng:'cooked rice'},{ml:'ചായ',rom:'chaaya',eng:'tea'},{ml:'വെള്ളം',rom:'vellam',eng:'water'}]},
   ]},
 
   // Colors
@@ -364,7 +364,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'പച്ച',    q:'What does പച്ച mean?',    ans:'green',  opts:['yellow','green','red','white']},
     {t:'MC', ml:'നീല',     q:'What does നീല mean?',     ans:'blue',   opts:['blue','green','purple','black']},
     {t:'MC', ml:'മഞ്ഞ',    q:'What does മഞ്ഞ mean?',    ans:'yellow', opts:['yellow','orange','white','green']},
-    {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'red'},{ml:'നീല',rom:'blue'},{ml:'പച്ച',rom:'green'},{ml:'മഞ്ഞ',rom:'yellow'}]},
+    {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'chuvappu',eng:'red'},{ml:'നീല',rom:'neela',eng:'blue'},{ml:'പച്ച',rom:'pacha',eng:'green'},{ml:'മഞ്ഞ',rom:'manja',eng:'yellow'}]},
   ]},
 
   // Family
@@ -373,7 +373,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'ചേച്ചി',    q:'What does ചേച്ചി mean?',    ans:'older sister',   opts:['older sister','younger sister','mother','aunt']},
     {t:'MC', ml:'അനിയൻ',    q:'What does അനിയൻ mean?',    ans:'younger brother', opts:['younger brother','older brother','younger sister','son']},
     {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister',  opts:['younger sister','older sister','mother','grandmother']},
-    {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'older brother'},{ml:'ചേച്ചി',rom:'older sister'},{ml:'അനിയൻ',rom:'younger brother'},{ml:'അനിയത്തി',rom:'younger sister'}]},
+    {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'chettan',eng:'older brother'},{ml:'ചേച്ചി',rom:'chechi',eng:'older sister'},{ml:'അനിയൻ',rom:'aniyan',eng:'younger brother'},{ml:'അനിയത്തി',rom:'aniyathi',eng:'younger sister'}]},
   ]},
 
   // Basic Conversation
@@ -382,7 +382,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'പേര്',         q:'What does പേര് mean?',         ans:'name',            opts:['name','age','place','time']},
     {t:'MC', ml:'മലയാളം',      q:'What does മലയാളം mean?',      ans:'Malayalam',       opts:['Malayalam','Kerala','India','language']},
     {t:'MC', ml:'മനസ്സിലായില്ല', q:'What does മനസ്സിലായില്ല mean?', ans:"I don't understand", opts:["I don't understand","I understand","I don't know","I agree"]},
-    {t:'MATCH', pairs:[{ml:'എന്റെ',rom:'my'},{ml:'പേര്',rom:'name'},{ml:'മലയാളം',rom:'Malayalam'},{ml:'മനസ്സിലായി',rom:'I understand'}]},
+    {t:'MATCH', pairs:[{ml:'എന്റെ',rom:'ente',eng:'my'},{ml:'പേര്',rom:'peru',eng:'name'},{ml:'മലയാളം',rom:'malayaalam',eng:'Malayalam'},{ml:'മനസ്സിലായി',rom:'manassilayi',eng:'I understand'}]},
   ]},
 
   // Food & Drink — Part 2
@@ -391,7 +391,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'പഴം',      q:'What does പഴം mean?',      ans:'fruit',      opts:['fruit','vegetable','flower','leaf']},
     {t:'MC', ml:'പച്ചക്കറി', q:'What does പച്ചക്കറി mean?', ans:'vegetables', opts:['vegetables','fruits','spices','grains']},
     {t:'MC', ml:'ഊണ്',      q:'What does ഊണ് mean?',      ans:'meal',       opts:['meal','snack','drink','dessert']},
-    {t:'MATCH', pairs:[{ml:'മീൻ',rom:'fish'},{ml:'പഴം',rom:'fruit'},{ml:'പച്ചക്കറി',rom:'vegetables'},{ml:'ഊണ്',rom:'meal'}]},
+    {t:'MATCH', pairs:[{ml:'മീൻ',rom:'meen',eng:'fish'},{ml:'പഴം',rom:'pazham',eng:'fruit'},{ml:'പച്ചക്കറി',rom:'pachakkari',eng:'vegetables'},{ml:'ഊണ്',rom:'uunu',eng:'meal'}]},
   ]},
 
   // Colors — Part 2
@@ -400,7 +400,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'കറുപ്പ്', q:'What does കറുപ്പ് mean?', ans:'black', opts:['black','white','red','blue']},
     {t:'MC', ml:'തവിട്ട്', q:'What does തവിട്ട് mean?', ans:'brown', opts:['brown','orange','yellow','grey']},
     {t:'MC', ml:'നിറം',    q:'What does നിറം mean?',   ans:'color',  opts:['color','shape','size','pattern']},
-    {t:'MATCH', pairs:[{ml:'വെള്ള',rom:'white'},{ml:'കറുപ്പ്',rom:'black'},{ml:'തവിട്ട്',rom:'brown'},{ml:'നിറം',rom:'color'}]},
+    {t:'MATCH', pairs:[{ml:'വെള്ള',rom:'veLLa',eng:'white'},{ml:'കറുപ്പ്',rom:'karuppu',eng:'black'},{ml:'തവിട്ട്',rom:'thaviddu',eng:'brown'},{ml:'നിറം',rom:'niram',eng:'color'}]},
   ]},
 
   // Family — Part 2
@@ -409,7 +409,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'അമ്മ',     q:'What does അമ്മ mean?',     ans:'mother',      opts:['mother','father','aunt','grandmother']},
     {t:'MC', ml:'മുത്തശ്ശി', q:'What does മുത്തശ്ശി mean?', ans:'grandmother', opts:['grandmother','grandfather','aunt','mother']},
     {t:'MC', ml:'മുത്തച്ഛൻ', q:'What does മുത്തച്ഛൻ mean?', ans:'grandfather', opts:['grandfather','grandmother','uncle','father']},
-    {t:'MATCH', pairs:[{ml:'അച്ഛൻ',rom:'father'},{ml:'അമ്മ',rom:'mother'},{ml:'മുത്തശ്ശി',rom:'grandmother'},{ml:'മുത്തച്ഛൻ',rom:'grandfather'}]},
+    {t:'MATCH', pairs:[{ml:'അച്ഛൻ',rom:'achan',eng:'father'},{ml:'അമ്മ',rom:'amma',eng:'mother'},{ml:'മുത്തശ്ശി',rom:'muthashi',eng:'grandmother'},{ml:'മുത്തച്ഛൻ',rom:'muthachan',eng:'grandfather'}]},
   ]},
 
   // Introductions — Part 2: Where are you from?
@@ -418,7 +418,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'നിന്നാണ്', q:'What does നിന്നാണ് mean?', ans:'am from', opts:['am from','am going','am staying','am coming']},
     {t:'MC', ml:'കേരളം',   q:'What does കേരളം mean?',   ans:'Kerala', opts:['Kerala','India','Malayalam','South India']},
     {t:'MC', ml:'സന്തോഷം', q:'What does സന്തോഷം mean?', ans:'happiness / pleased', opts:['happiness / pleased','sadness','anger','surprise']},
-    {t:'MATCH', pairs:[{ml:'എവിടെ',rom:'where'},{ml:'നിന്നാണ്',rom:'am from'},{ml:'കേരളം',rom:'Kerala'},{ml:'സന്തോഷം',rom:'happiness'}]},
+    {t:'MATCH', pairs:[{ml:'എവിടെ',rom:'evide',eng:'where'},{ml:'നിന്നാണ്',rom:'ninnaanu',eng:'am from'},{ml:'കേരളം',rom:'keralam',eng:'Kerala'},{ml:'സന്തോഷം',rom:'santhosham',eng:'happiness'}]},
   ]},
 
   // Introductions — Part 3: Useful phrases
@@ -427,7 +427,7 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'പതുക്കെ',  q:'What does പതുക്കെ mean?',  ans:'slowly',     opts:['slowly','quickly','loudly','quietly']},
     {t:'MC', ml:'ഒന്നുകൂടി', q:'What does ഒന്നുകൂടി mean?', ans:'once more',  opts:['once more','enough','stop','continue']},
     {t:'MC', ml:'ദയവായി പതുക്കെ പറയൂ', q:'What does this phrase mean?', ans:'Please speak slowly', opts:['Please speak slowly','Please come here','Please sit down','Please say thank you']},
-    {t:'MATCH', pairs:[{ml:'ദയവായി',rom:'please'},{ml:'പതുക്കെ',rom:'slowly'},{ml:'ഒന്നുകൂടി',rom:'once more'},{ml:'ശരി',rom:'okay'}]},
+    {t:'MATCH', pairs:[{ml:'ദയവായി',rom:'dayavayi',eng:'please'},{ml:'പതുക്കെ',rom:'pathukkhe',eng:'slowly'},{ml:'ഒന്നുകൂടി',rom:'onnukuudi',eng:'once more'},{ml:'ശരി',rom:'shari',eng:'okay'}]},
   ]},
   { id:26, title:'Days of the Week', sub:'തിങ്കൾ · ചൊവ്വ · ബുധൻ…', xp:20, emoji:'📅', ex:[
     {t:'INTRO', ml:'തിങ്കൾ', rom:'thingaL', hint:'Monday — named after the moon (thingaL = moon)', eg:'തിങ്കൾ · thingaL · Monday'},
@@ -1817,13 +1817,14 @@ function buildMatch(e) {
     </button>`;
   }
   for (const p of rs) {
+    const display = p.eng || p.rom;
     const done=S.mDone.includes(p.rom),sel=S.mSel?.side==='R'&&S.mSel.val===p.rom,wrg=S.mWrong?.includes(p.rom);
-    rHTML+=`<button data-action="match-r" data-val="${esc(p.rom)}" style="flex:1;background:${done?'#D1FAE5':wrg?'#FEE2E2':sel?'#FEF3C7':'#fff'};border:2px solid ${done?'#059669':wrg?'#DC2626':sel?'#F5A623':'#E7E5E4'};border-radius:14px;padding:8px 6px;font-size:14px;font-weight:900;color:${done?'#059669':wrg?'#DC2626':sel?'#d4891e':'#1C1917'};cursor:${done?'default':'pointer'};opacity:${done?0.5:1};min-height:58px">${p.rom}</button>`;
+    rHTML+=`<button data-action="match-r" data-val="${esc(p.rom)}" style="flex:1;background:${done?'#D1FAE5':wrg?'#FEE2E2':sel?'#FEF3C7':'#fff'};border:2px solid ${done?'#059669':wrg?'#DC2626':sel?'#F5A623':'#E7E5E4'};border-radius:14px;padding:8px 6px;font-size:14px;font-weight:900;color:${done?'#059669':wrg?'#DC2626':sel?'#d4891e':'#1C1917'};cursor:${done?'default':'pointer'};opacity:${done?0.5:1};min-height:58px">${esc(display)}</button>`;
   }
   return `
     <div style="flex:1;display:flex;flex-direction:column">
       <div style="font-size:15px;font-weight:800;color:#1C1917;margin-bottom:4px">Match the pairs</div>
-      <div style="font-size:13px;color:#78716C;font-weight:700;margin-bottom:16px">Tap a letter, then tap its romanization</div>
+      <div style="font-size:13px;color:#78716C;font-weight:700;margin-bottom:16px">Tap a word, then tap its match</div>
       <div style="display:flex;gap:10px;flex:1">
         <div style="flex:1;display:flex;flex-direction:column;gap:8px">${lHTML}</div>
         <div style="flex:1;display:flex;flex-direction:column;gap:8px">${rHTML}</div>
