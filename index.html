@@ -93,7 +93,7 @@ const LESSONS = [
     {ml:'ജ',rom:'ja',  hint:"Like 'j' in jump",             eg:'ജലം · jalam · water',            opts:['cha','ja','ga','da'],   flipOpts:['ച','ജ','ഝ','ഞ']},
     {ml:'ഝ',rom:'jha', hint:'Aspirated j — breathy sound',  eg:'ഝരം · jharam · stream',          opts:['ja','jha','cha','gha'], flipOpts:['ജ','ഝ','ഛ','ഞ']},
     {ml:'ഞ',rom:'nya', hint:"Nasal 'ny' — like ny in canyon",eg:'ഞാൻ · njaan · I (me)',          opts:['na','nya','nga','ma'],  flipOpts:['ച','ജ','ഞ','ങ']},
-  ],[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'}],{t:'MC',ml:'ജലം',q:'What does ജലം mean?',ans:'water',opts:['water','fire','air','earth']}),
+  ],[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'}],{t:'MC',ml:'ജനാല',q:'What does ജനാല mean?',ans:'window',opts:['window','door','room','wall']}),
   mkL(7,'Retroflex Stops','ട · ഠ · ഡ · ഢ · ണ','🟠',20,[
     {ml:'ട',rom:'tt',  hint:'Retroflex t — curl tongue back toward palate', eg:'ടൺ · tan · ton / unit of weight',     opts:['tt','th','dd','ka'],   flipOpts:['ട','ഠ','ഡ','ഢ']},
     {ml:'ഠ',rom:'tth', hint:'Aspirated retroflex t — breathy tongue-curl',  eg:'ഠക്കൻ · thakkan · stubborn',          opts:['tt','tth','ddh','pha'], flipOpts:['ട','ഠ','ഢ','ണ']},
@@ -159,7 +159,20 @@ LESSONS.push(...NUM_LESSONS);
 // Only used for vocab/grammar lessons (22+). Script lessons 1-12 are
 // handled entirely within their lesson definitions.
 const VOCAB_ADDITIONS = {
+  21: [
+    {t:'FITB',
+      parts:[{ml:'___',eng:'',isBlank:true},{ml:'എന്റെ',eng:'my'},{ml:'ചേച്ചി',eng:'older sister'},{ml:'ആണ്',eng:'is'}],
+      ans:'അവൾ', opts:['അവൾ','അവൻ','അവർ','ഞാൻ'],
+      q:'Complete: "___ is my older sister"', hint:'👩 She — uses ൾ chillu'},
+    {t:'BUILD', eng:'They are coming', correct:['അവർ','വരുന്നു'],
+      tiles:[{ml:'അവർ',eng:'they'},{ml:'വരുന്നു',eng:'are coming'},{ml:'പോകുന്നു',eng:'are going'},{ml:'അവൻ',eng:'he'}],
+      hint:'Subject + Verb'},
+  ],
   22: [
+    {t:'FITB',
+      parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ചായ',eng:'tea'},{ml:'___',eng:'',isBlank:true}],
+      ans:'കുടിക്കുന്നു', opts:['കുടിക്കുന്നു','കഴിക്കുന്നു','കൊണ്ടുവരുന്നു','ഉണ്ട്'],
+      q:'Complete: "I am drinking tea"', hint:'🍵 ചായ is the object — what verb fits?'},
     {t:'BUILD', eng:'Please eat rice', correct:['ചോറ്','കഴിക്കൂ'],
       tiles:[{ml:'ചോറ്',eng:'cooked rice'},{ml:'കഴിക്കൂ',eng:'please eat'},{ml:'ചായ',eng:'tea'},{ml:'കുടിക്കൂ',eng:'please drink'}],
       hint:'Object + Verb — subject "you" is implied in Malayalam'},
@@ -190,6 +203,51 @@ const VOCAB_ADDITIONS = {
     {t:'BUILD', eng:'I am learning Malayalam', correct:['ഞാൻ','മലയാളം','പഠിക്കുകയാണ്'],
       tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പഠിക്കുകയാണ്',eng:'am learning'},{ml:'മനസ്സിലായി',eng:'I understand'}],
       hint:'Subject + Object + Verb — SOV order'},
+  ],
+  35: [
+    {t:'FITB',
+      parts:[{ml:'ഞാൻ',eng:'I'},{ml:'___',eng:'',isBlank:true},{ml:'കഴിക്കുന്നു',eng:'am eating'}],
+      ans:'മീൻ', opts:['മീൻ','ചോറ്','ചായ','വെള്ളം'],
+      q:'Complete: "I am eating ___"', hint:'🐟 Something from the sea'},
+    {t:'BUILD', eng:'I am eating rice', correct:['ഞാൻ','ചോറ്','കഴിക്കുന്നു'],
+      tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'ചോറ്',eng:'rice'},{ml:'കഴിക്കുന്നു',eng:'am eating'},{ml:'കുടിക്കുന്നു',eng:'am drinking'}],
+      hint:'Subject + Object + Verb — SOV order'},
+  ],
+  36: [
+    {t:'FITB',
+      parts:[{ml:'ആന',eng:'elephant'},{ml:'___',eng:'',isBlank:true},{ml:'ആണ്',eng:'is'}],
+      ans:'വെള്ള', opts:['വെള്ള','കറുപ്പ്','നീല','ചുവപ്പ്'],
+      q:'Complete: "The elephant is ___"', hint:'🐘 What color are elephants?'},
+    {t:'BUILD', eng:'The crow is black', correct:['കാക്ക','കറുപ്പ്','ആണ്'],
+      tiles:[{ml:'കാക്ക',eng:'crow'},{ml:'കറുപ്പ്',eng:'black'},{ml:'ആണ്',eng:'is'},{ml:'വെള്ള',eng:'white'}],
+      hint:'Subject + Color + ആണ്'},
+  ],
+  37: [
+    {t:'FITB',
+      parts:[{ml:'അവൾ',eng:'she'},{ml:'എന്റെ',eng:'my'},{ml:'___',eng:'',isBlank:true},{ml:'ആണ്',eng:'is'}],
+      ans:'അമ്മ', opts:['അമ്മ','അച്ഛൻ','മുത്തശ്ശി','ചേച്ചി'],
+      q:'Complete: "She is my ___"', hint:'👩 The woman who raised you'},
+    {t:'BUILD', eng:'He is my father', correct:['അവൻ','എന്റെ','അച്ഛൻ','ആണ്'],
+      tiles:[{ml:'അവൻ',eng:'he'},{ml:'എന്റെ',eng:'my'},{ml:'അച്ഛൻ',eng:'father'},{ml:'ആണ്',eng:'is'},{ml:'അമ്മ',eng:'mother'}],
+      hint:'Subject + my + family member + ആണ്'},
+  ],
+  38: [
+    {t:'FITB',
+      parts:[{ml:'ഞാൻ',eng:'I'},{ml:'കേരളത്തിൽ',eng:'Kerala (locative)'},{ml:'___',eng:'',isBlank:true}],
+      ans:'നിന്നാണ്', opts:['നിന്നാണ്','പോകുന്നു','വരുന്നു','ഉണ്ട്'],
+      q:'Complete: "I am from Kerala"', hint:'നിന്ന് + ആണ് = നിന്നാണ്'},
+    {t:'BUILD', eng:'I am from Kerala', correct:['ഞാൻ','കേരളത്തിൽ','നിന്നാണ്'],
+      tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'കേരളത്തിൽ',eng:'Kerala'},{ml:'നിന്നാണ്',eng:'am from'},{ml:'പോകുന്നു',eng:'am going'}],
+      hint:'ഞാൻ + place + നിന്നാണ്'},
+  ],
+  39: [
+    {t:'FITB',
+      parts:[{ml:'ദയവായി',eng:'please'},{ml:'___',eng:'',isBlank:true},{ml:'പറയൂ',eng:'speak'}],
+      ans:'പതുക്കെ', opts:['പതുക്കെ','വേഗം','ഉച്ചത്തിൽ','ശാന്തമായി'],
+      q:'Complete: "Please speak ___"', hint:'🐢 The opposite of fast'},
+    {t:'BUILD', eng:'Please say it once more', correct:['ദയവായി','ഒന്നുകൂടി','പറയൂ'],
+      tiles:[{ml:'ദയവായി',eng:'please'},{ml:'ഒന്നുകൂടി',eng:'once more'},{ml:'പറയൂ',eng:'say/speak'},{ml:'പതുക്കെ',eng:'slowly'}],
+      hint:'ദയവായി + ഒന്നുകൂടി + പറയൂ'},
   ],
   26: [
     {t:'FITB',
@@ -234,7 +292,7 @@ const REVIEW_LESSONS = [
     {t:'MC', ml:'ന', q:'How do you read this letter?', ans:'na',  opts:['n','na','ma','nga'],    _flipOpts:['ത','ദ','ന','ണ'], _flipLabel:'na',  _canFlip:true},
     {t:'MC', ml:'കടൽ',  q:'What does കടൽ mean?',  ans:'sea',   opts:['sea','river','lake','mountain']},
     {t:'MC', ml:'കണ്ണ്', q:'What does കണ്ണ് mean?', ans:'eye',   opts:['eye','ear','nose','mouth']},
-    {t:'MC', ml:'ജലം',  q:'What does ജലം mean?',  ans:'water', opts:['water','fire','air','earth']},
+    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water', opts:['water','fire','air','earth']},
     {t:'MC', ml:'ദിവസം', q:'What does ദിവസം mean?', ans:'day',  opts:['day','night','week','month']},
     {t:'MATCH', pairs:[{ml:'ക',rom:'ka'},{ml:'ഗ',rom:'ga'},{ml:'ച',rom:'cha'},{ml:'ജ',rom:'ja'}]},
     {t:'MATCH', pairs:[{ml:'ട',rom:'tt'},{ml:'ഡ',rom:'dd'},{ml:'ത',rom:'tha'},{ml:'ദ',rom:'dha'}]},
@@ -293,32 +351,84 @@ const CONTENT_LESSONS = [
 
   // Food & Drink
   { id:22, title:'Food & Drink', sub:'ഭക്ഷണം · ചോറ് · ചായ', xp:20, emoji:'🍛', ex:[
-    {t:'MC', ml:'ചോറ്',  q:'What does ചോറ് mean?',  ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
-    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water',       opts:['water','milk','juice','tea']},
+    {t:'MC', ml:'ചോറ്',   q:'What does ചോറ് mean?',   ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
+    {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?',  ans:'water',       opts:['water','milk','juice','tea']},
+    {t:'MC', ml:'ചായ',    q:'What does ചായ mean?',    ans:'tea',         opts:['tea','coffee','juice','water']},
+    {t:'MC', ml:'പാൽ',    q:'What does പാൽ mean?',    ans:'milk',        opts:['milk','water','tea','juice']},
     {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'food'},{ml:'ചോറ്',rom:'cooked rice'},{ml:'ചായ',rom:'tea'},{ml:'വെള്ളം',rom:'water'}]},
   ]},
 
   // Colors
   { id:23, title:'Colors', sub:'ചുവപ്പ് · നീല · പച്ച', xp:20, emoji:'🎨', ex:[
-    {t:'MC', ml:'ചുവപ്പ്', q:'What color is ചുവപ്പ്?', ans:'red',   opts:['red','blue','green','yellow']},
-    {t:'MC', ml:'പച്ച',    q:'What color is പച്ച?',    ans:'green', opts:['yellow','green','red','white']},
+    {t:'MC', ml:'ചുവപ്പ്', q:'What does ചുവപ്പ് mean?', ans:'red',    opts:['red','blue','green','yellow']},
+    {t:'MC', ml:'പച്ച',    q:'What does പച്ച mean?',    ans:'green',  opts:['yellow','green','red','white']},
+    {t:'MC', ml:'നീല',     q:'What does നീല mean?',     ans:'blue',   opts:['blue','green','purple','black']},
+    {t:'MC', ml:'മഞ്ഞ',    q:'What does മഞ്ഞ mean?',    ans:'yellow', opts:['yellow','orange','white','green']},
     {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'red'},{ml:'നീല',rom:'blue'},{ml:'പച്ച',rom:'green'},{ml:'മഞ്ഞ',rom:'yellow'}]},
   ]},
 
   // Family
   { id:24, title:'Family', sub:'കുടുംബം', xp:20, emoji:'👨‍👩‍👧', ex:[
     {t:'MC', ml:'ചേട്ടൻ',    q:'What does ചേട്ടൻ mean?',    ans:'older brother',  opts:['older brother','younger brother','older sister','father']},
+    {t:'MC', ml:'ചേച്ചി',    q:'What does ചേച്ചി mean?',    ans:'older sister',   opts:['older sister','younger sister','mother','aunt']},
+    {t:'MC', ml:'അനിയൻ',    q:'What does അനിയൻ mean?',    ans:'younger brother', opts:['younger brother','older brother','younger sister','son']},
     {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister',  opts:['younger sister','older sister','mother','grandmother']},
     {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'older brother'},{ml:'ചേച്ചി',rom:'older sister'},{ml:'അനിയൻ',rom:'younger brother'},{ml:'അനിയത്തി',rom:'younger sister'}]},
   ]},
 
   // Basic Conversation
   { id:25, title:'Introductions', sub:'My name is… · I\'m learning', xp:25, emoji:'💬', ex:[
-    {t:'MC', ml:'എന്റെ', q:'What does എന്റെ (ente) mean?', ans:'my', opts:['my','your','his','their']},
+    {t:'MC', ml:'എന്റെ',        q:'What does എന്റെ mean?',        ans:'my',              opts:['my','your','his','their']},
+    {t:'MC', ml:'പേര്',         q:'What does പേര് mean?',         ans:'name',            opts:['name','age','place','time']},
+    {t:'MC', ml:'മലയാളം',      q:'What does മലയാളം mean?',      ans:'Malayalam',       opts:['Malayalam','Kerala','India','language']},
     {t:'MC', ml:'മനസ്സിലായില്ല', q:'What does മനസ്സിലായില്ല mean?', ans:"I don't understand", opts:["I don't understand","I understand","I don't know","I agree"]},
+    {t:'MATCH', pairs:[{ml:'എന്റെ',rom:'my'},{ml:'പേര്',rom:'name'},{ml:'മലയാളം',rom:'Malayalam'},{ml:'മനസ്സിലായി',rom:'I understand'}]},
   ]},
 
-  // Days of the Week
+  // Food & Drink — Part 2
+  { id:35, title:'More Food', sub:'മീൻ · പഴം · പച്ചക്കറി', xp:20, emoji:'🐟', ex:[
+    {t:'MC', ml:'മീൻ',      q:'What does മീൻ mean?',      ans:'fish',       opts:['fish','chicken','meat','egg']},
+    {t:'MC', ml:'പഴം',      q:'What does പഴം mean?',      ans:'fruit',      opts:['fruit','vegetable','flower','leaf']},
+    {t:'MC', ml:'പച്ചക്കറി', q:'What does പച്ചക്കറി mean?', ans:'vegetables', opts:['vegetables','fruits','spices','grains']},
+    {t:'MC', ml:'ഊണ്',      q:'What does ഊണ് mean?',      ans:'meal',       opts:['meal','snack','drink','dessert']},
+    {t:'MATCH', pairs:[{ml:'മീൻ',rom:'fish'},{ml:'പഴം',rom:'fruit'},{ml:'പച്ചക്കറി',rom:'vegetables'},{ml:'ഊണ്',rom:'meal'}]},
+  ]},
+
+  // Colors — Part 2
+  { id:36, title:'More Colors', sub:'വെള്ള · കറുപ്പ് · നിറം', xp:20, emoji:'🖤', ex:[
+    {t:'MC', ml:'വെള്ള',   q:'What does വെള്ള mean?',   ans:'white', opts:['white','black','grey','brown']},
+    {t:'MC', ml:'കറുപ്പ്', q:'What does കറുപ്പ് mean?', ans:'black', opts:['black','white','red','blue']},
+    {t:'MC', ml:'തവിട്ട്', q:'What does തവിട്ട് mean?', ans:'brown', opts:['brown','orange','yellow','grey']},
+    {t:'MC', ml:'നിറം',    q:'What does നിറം mean?',   ans:'color',  opts:['color','shape','size','pattern']},
+    {t:'MATCH', pairs:[{ml:'വെള്ള',rom:'white'},{ml:'കറുപ്പ്',rom:'black'},{ml:'തവിട്ട്',rom:'brown'},{ml:'നിറം',rom:'color'}]},
+  ]},
+
+  // Family — Part 2
+  { id:37, title:'Parents & Grandparents', sub:'അമ്മ · അച്ഛൻ · മുത്തശ്ശി', xp:20, emoji:'👴', ex:[
+    {t:'MC', ml:'അച്ഛൻ',    q:'What does അച്ഛൻ mean?',    ans:'father',      opts:['father','mother','uncle','grandfather']},
+    {t:'MC', ml:'അമ്മ',     q:'What does അമ്മ mean?',     ans:'mother',      opts:['mother','father','aunt','grandmother']},
+    {t:'MC', ml:'മുത്തശ്ശി', q:'What does മുത്തശ്ശി mean?', ans:'grandmother', opts:['grandmother','grandfather','aunt','mother']},
+    {t:'MC', ml:'മുത്തച്ഛൻ', q:'What does മുത്തച്ഛൻ mean?', ans:'grandfather', opts:['grandfather','grandmother','uncle','father']},
+    {t:'MATCH', pairs:[{ml:'അച്ഛൻ',rom:'father'},{ml:'അമ്മ',rom:'mother'},{ml:'മുത്തശ്ശി',rom:'grandmother'},{ml:'മുത്തച്ഛൻ',rom:'grandfather'}]},
+  ]},
+
+  // Introductions — Part 2: Where are you from?
+  { id:38, title:'Where Are You From?', sub:'എവിടെ നിന്നാണ്? · കേരളം', xp:25, emoji:'🌍', ex:[
+    {t:'MC', ml:'എവിടെ',   q:'What does എവിടെ mean?',   ans:'where',  opts:['where','when','what','who']},
+    {t:'MC', ml:'നിന്നാണ്', q:'What does നിന്നാണ് mean?', ans:'am from', opts:['am from','am going','am staying','am coming']},
+    {t:'MC', ml:'കേരളം',   q:'What does കേരളം mean?',   ans:'Kerala', opts:['Kerala','India','Malayalam','South India']},
+    {t:'MC', ml:'സന്തോഷം', q:'What does സന്തോഷം mean?', ans:'happiness / pleased', opts:['happiness / pleased','sadness','anger','surprise']},
+    {t:'MATCH', pairs:[{ml:'എവിടെ',rom:'where'},{ml:'നിന്നാണ്',rom:'am from'},{ml:'കേരളം',rom:'Kerala'},{ml:'സന്തോഷം',rom:'happiness'}]},
+  ]},
+
+  // Introductions — Part 3: Useful phrases
+  { id:39, title:'Useful Phrases', sub:'ദയവായി · പതുക്കെ · ഒന്നുകൂടി', xp:25, emoji:'🗣️', ex:[
+    {t:'MC', ml:'ദയവായി',   q:'What does ദയവായി mean?',   ans:'please',     opts:['please','sorry','thank you','okay']},
+    {t:'MC', ml:'പതുക്കെ',  q:'What does പതുക്കെ mean?',  ans:'slowly',     opts:['slowly','quickly','loudly','quietly']},
+    {t:'MC', ml:'ഒന്നുകൂടി', q:'What does ഒന്നുകൂടി mean?', ans:'once more',  opts:['once more','enough','stop','continue']},
+    {t:'MC', ml:'ദയവായി പതുക്കെ പറയൂ', q:'What does this phrase mean?', ans:'Please speak slowly', opts:['Please speak slowly','Please come here','Please sit down','Please say thank you']},
+    {t:'MATCH', pairs:[{ml:'ദയവായി',rom:'please'},{ml:'പതുക്കെ',rom:'slowly'},{ml:'ഒന്നുകൂടി',rom:'once more'},{ml:'ശരി',rom:'okay'}]},
+  ]},
   { id:26, title:'Days of the Week', sub:'തിങ്കൾ · ചൊവ്വ · ബുധൻ…', xp:20, emoji:'📅', ex:[
     {t:'INTRO', ml:'തിങ്കൾ', rom:'thingaL', hint:'Monday — named after the moon (thingaL = moon)', eg:'തിങ്കൾ · thingaL · Monday'},
     {t:'INTRO', ml:'ചൊവ്വ', rom:'chova',   hint:'Tuesday — named after Mars', eg:'ചൊവ്വ · chova · Tuesday'},
@@ -513,10 +623,10 @@ const UNITS = [
   {id:6,  title:'Vowel Signs',          sub:'How vowels attach to letters',  icon:'✍️', color:'#0E7490', lessonIds:[19,20],  desc:'In Malayalam, vowels don\'t stand alone next to consonants — they attach as signs (matras). ക becomes കാ, കി, കീ etc. Once you know these, you can read most real Malayalam words.'},
   {id:7,  title:'Chillu Letters',       sub:'Final consonant forms',         icon:'🔚', color:'#7C3AED', lessonIds:[21],     desc:'Chillus are special forms of consonants that appear at the end of syllables — like the ൻ in അവൻ (he) or the ൾ in അവൾ (she). They\'re extremely common in everyday Malayalam.'},
   {id:10, title:'Full Alphabet Review', sub:'All letters + vocab',           icon:'🏆', color:'#B45309', lessonIds:[18],     desc:'You now know the full Malayalam alphabet! This unit reviews all the letters and introduces some vocabulary. A big milestone — most people can\'t read a single Malayalam word. You can.'},
-  {id:11, title:'Food & Drink',         sub:'ഭക്ഷണം · ചോറ് · ചായ',         icon:'🍛', color:'#065F46', lessonIds:[22],     desc:'Essential Kerala vocabulary — rice, tea, water and more. Kerala cuisine is famous worldwide and these words come up in every meal.'},
-  {id:12, title:'Colors',               sub:'ചുവപ്പ് · നീല · പച്ച',          icon:'🎨', color:'#DC2626', lessonIds:[23],     desc:'Basic color words in Malayalam. Colors also appear in everyday phrases — like കടൽ നീലം ആണ് (the sea is blue).'},
-  {id:13, title:'Family',               sub:'കുടുംബം',                       icon:'👨‍👩‍👧', color:'#0D5C39', lessonIds:[24],  desc:'Family terms are central to Malayalam culture — and double as polite forms of address. Calling someone ചേട്ടൻ (older brother) or ചേച്ചി (older sister) is a common respectful greeting even with strangers.'},
-  {id:14, title:'Introductions',        sub:'My name is… · I\'m learning',   icon:'💬', color:'#1D4ED8', lessonIds:[25],    desc:'How to introduce yourself, say you\'re learning Malayalam, and the most useful phrase for any learner: ദയവായി പതുക്കെ പറയൂ — please speak slowly!'},
+  {id:11, title:'Food & Drink',    sub:'ഭക്ഷണം · ചോറ് · ചായ',       icon:'🍛', color:'#065F46', lessonIds:[22,35], desc:'Essential Kerala vocabulary — rice, tea, water and more. Kerala cuisine is famous worldwide and these words come up in every meal.'},
+  {id:12, title:'Colors',          sub:'ചുവപ്പ് · നീല · പച്ച',        icon:'🎨', color:'#DC2626', lessonIds:[23,36], desc:'Basic color words in Malayalam. Colors also appear in everyday phrases — like കടൽ നീലം ആണ് (the sea is blue).'},
+  {id:13, title:'Family',          sub:'കുടുംബം',                      icon:'👨‍👩‍👧', color:'#0D5C39', lessonIds:[24,37], desc:'Family terms are central to Malayalam culture — and double as polite forms of address. Calling someone ചേട്ടൻ (older brother) or ചേച്ചി (older sister) is a common respectful greeting even with strangers.'},
+  {id:14, title:'Introductions',   sub:'My name is… · I\'m learning',  icon:'💬', color:'#1D4ED8', lessonIds:[25,38,39], desc:'How to introduce yourself, say you\'re learning Malayalam, and the most useful phrase for any learner: ദയവായി പതുക്കെ പറയൂ — please speak slowly!'},
   // Units 15+ hidden pending content review — all lesson data preserved
 ];
 
