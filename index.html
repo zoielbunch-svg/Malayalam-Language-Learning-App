@@ -1886,7 +1886,7 @@ function buildFITB(e) {
       return `<span style="display:inline-block;min-width:80px;background:${S.fb?(S.fb.ok?'#D1FAE5':'#FEE2E2'):'#FEF3C7'};border-radius:8px;padding:5px 12px;font-family:'Noto Serif Malayalam',serif;font-size:20px;color:${S.fb?(S.fb.ok?'#059669':'#DC2626'):'#d4891e'};font-weight:700;text-align:center;border:2px solid ${S.fb?(S.fb.ok?'#059669':'#DC2626'):'#F5A623'}">${filled?S.mcPicked:'___'}</span>`;
     }
     if (!p.ml || p.ml===',' || p.ml==='.') return `<span class="ml" style="font-size:22px;color:#1C1917">${p.ml}</span>`;
-    return `<button data-action="show-tooltip" data-ml="${esc(p.ml)}" data-eng="${esc(p.eng)}"
+    return `<button data-action="show-tooltip" data-ml="${esc(p.ml)}" data-eng="${esc(p.eng)}" data-rom="${esc(ML_ROM[p.ml]||'')}"
       style="background:none;border:none;cursor:pointer;font-family:'Noto Serif Malayalam',serif;font-size:22px;color:#0D5C39;font-weight:700;padding:2px 4px;border-bottom:1px dotted #A8A29E">${p.ml}</button>`;
   }).join(' ');
 
