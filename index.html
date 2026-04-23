@@ -79,7 +79,6 @@ const LESSONS = [
     {t:'MC', ml:'ഇല്ല', q:'How do you read this?', ans:'illa', opts:['namaskaram','nandi','shari','illa']},
     {t:'MATCH',pairs:[{ml:'നമസ്കാരം',rom:'namaskaram'},{ml:'നന്ദി',rom:'nandi'},{ml:'ശരി',rom:'shari'},{ml:'ഇല്ല',rom:'illa'}]},
     {t:'MC', ml:'നമസ്കാരം', q:'What does നമസ്കാരം mean?', ans:'hello / greetings', opts:['hello / greetings','thank you','okay','no']},
-    {t:'FREE', q:"How do you say 'hello' in Malayalam? (romanization)", ans:'namaskaram', hint:'🙏 You just learned this!'},
   ]},
   mkL(5,'Velar Stops','ക · ഖ · ഗ · ഘ · ങ','🔵',20,[
     {ml:'ക',rom:'ka', hint:"Like 'k' in king",               eg:'കടൽ · kadal · sea',            opts:['ka','ga','cha','pa'],   flipOpts:['ക','ഖ','ഗ','ഘ']},
@@ -141,20 +140,17 @@ const NUM_LESSONS = [
     {t:'MC', ml:'ഒന്ന്', q:'What number is this?',ans:'1 (one)',opts:['1 (one)','2 (two)','3 (three)','5 (five)']},
     {t:'MC', ml:'രണ്ട്', q:'What number is this?',ans:'2 (two)',opts:['1 (one)','2 (two)','4 (four)','6 (six)']},
     {t:'MC', ml:'മൂന്ന്',q:'What number is this?',ans:'3 (three)',opts:['2 (two)','3 (three)','7 (seven)','9 (nine)']},
-    {t:'MATCH',pairs:[{ml:'ഒന്ന്',rom:'onnu'},{ml:'രണ്ട്',rom:'randu'},{ml:'മൂന്ന്',rom:'moonnu'},{ml:'നാല്',rom:'naalu'}]},
-    {t:'FREE', q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
+    {t:'MATCH',pairs:[{ml:'ഒന്ന്',rom:'1 · one'},{ml:'രണ്ട്',rom:'2 · two'},{ml:'മൂന്ന്',rom:'3 · three'},{ml:'നാല്',rom:'4 · four'}]},
   ]},
   { id:14, title:'Numbers 6–10', sub:'ആറ് · ഏഴ് · എട്ട്…', xp:20, emoji:'🔣', ex:[
     {t:'MC', ml:'ആറ്', q:'What number is this?',ans:'6 (six)',opts:['5 (five)','6 (six)','7 (seven)','8 (eight)']},
     {t:'MC', ml:'ഏഴ്', q:'What number is this?',ans:'7 (seven)',opts:['6 (six)','7 (seven)','8 (eight)','9 (nine)']},
-    {t:'MATCH',pairs:[{ml:'ആറ്',rom:'aaru'},{ml:'ഏഴ്',rom:'eezhu'},{ml:'എട്ട്',rom:'ettu'},{ml:'പത്ത്',rom:'pathu'}]},
-    {t:'FREE', q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
+    {t:'MATCH',pairs:[{ml:'ആറ്',rom:'6 · six'},{ml:'ഏഴ്',rom:'7 · seven'},{ml:'എട്ട്',rom:'8 · eight'},{ml:'പത്ത്',rom:'10 · ten'}]},
   ]},
   { id:15, title:'Numbers 11–20', sub:'പതിനൊന്ന് · ഇരുപത്…', xp:25, emoji:'🔟', ex:[
     {t:'MC', ml:'പതിനൊന്ന്',q:'What number is this?',ans:'11 (eleven)',opts:['10 (ten)','11 (eleven)','12 (twelve)','15 (fifteen)']},
     {t:'MC', ml:'ഇരുപത്',  q:'What number is this?',ans:'20 (twenty)',opts:['15 (fifteen)','18 (eighteen)','20 (twenty)','25 (twenty-five)']},
-    {t:'MATCH',pairs:[{ml:'പതിനൊന്ന്',rom:'pathinonnu'},{ml:'പന്ത്രണ്ട്',rom:'panthrandu'},{ml:'പതിനഞ്ച്',rom:'pathinanchu'},{ml:'ഇരുപത്',rom:'irupathu'}]},
-    {t:'FREE', q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
+    {t:'MATCH',pairs:[{ml:'പതിനൊന്ന്',rom:'11 · eleven'},{ml:'പന്ത്രണ്ട്',rom:'12 · twelve'},{ml:'പതിനഞ്ച്',rom:'15 · fifteen'},{ml:'ഇരുപത്',rom:'20 · twenty'}]},
   ]},
 ];
 LESSONS.push(...NUM_LESSONS);
@@ -299,32 +295,27 @@ const CONTENT_LESSONS = [
   { id:22, title:'Food & Drink', sub:'ഭക്ഷണം · ചോറ് · ചായ', xp:20, emoji:'🍛', ex:[
     {t:'MC', ml:'ചോറ്',  q:'What does ചോറ് mean?',  ans:'cooked rice', opts:['cooked rice','bread','fish','vegetables']},
     {t:'MC', ml:'വെള്ളം', q:'What does വെള്ളം mean?', ans:'water',       opts:['water','milk','juice','tea']},
-    {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'bhakshanam'},{ml:'ചോറ്',rom:'choru'},{ml:'ചായ',rom:'chaaya'},{ml:'വെള്ളം',rom:'vellam'}]},
-    {t:'FREE', q:'How do you say "tea" in Malayalam? (romanization)', ans:'chaaya', hint:'☕ Kerala\'s favourite drink'},
+    {t:'MATCH', pairs:[{ml:'ഭക്ഷണം',rom:'food'},{ml:'ചോറ്',rom:'cooked rice'},{ml:'ചായ',rom:'tea'},{ml:'വെള്ളം',rom:'water'}]},
   ]},
 
   // Colors
   { id:23, title:'Colors', sub:'ചുവപ്പ് · നീല · പച്ച', xp:20, emoji:'🎨', ex:[
     {t:'MC', ml:'ചുവപ്പ്', q:'What color is ചുവപ്പ്?', ans:'red',   opts:['red','blue','green','yellow']},
     {t:'MC', ml:'പച്ച',    q:'What color is പച്ച?',    ans:'green', opts:['yellow','green','red','white']},
-    {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'chuvappu'},{ml:'നീല',rom:'neela'},{ml:'പച്ച',rom:'pacha'},{ml:'മഞ്ഞ',rom:'manja'}]},
-    {t:'FREE', q:'What does നീല (neela) mean?', ans:'blue', hint:'🌊 Color of the sea — കടൽ നീലം ആണ്'},
+    {t:'MATCH', pairs:[{ml:'ചുവപ്പ്',rom:'red'},{ml:'നീല',rom:'blue'},{ml:'പച്ച',rom:'green'},{ml:'മഞ്ഞ',rom:'yellow'}]},
   ]},
 
   // Family
   { id:24, title:'Family', sub:'കുടുംബം', xp:20, emoji:'👨‍👩‍👧', ex:[
     {t:'MC', ml:'ചേട്ടൻ',    q:'What does ചേട്ടൻ mean?',    ans:'older brother',  opts:['older brother','younger brother','older sister','father']},
     {t:'MC', ml:'അനിയത്തി', q:'What does അനിയത്തി mean?', ans:'younger sister',  opts:['younger sister','older sister','mother','grandmother']},
-    {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'chettan'},{ml:'ചേച്ചി',rom:'chechi'},{ml:'അനിയൻ',rom:'aniyan'},{ml:'അനിയത്തി',rom:'aniyathi'}]},
-    {t:'FREE', q:'What does ചേട്ടൻ (chettan) mean?', ans:'older brother', alts:['elder brother','big brother','older bro','elder bro'], hint:'👦 The elder male sibling — also a polite address'},
+    {t:'MATCH', pairs:[{ml:'ചേട്ടൻ',rom:'older brother'},{ml:'ചേച്ചി',rom:'older sister'},{ml:'അനിയൻ',rom:'younger brother'},{ml:'അനിയത്തി',rom:'younger sister'}]},
   ]},
 
   // Basic Conversation
   { id:25, title:'Introductions', sub:'My name is… · I\'m learning', xp:25, emoji:'💬', ex:[
     {t:'MC', ml:'എന്റെ', q:'What does എന്റെ (ente) mean?', ans:'my', opts:['my','your','his','their']},
     {t:'MC', ml:'മനസ്സിലായില്ല', q:'What does മനസ്സിലായില്ല mean?', ans:"I don't understand", opts:["I don't understand","I understand","I don't know","I agree"]},
-    {t:'FREE', q:'How do you say "my name" in Malayalam? (romanization)', ans:'ente peru', hint:'എന്റെ = my · പേര് = name'},
-    {t:'FREE', q:'What does മനസ്സിലായി (manassilayi) mean?', ans:'I understand', alts:['understood','i got it','got it','i understand'], hint:'💡 Literally "it entered my mind"'},
   ]},
 
   // Days of the Week
@@ -339,7 +330,6 @@ const CONTENT_LESSONS = [
     {t:'INTRO', ml:'ശനി', rom:'shani',     hint:'Saturday — named after Saturn', eg:'ശനി · shani · Saturday'},
     {t:'INTRO', ml:'ഞായർ', rom:'njaayar',  hint:'Sunday — named after the sun', eg:'ഞായർ · njaayar · Sunday'},
     {t:'MATCH', pairs:[{ml:'തിങ്കൾ',rom:'thingaL'},{ml:'ചൊവ്വ',rom:'chova'},{ml:'ബുധൻ',rom:'budhan'},{ml:'വ്യാഴം',rom:'vyaazham'}]},
-    {t:'FREE', q:'How do you say "Sunday" in Malayalam? (romanization)', ans:'njaayar', hint:'☀️ Named after the sun'},
   ]},
 ];
 LESSONS.push(...CONTENT_LESSONS);
@@ -368,7 +358,6 @@ const GRAMMAR_LESSONS = [
     {t:'SENT', ml:'എനിക്ക് സന്തോഷം ഉണ്ട്', rom:'enikku santhosham undu', eng:'I am happy', words:[{ml:'എനിക്ക്',eng:'to me'},{ml:'സന്തോഷം',eng:'happiness'},{ml:'ഉണ്ട്',eng:'there is / I have'}]},
     {t:'FITB', parts:[{ml:'___',eng:'',isBlank:true},{ml:'വേണം',eng:'want/need'}], ans:'എനിക്ക്', opts:['എനിക്ക്','ഞാൻ','നിങ്ങൾ','അവൻ'], q:'Complete: "___ വേണം" — I want/need', hint:'The dative form of ഞാൻ'},
     {t:'BUILD', eng:'I want water', correct:['എനിക്ക്','വെള്ളം','വേണം'], tiles:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'വെള്ളം',eng:'water'},{ml:'വേണം',eng:'want/need'},{ml:'ഞാൻ',eng:'I (subject)'}], hint:'Dative · Object · വേണം — "to me water want" = I want water'},
-    {t:'FREE', q:'How do you say "I don\'t know"? (romanization)', ans:'enikku ariyilla', hint:'Dative "I" + "don\'t know"'},
   ]},
 
   // Lesson 28: Possession + Cases Overview
@@ -386,7 +375,6 @@ const GRAMMAR_LESSONS = [
     {t:'FITB', parts:[{ml:'___',eng:'',isBlank:true},{ml:'പേര്',eng:'name'},{ml:'ആണ്',eng:'is'}], ans:'എന്റെ', opts:['എന്റെ','നിങ്ങളുടെ','അവന്റെ','അവളുടെ'], q:'Complete: "___ പേര് ആണ് ..." — My name is...', hint:'Genitive form of ഞാൻ'},
     {t:'BUILD', eng:'What is your name?', correct:['നിങ്ങളുടെ','പേര്','എന്താണ്?'], tiles:[{ml:'നിങ്ങളുടെ',eng:'your'},{ml:'പേര്',eng:'name'},{ml:'എന്താണ്?',eng:'what is?'},{ml:'എന്റെ',eng:'my'},{ml:'ആണ്',eng:'is'}], hint:'Genitive + Noun + Question — What is your name?'},
     {t:'VOCAB', ml:'Cases · കാരകങ്ങൾ', rom:'kaarakangaL', eng:'How pronouns change role in a sentence', note:'ഞാൻ = I (subject) · എന്നെ = me (object) · എനിക്ക് = to me (receiver) · എന്റെ = my (possessor). Same person, four forms — each shows a different grammatical role!'},
-    {t:'FREE', q:'What does എന്റെ (ente) mean?', ans:'my', alts:['mine'], hint:'Genitive form of ഞാൻ'},
   ]},
 ];
 LESSONS.push(...GRAMMAR_LESSONS);
@@ -410,7 +398,6 @@ const GRAMMAR_LESSONS_2 = [
     {t:'FITB', parts:[{ml:'അവൾ',eng:'she'},{ml:'ടീച്ചർ',eng:'teacher'},{ml:'___',eng:'',isBlank:true}], ans:'ആണ്', opts:['ആണ്','ഉണ്ട്','അല്ല','ഇല്ല'], q:'Complete: "She is a teacher"', hint:'Identity statement — ആണ് ends the sentence'},
     {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ഡോക്ടർ',eng:'doctor'},{ml:'___',eng:'',isBlank:true}], ans:'അല്ല', opts:['അല്ല','ഇല്ല','ആണ്','ഉണ്ട്'], q:'Complete: "I am not a doctor"', hint:'Negate ആണ് with this word'},
     {t:'BUILD', eng:'She is a teacher', correct:['അവൾ','ടീച്ചർ','ആണ്'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'ടീച്ചർ',eng:'teacher'},{ml:'ആണ്',eng:'is (identity)'},{ml:'ഉണ്ട്',eng:'is present'}], hint:'Subject · Predicate · ആണ് — all three in this order'},
-    {t:'FREE', q:'How do you say "I am not a doctor"? (romanization)', ans:'njaan doctor alla', alts:['njan doctor alla'], hint:'Use അല്ല to negate ആണ്'},
   ]},
 
   // Lesson 30: ഉണ്ട് and ഇല്ല — Existence and Possession
@@ -429,7 +416,6 @@ const GRAMMAR_LESSONS_2 = [
     {t:'MATCH', pairs:[{ml:'ആണ്',rom:'is (identity)'},{ml:'ഉണ്ട്',rom:'exists / is present'},{ml:'അല്ല',rom:'is not (identity)'},{ml:'ഇല്ല',rom:'doesn\'t exist / not there'}]},
     {t:'FITB', parts:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'സമയം',eng:'time'},{ml:'___',eng:'',isBlank:true}], ans:'ഇല്ല', opts:['ഇല്ല','ഉണ്ട്','ആണ്','അല്ല'], q:'Complete: "I don\'t have time"', hint:'Negate ഉണ്ട് with this word'},
     {t:'BUILD', eng:'I have water', correct:['എനിക്ക്','വെള്ളം','ഉണ്ട്'], tiles:[{ml:'എനിക്ക്',eng:'to me (I)'},{ml:'വെള്ളം',eng:'water'},{ml:'ഉണ്ട്',eng:'there is / I have'},{ml:'ഇല്ല',eng:'there is no'}], hint:'Dative · Object · ഉണ്ട് — "to me water exists" = I have water'},
-    {t:'FREE', q:'How do you say "I don\'t have time"? (romanization)', ans:'enikku samayam illa', hint:'Dative I + time + negation of ഉണ്ട്'},
   ]},
 ];
 LESSONS.push(...GRAMMAR_LESSONS_2);
@@ -453,7 +439,6 @@ const GRAMMAR_LESSONS_3 = [
     {t:'SENT', ml:'അവൾ മലയാളം പറയുന്നു', rom:'avaL malayaLam parayunnu', eng:'She speaks Malayalam', words:[{ml:'അവൾ',eng:'she'},{ml:'മലയാളം',eng:'Malayalam'},{ml:'പറയുന്നു',eng:'speaks'}]},
     {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ചായ',eng:'tea'},{ml:'___',eng:'',isBlank:true}], ans:'കുടിക്കുന്നു', opts:['കുടിക്കുന്നു','കഴിക്കുന്നു','പോകുന്നു','വരുന്നു'], q:'Complete: "I am drinking tea"', hint:'Subject · Object · Verb — which verb means "drink"?'},
     {t:'BUILD', eng:'She is coming', correct:['അവൾ','വരുന്നു'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'വരുന്നു',eng:'is coming'},{ml:'പോകുന്നു',eng:'is going'},{ml:'ഞാൻ',eng:'I'}], hint:'Subject · Verb — just two words needed'},
-    {t:'FREE', q:'How do you say "I am going"? (romanization)', ans:'njaan pokunnu', hint:'Subject + present tense of പോകുക'},
   ]},
 
   // Lesson 32: Accusative + Locative + Full Sentences
@@ -471,7 +456,6 @@ const GRAMMAR_LESSONS_3 = [
     {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'___',eng:'',isBlank:true},{ml:'കാണുന്നു',eng:'see'}], ans:'അവളെ', opts:['അവളെ','അവൾ','അവളുടെ','അവൾക്ക്'], q:'Complete: "I see her"', hint:'Accusative form — she becomes her when she\'s the object'},
     {t:'BUILD', eng:'I am at home', correct:['ഞാൻ','വീട്ടിൽ','ഉണ്ട്'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'വീട്ടിൽ',eng:'at home'},{ml:'ഉണ്ട്',eng:'am/is'},{ml:'ഇല്ല',eng:'am not'}], hint:'Subject · Location · ഉണ്ട്'},
     {t:'BUILD', eng:'I see her', correct:['ഞാൻ','അവളെ','കാണുന്നു'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'അവളെ',eng:'her (object)'},{ml:'കാണുന്നു',eng:'see'},{ml:'അവൾ',eng:'she (subject)'}], hint:'Subject · Object(accusative) · Verb'},
-    {t:'FREE', q:'How do you say "I see her"? (romanization)', ans:'njaan avaLe kaanunnu', hint:'Subject · accusative object · present tense verb'},
   ]},
 ];
 LESSONS.push(...GRAMMAR_LESSONS_3);
@@ -496,7 +480,6 @@ const GRAMMAR_LESSONS_4 = [
     {t:'SENT', ml:'ഞാൻ ചോറ് കഴിച്ചു', rom:'njaan choru kazhichu', eng:'I ate rice', words:[{ml:'ഞാൻ',eng:'I'},{ml:'ചോറ്',eng:'rice'},{ml:'കഴിച്ചു',eng:'ate'}]},
     {t:'FITB', parts:[{ml:'ഞാൻ',eng:'I'},{ml:'ചായ',eng:'tea'},{ml:'___',eng:'',isBlank:true}], ans:'കുടിച്ചു', opts:['കുടിച്ചു','കഴിച്ചു','പോയി','വന്നു'], q:'Complete: "I drank tea"', hint:'Past tense of "to drink"'},
     {t:'BUILD', eng:'She came', correct:['അവൾ','വന്നു'], tiles:[{ml:'അവൾ',eng:'she'},{ml:'വന്നു',eng:'came'},{ml:'പോയി',eng:'went'},{ml:'ഞാൻ',eng:'I'}], hint:'Subject · past tense verb'},
-    {t:'FREE', q:'How do you say "I ate rice"? (romanization)', ans:'njaan choru kazhichu', hint:'Subject · Object · past tense of eat'},
   ]},
 
   // Lesson 34: Past Tense in Context + Negation
@@ -515,7 +498,6 @@ const GRAMMAR_LESSONS_4 = [
     {t:'FITB', parts:[{ml:'അവൾ',eng:'she'},{ml:'ചോറ്',eng:'rice'},{ml:'___',eng:'',isBlank:true}], ans:'കഴിച്ചില്ല', opts:['കഴിച്ചില്ല','കഴിച്ചു','കഴിക്കുന്നു','കഴിക്കുന്നില്ല'], q:'Complete: "She didn\'t eat rice"', hint:'Past tense + ഇല്ല'},
     {t:'BUILD', eng:'I didn\'t go', correct:['ഞാൻ','പോയില്ല'], tiles:[{ml:'ഞാൻ',eng:'I'},{ml:'പോയില്ല',eng:'didn\'t go'},{ml:'പോയി',eng:'went'},{ml:'ഇന്നലെ',eng:'yesterday'}], hint:'Subject · negative past verb'},
     {t:'BUILD', eng:'Yesterday I saw him', correct:['ഇന്നലെ','ഞാൻ','അവനെ','കണ്ടു'], tiles:[{ml:'ഇന്നലെ',eng:'yesterday'},{ml:'ഞാൻ',eng:'I'},{ml:'അവനെ',eng:'him (object)'},{ml:'കണ്ടു',eng:'saw'},{ml:'കണ്ടില്ല',eng:'didn\'t see'}], hint:'Time · Subject · Object(acc.) · Verb'},
-    {t:'FREE', q:'How do you say "I didn\'t go"? (romanization)', ans:'njaan pooyilla', hint:'Past tense of go + ഇല്ല negation'},
   ]},
 ];
 LESSONS.push(...GRAMMAR_LESSONS_4);
@@ -670,102 +652,6 @@ for (const examples of Object.values(CHAR_EGS)) {
 }
 
 const LESSON_FREE_POOLS = {
-  1:[
-    {q:'What does അമ്മ (amma) mean?',ans:'mother',alts:['mom','mum','mama','amma'],hint:'💛 Think family...'},
-    {q:'What does ഇല (ila) mean?',ans:'leaf',hint:'🍃 Found on trees'},
-    {q:'What does ആകാശം (aakasham) mean?',ans:'sky',hint:'☁️ Look up — it\'s above you'},
-  ],
-  2:[
-    {q:'What does ഊണ് (uunu) mean?',ans:'meal',alts:['food','lunch','dinner','a meal'],hint:'🍽️ A time to eat'},
-    {q:'What does ആന (aana) mean?',ans:'elephant',hint:'🐘 Kerala\'s iconic animal'},
-    {q:'What does ഏഴ് (eezhu) mean?',ans:'seven',alts:['7','seven'],hint:'7️⃣ A number'},
-  ],
-  3:[
-    {q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Desert animal'},
-    {q:'How do you say "a/an" in Malayalam? (romanization)',ans:'oru',hint:'ഒരു — used before nouns'},
-    {q:'What does ഓർമ്മ (orma) mean?',ans:'memory',alts:['memory','remembrance'],hint:'🧠 Something you recall from the past'},
-  ],
-  4:[
-    {q:'How do you say "hello" in Malayalam? (romanization)',ans:'namaskaram',hint:'🙏 The all-purpose greeting'},
-    {q:'What does ഇല്ല (illa) mean?',ans:'no',alts:['not','no/not','not there','none'],hint:'The negation word'},
-    {q:'How do you say "okay" in Malayalam? (romanization)',ans:'shari',hint:'ശരി — agreement / acknowledgment'},
-  ],
-  5:[
-    {q:'What does കടൽ (kadal) mean?',ans:'sea',alts:['ocean','the sea'],hint:'🌊 Large body of salt water'},
-    {q:'What does ഗ്രാമം (graamam) mean?',ans:'village',hint:'🏡 A small settlement — Kerala has thousands'},
-    {q:'What does ഞണ്ട് (njandu) mean?',ans:'crab',hint:'🦀 A sea creature — common in Kerala cuisine!'},
-  ],
-  6:[
-    {q:'What does ജലം (jalam) mean?',ans:'water',hint:'💧 Essential for life'},
-    {q:'What does ഞാൻ (njaan) mean?',ans:'I',alts:['I/me','me','myself'],hint:'🙋 The Malayalam word for yourself'},
-    {q:'What does ചായ (chaaya) mean?',ans:'tea',hint:'☕ Kerala\'s favourite drink'},
-  ],
-  7:[
-    {q:'What does കണ്ണ് (kannu) mean?',ans:'eye',hint:'👁️ You see with it'},
-    {q:'What does ഡോക്ടർ (dokttar) mean?',ans:'doctor',hint:'🩺 A medical professional'},
-    {q:'What does ഒട്ടകം (ottakam) mean?',ans:'camel',hint:'🐪 Has a double-tt sound in the middle'},
-  ],
-  8:[
-    {q:'What does ദിവസം (divasam) mean?',ans:'day',hint:'☀️ There are 7 in a week'},
-    {q:'What does തേൻ (then) mean?',ans:'honey',hint:'🍯 Sweet golden liquid from bees'},
-    {q:'What does നദി (nadi) mean?',ans:'river',hint:'🌊 Flows through the land — Kerala has many!'},
-  ],
-  9:[
-    {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Falls from the sky'},
-    {q:'What does പൂ (poo) mean?',ans:'flower',hint:'🌸 Grows in gardens'},
-    {q:'What does ഭക്ഷണം (bhakshanam) mean?',ans:'food',hint:'🍛 Something you eat'},
-  ],
-  10:[
-    {q:'What does ലോകം (lokam) mean?',ans:'world',hint:'🌍 The whole planet'},
-    {q:'What does വഴി (vazhi) mean?',ans:'road',alts:['road','way','path','road/way'],hint:'🛣️ You walk or drive on it'},
-    {q:'What does രാത്രി (raatri) mean?',ans:'night',hint:'🌙 The dark part of the day'},
-  ],
-  11:[
-    {q:'What does സൂര്യൻ (suuryan) mean?',ans:'sun',hint:'☀️ Shines during the day'},
-    {q:'What does ശബ്ദം (shabdam) mean?',ans:'sound',alts:['word','sound','sound/word'],hint:'👂 Something you hear'},
-    {q:'What does ഹൃദയം (hrudayam) mean?',ans:'heart',hint:'❤️ The organ that pumps blood — also means "heart" emotionally'},
-  ],
-  12:[
-    {q:'What does ഉള്ളി (ulli) mean?',ans:'onion',hint:'🧅 Makes you cry when chopped!'},
-    {q:'What does മഴ (mazha) mean?',ans:'rain',hint:'🌧️ Contains the unique ഴ sound'},
-    {q:'How do you say "onion" in Malayalam? (romanization)',ans:'ulli',hint:'ഉള്ളി — contains the retroflex ള sound'},
-  ],
-  13:[
-    {q:'How do you say 3 in Malayalam? (romanization)',ans:'moonnu',hint:'3️⃣ Third number'},
-    {q:'What does ഒന്ന് (onnu) mean?',ans:'one',alts:['1','one','1/one'],hint:'The first number'},
-    {q:'How do you say 5 in Malayalam? (romanization)',ans:'anchu',hint:'5️⃣ Five fingers on a hand'},
-  ],
-  14:[
-    {q:'How do you say 7 in Malayalam? (romanization)',ans:'eezhu',hint:'7️⃣ Lucky number'},
-    {q:'What does പത്ത് (pathu) mean?',ans:'ten',alts:['10','ten'],hint:'10 — two hands worth of fingers'},
-    {q:'How do you say 8 in Malayalam? (romanization)',ans:'ettu',hint:'8️⃣ Eight'},
-  ],
-  15:[
-    {q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
-    {q:'What number is പതിനഞ്ച് (pathinanchu)?',ans:'fifteen',alts:['15','fifteen'],hint:'Halfway between 10 and 20'},
-    {q:'How do you say 11 in Malayalam? (romanization)',ans:'pathinonnu',hint:'1️⃣1️⃣ Ten plus one'},
-  ],
-  22:[
-    {q:'How do you say "tea" in Malayalam? (romanization)',ans:'chaaya',hint:'☕ Kerala\'s favourite drink'},
-    {q:'What does ചോറ് (choru) mean?',ans:'cooked rice',alts:['rice','rice (cooked)'],hint:'🍚 Kerala\'s staple food'},
-    {q:'How do you say "to eat" in Malayalam? (romanization)',ans:'kazhikkuka',hint:'🍽️ The action of eating'},
-  ],
-  23:[
-    {q:'What color is നീല (neela)?',ans:'blue',hint:'🌊 Color of the sea'},
-    {q:'What color is പച്ച (pacha)?',ans:'green',hint:'🌿 Color of leaves and plants'},
-    {q:'What color is ചുവപ്പ് (chuvappu)?',ans:'red',hint:'🔴 The warmest color'},
-  ],
-  24:[
-    {q:'What does ചേട്ടൻ (chettan) mean?',ans:'older brother',alts:['elder brother','big brother','older bro'],hint:'👦 The elder male sibling'},
-    {q:'What does അനിയത്തി (aniyathi) mean?',ans:'younger sister',alts:['little sister','young sister'],hint:'👧 The younger female sibling'},
-    {q:'How do you say "grandmother" in Malayalam? (romanization)',ans:'muthashi',hint:'👵 The mother of your parent'},
-    {q:'What does അച്ഛൻ (achan) mean?',ans:'father',alts:['dad','appa','achan'],hint:'👨 Also commonly said as "appa" in daily speech'},
-  ],
-  25:[
-    {q:'What does മനസ്സിലായി (manassilayi) mean?',ans:'I understand',alts:['understood','i got it','got it'],hint:'💡 Literally "it entered my mind"'},
-    {q:'How do you say "my name"? (romanization)',ans:'ente peru',hint:'എന്റെ = my, പേര് = name'},
-    {q:'What does മനസ്സിലായില്ല (manassilayilla) mean?',ans:"I don't understand",alts:["don't understand","i don't understand","i do not understand"],hint:'Add ഇല്ല (no/not) to negate'},
-  ],
   26:[
     {q:'How do you say "Sunday" in Malayalam? (romanization)',ans:'njaayar',hint:'☀️ Named after the sun'},
     {q:'Which day is വ്യാഴം (vyaazham)?',ans:'Thursday',hint:'Named after Jupiter (Vyazha = Jupiter)'},
@@ -1230,7 +1116,6 @@ function makePracticeEx(item, allItems) {
       const wrongEngs = shuffle(vocabOthers).slice(0,3).map(i => i.eng || S.srs[i.ml]?.eng);
       return {t:'MC', ml:item.ml, q:`What does ${item.ml} mean?`, ans:eng, opts:shuffle([eng,...wrongEngs]), isPractice:true};
     }
-    return {t:'FREE', q:`How do you say "${eng}" in Malayalam? (romanization)`, ans:item.rom, hint:`Hint: ${item.ml}`, isPractice:true};
   }
   return null;
 }
