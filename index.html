@@ -270,7 +270,6 @@ const MATRA_LESSONS = [
     {t:'MATRA', base:'ക', matra:'ൂ', result:'കൂ', rom:'kuu', hint:"Add ൂ to get the long 'uu' sound", eg:'കൂട് · kuudu · nest/cage'},
     {t:'MC', ml:'കുട', q:'What does കുട mean?', ans:'umbrella', opts:['umbrella','hat','bag','basket']},
     {t:'MATCH', pairs:[{ml:'കാ',rom:'kaa'},{ml:'കി',rom:'ki'},{ml:'കു',rom:'ku'},{ml:'കൂ',rom:'kuu'}]},
-    {t:'FREE', q:'What does കിളി (kili) mean?', ans:'bird', hint:'🐦 Has the കി matra'},
   ]},
   { id:20, title:'Matras Part 2', sub:'കെ · കേ · കൊ · കോ · ക്', xp:25, emoji:'✍️', ex:[
     {t:'MATRA', base:'ക', matra:'െ', result:'കെ', rom:'ke',  hint:"Add െ to get the short 'e' sound", eg:'കെട്ട് · kettu · bundle/tied'},
@@ -281,7 +280,6 @@ const MATRA_LESSONS = [
     {t:'MC', ml:'കോഴി', q:'What does കോഴി mean?', ans:'chicken', opts:['chicken','duck','fish','goat']},
     {t:'MATRA', base:'ക', matra:'്', result:'ക്', rom:'k',   hint:"Add ് (virama) to remove the vowel — pure consonant. Also joins consonants: ക്+ഷ = ക്ഷ", eg:'ക്ഷമ · kshama · forgiveness'},
     {t:'MATCH', pairs:[{ml:'കെ',rom:'ke'},{ml:'കേ',rom:'kee'},{ml:'കൊ',rom:'ko'},{ml:'കോ',rom:'koo'}]},
-    {t:'FREE', q:'What does കോഴി (koozhi) mean?', ans:'chicken', hint:'🐔 Common Kerala food — has the കോ matra'},
   ]},
 ];
 LESSONS.push(...MATRA_LESSONS);
@@ -295,7 +293,6 @@ const CONTENT_LESSONS = [
     {t:'MC', ml:'അവർ', q:'What does അവർ mean?', ans:'they', opts:['they','he','she','we']},
     {t:'MC', ml:'അവൾ', q:'What does അവൾ mean?', ans:'she', opts:['she','he','they','I']},
     {t:'MATCH', pairs:[{ml:'ൻ',rom:'n'},{ml:'ർ',rom:'r'},{ml:'ൽ',rom:'l'},{ml:'ൾ',rom:'ll'}]},
-    {t:'FREE', q:'What does അവൾ (avaL) mean?', ans:'she', alts:['her','she/her','that woman'], hint:'👩 The feminine of അവൻ (he)'},
   ]},
 
   // Food & Drink
@@ -747,21 +744,6 @@ const LESSON_FREE_POOLS = {
     {q:'How do you say 20 in Malayalam? (romanization)',ans:'irupathu',hint:'2️⃣0️⃣ Two tens'},
     {q:'What number is പതിനഞ്ച് (pathinanchu)?',ans:'fifteen',alts:['15','fifteen'],hint:'Halfway between 10 and 20'},
     {q:'How do you say 11 in Malayalam? (romanization)',ans:'pathinonnu',hint:'1️⃣1️⃣ Ten plus one'},
-  ],
-  19:[
-    {q:'What does കിളി (kili) mean?',ans:'bird',hint:'🐦 Flies through the sky — has the കി matra'},
-    {q:'What does കുട (kuda) mean?',ans:'umbrella',hint:'☂️ Useful in Kerala\'s rain — has the കു matra'},
-    {q:'What does കൂട് (kuudu) mean?',ans:'nest',alts:['nest','cage','nest/cage'],hint:'🐦 Where birds live — has the കൂ matra'},
-  ],
-  20:[
-    {q:'What does കോഴി (koozhi) mean?',ans:'chicken',hint:'🐔 Common Kerala food — has the കോ matra'},
-    {q:'What does കൊടി (kodi) mean?',ans:'flag',hint:'🚩 Flies in the wind — has the കൊ matra'},
-    {q:'What does കെട്ട് (kettu) mean?',ans:'bundle',alts:['bundle','tied','bundle/tied'],hint:'Has the കെ matra — things tied together'},
-  ],
-  21:[
-    {q:'What does അവൾ (avaL) mean?',ans:'she',alts:['her','she/her'],hint:'👩 Feminine pronoun'},
-    {q:'What does അവൻ (avan) mean?',ans:'he',alts:['him','he/him'],hint:'👨 Masculine pronoun'},
-    {q:'What does ആൺ (aan) mean?',ans:'male',alts:['man','masculine','male/man'],hint:'The masculine gender marker'},
   ],
   22:[
     {q:'How do you say "tea" in Malayalam? (romanization)',ans:'chaaya',hint:'☕ Kerala\'s favourite drink'},
