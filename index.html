@@ -2336,7 +2336,7 @@ function buildStats() {
   const lettersLearned = new Set();
   for (const lid of S.done) {
     const ls = LESSON_TAUGHT[lid];
-    if (ls) ls.forEach(c => lettersLearned.add(c));
+    if (ls) ls.forEach(c => { if (ML_STROKES[c]) lettersLearned.add(c); });
   }
   const totalLetters = Object.keys(ML_STROKES).length; // 53
 
