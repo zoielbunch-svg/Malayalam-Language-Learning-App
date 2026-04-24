@@ -895,6 +895,7 @@ function saveProgress() {
       onboarded: S.onboarded, mode: S.mode,
       dailyGoal: S.dailyGoal, reminderTime: S.reminderTime,
       lessonsTodayCount: S.lessonsTodayCount, srs: S.srs,
+      badges: [...S.badges],
     }));
   } catch(e) {}
 }
@@ -919,6 +920,10 @@ function loadProgress() {
       S.reminderTime      = p.reminderTime      ?? null;
       S.lessonsTodayCount = p.lessonsTodayCount ?? 0;
       S.srs               = p.srs               ?? {};
+      S.badges            = new Set(Array.isArray(p.badges) ? p.badges : []);
+      if (!S.stats.timeByDay)        S.stats.timeByDay        = {};
+      if (!S.stats.accByDay)         S.stats.accByDay         = {};
+      if (!S.stats.bestAcc)          S.stats.bestAcc          = {};
     }
   } catch(e) {
     // Corrupt data — reset to defaults but don't crash
@@ -941,13 +946,22 @@ let S = {
   mSel:null, mDone:[], mWrong:null, shuffled:[],
   ft:'', grading:false, mcPicked:null,
   streak:0, lastDay:null,
-  stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{}, wrongItemsRecent:{} },
+  stats: { lessonAcc:{}, wrongItems:{}, xpByDay:{}, wrongItemsRecent:{}, timeByDay:{}, accByDay:{}, bestAcc:{} },
   // onboarding
   onboarded: false, onboardStep: 0,
   mode: 'full', dailyGoal: 1, reminderTime: null,
   // spaced repetition data — keyed by Malayalam string
   // {interval (days), ease (float), due (timestamp), reps (int)}
   srs: {},
+  // badges earned
+  badges: new Set(),
+  newBadges: [],
+  // lesson start timestamp (for study time tracking)
+  studyStart: null,
+  // expanded badge (for description tooltip)
+  expandedBadge: null,
+  // selected month for accuracy chart (null = current month)
+  statsMonth: null,
   // practice session
   practiceQueue: [], practiceEi: 0, practiceScore: 0,
   // retry queue (wrong answers repeat until correct)
@@ -1161,13 +1175,72 @@ function startLesson(id) {
   const resolvedEx = resolveLesson(lesson, isReplay).map((e, i) => ({...e, _qid: i}));
   const firstEx = resolvedEx[0];
   S = {...S, lid:id, ei:0, fb:null, mcPicked:null,
-    mSel:null, mDone:[], mWrong:null, mHeartLost:false, ft:'', lxp:0, screen:'lesson',
+    mSel:null, mDone:[], mWrong:null, mHeartLost:false, ft:'', lxp:0, screen:'lesson', studyStart: Date.now(), newBadges:[],
     resolvedEx, retryQueue:[], tooltip:null, isReplay,
     buildPlaced: firstEx?.t==='BUILD' ? [] : [],
     buildAvailable: firstEx?.t==='BUILD' ? [...firstEx.tiles].sort(()=>Math.random()-0.5) : [],
     shuffled: firstEx?.t==='MATCH' ? [...firstEx.pairs].sort(()=>Math.random()-0.5) : []};
   render();
   if (firstEx?.t==='INTRO' || firstEx?.t==='MATRA') setTimeout(()=>speak(firstEx.ml || firstEx.result), 400);
+}
+
+// ── BADGES ───────────────────────────────────────────────────────────
+const BADGE_DEFS = [
+  {id:'first_lesson',   icon:'🌱', name:'First Step',        desc:'Completed your first lesson'},
+  {id:'vowels_done',    icon:'🌊', name:'Vowel Master',       desc:'Completed all vowel lessons'},
+  {id:'alphabet_done',  icon:'🏆', name:'Full Alphabet',      desc:'Completed the Full Alphabet Review'},
+  {id:'first_trace',    icon:'✍️', name:'Penmanship',         desc:'Completed your first trace exercise'},
+  {id:'streak_3',       icon:'🔥', name:'On Fire',            desc:'3-day streak'},
+  {id:'streak_7',       icon:'🔥🔥', name:'Week Warrior',     desc:'7-day streak'},
+  {id:'streak_30',      icon:'🌟', name:'Dedicated',          desc:'30-day streak'},
+  {id:'perfect_lesson', icon:'🎯', name:'Perfect',            desc:'100% accuracy on a lesson'},
+  {id:'five_perfect',   icon:'⭐', name:'Sharp Mind',         desc:'5 lessons with 80%+ accuracy'},
+  {id:'ten_lessons',    icon:'📚', name:'Scholar',            desc:'Completed 10 lessons'},
+  {id:'all_done',       icon:'🌴', name:'Malayalam Explorer', desc:'Completed all current content'},
+  {id:'night_owl',      icon:'🦉', name:'Night Owl',          desc:'Studied past midnight'},
+  {id:'speed_run',      icon:'⚡', name:'Speed Run',          desc:'3 lessons in one day'},
+];
+
+function checkBadges(done, streak, timeByDay, lessonAcc) {
+  const b = new Set(S.badges);
+  const hour = new Date().getHours();
+  const today = new Date().toDateString();
+
+  if (done.size >= 1)  b.add('first_lesson');
+  if (done.size >= 10) b.add('ten_lessons');
+
+  // Vowels done — lessons 1,2,3 all complete
+  if ([1,2,3].every(id => done.has(id))) b.add('vowels_done');
+
+  // Full alphabet — lesson 18 complete
+  if (done.has(18)) b.add('alphabet_done');
+
+  // All current visible lessons done
+  const visibleIds = UNITS.flatMap(u => u.lessonIds);
+  if (visibleIds.every(id => done.has(id))) b.add('all_done');
+
+  // Streaks
+  if (streak >= 3)  b.add('streak_3');
+  if (streak >= 7)  b.add('streak_7');
+  if (streak >= 30) b.add('streak_30');
+
+  // Accuracy badges
+  const perfectLessons = Object.values(lessonAcc).filter(a => a.total > 0 && Math.round(a.correct/a.total*100) === 100);
+  if (perfectLessons.length >= 1) b.add('perfect_lesson');
+  const goodLessons = Object.values(lessonAcc).filter(a => a.total > 0 && Math.round(a.correct/a.total*100) >= 80);
+  if (goodLessons.length >= 5) b.add('five_perfect');
+
+  // First trace — check if current lesson had any TRACE
+  const lesson = LESSONS.find(l => l.id === S.lid);
+  if (lesson?.ex.some(e => e.t === 'TRACE')) b.add('first_trace');
+
+  // Night owl
+  if (hour >= 0 && hour < 4) b.add('night_owl');
+
+  // Speed run — 3 lessons today
+  if ((S.lessonsTodayCount + 1) >= 3) b.add('speed_run');
+
+  return b;
 }
 
 function nextEx() {
@@ -1185,15 +1258,30 @@ function nextEx() {
     const newStreak = S.lastDay === today ? S.streak
       : S.lastDay === yesterday ? S.streak + 1 : 1;
     const newXpByDay = {...S.stats.xpByDay, [today]: (S.stats.xpByDay[today]||0) + S.lxp};
+    // Track study time
+    const elapsed = S.studyStart ? Math.round((Date.now() - S.studyStart) / 1000) : 0;
+    const newTimeByDay = {...(S.stats.timeByDay||{}), [today]: ((S.stats.timeByDay||{})[today]||0) + elapsed};
     // Replaying a completed lesson restores +1 heart
     const wasReplay = S.done.has(S.lid);
     const newHearts = wasReplay ? Math.min(5, S.hearts + 1) : S.hearts;
+    const newDone = new Set([...S.done, S.lid]);
     if (!wasReplay) srsSeedLesson(S.lid);
-    S = {...S, xp:S.xp+S.lxp, done:new Set([...S.done, S.lid]), screen:'results',
+    // Check badges
+    const newBadges = checkBadges(newDone, newStreak, newTimeByDay, S.stats.lessonAcc);
+    const newBadgeIds = [...newBadges].filter(id => !S.badges.has(id));
+    // Track personal best accuracy per lesson
+    const newBestAcc = {...(S.stats.bestAcc||{})};
+    if (S.stats.lessonAcc[S.lid]) {
+      const {correct, total} = S.stats.lessonAcc[S.lid];
+      const pct = total > 0 ? Math.round(correct/total*100) : 0;
+      if (!newBestAcc[S.lid] || pct > newBestAcc[S.lid]) newBestAcc[S.lid] = pct;
+    }
+    S = {...S, xp:S.xp+S.lxp, done:newDone, screen:'results',
       fb:null, ft:'', mcPicked:null, mSel:null, mDone:[], mWrong:null,
       hearts:newHearts, streak:newStreak, lastDay:today,
       lessonsTodayCount: S.lessonsTodayCount + 1,
-      stats:{...S.stats, xpByDay:newXpByDay}};
+      badges: newBadges, newBadges: newBadgeIds,
+      stats:{...S.stats, xpByDay:newXpByDay, timeByDay:newTimeByDay, bestAcc:newBestAcc}};
     saveProgress(); render();
     setTimeout(launchConfetti, 100);
   } else {
@@ -1342,15 +1430,21 @@ function nextPracticeEx() {
 function recordStat(correct) {
   const e = getEx();
   const lid = S.screen === 'practice-session' ? null : S.lid;
+  const today = new Date().toDateString();
   if (lid) {
     if (!S.stats.lessonAcc[lid]) S.stats.lessonAcc[lid] = { correct:0, total:0 };
     S.stats.lessonAcc[lid].total++;
     if (correct) S.stats.lessonAcc[lid].correct++;
   }
+  // Track daily accuracy
+  if (!S.stats.accByDay) S.stats.accByDay = {};
+  if (!S.stats.accByDay[today]) S.stats.accByDay[today] = { correct:0, total:0 };
+  S.stats.accByDay[today].total++;
+  if (correct) S.stats.accByDay[today].correct++;
+
   if (!correct && e) {
     const label = e.ml || e.result || (e.q||'').slice(0,30);
     S.stats.wrongItems[label] = (S.stats.wrongItems[label] || 0) + 1;
-    // Track recency — store timestamp of last wrong answer
     S.stats.wrongItemsRecent[label] = Date.now();
   }
 }
@@ -1592,7 +1686,7 @@ function buildHome() {
       const xpBg     = isDone?'#D1FAE5':noHearts?'#FEE2E2':'#FEF3C7';
       const xpCol    = isDone?'#059669':noHearts?'#DC2626':'#d4891e';
       const icon     = locked?(noHearts?'💔':'🔒'):isDone?'✅':l.emoji;
-      const xpLabel  = isDone?'REPLAY · +❤️ +'+l.xp+'XP':noHearts?'Practice needed':'+ '+l.xp+' XP';
+      const xpLabel  = isDone?'REPLAY · +1❤️ +'+l.xp+'XP':noHearts?'Practice needed':'+ '+l.xp+' XP';
       lessonsHTML += `
         <button data-action="start-lesson" data-id="${l.id}" style="background:#fff;border:2px solid ${bBorder};border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:${locked?'not-allowed':'pointer'};text-align:left;opacity:${locked?0.45:1};box-shadow:${locked?'none':'0 2px 14px rgba(0,0,0,0.10)'};width:100%;margin:0">
           <div style="width:44px;height:44px;border-radius:12px;background:${iBg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${icon}</div>
@@ -1714,13 +1808,25 @@ function buildHome() {
       <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
         ${reminderBanner}
         ${reminderRow}
-        ${S.hearts === 0 ? `<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
-          <span style="font-size:24px">💔</span>
+        ${(() => {
+          const due = srsDueCount();
+          if (due === 0) return '';
+          return `<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:18px">🔁</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:900;color:#B45309">${due} item${due>1?'s':''} due for review</div>
+              <div style="font-size:11px;color:#D97706;font-weight:700">Keep your memory fresh</div>
+            </div>
+            <button data-action="nav-practice" style="background:#D97706;color:white;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer">Review →</button>
+          </div>`;
+        })()}
+        ${S.hearts < 5 ? `<div style="background:${S.xp>=100?'#F0FDF4':'#FEF2F2'};border:1px solid ${S.xp>=100?'#BBF7D0':'#FECACA'};border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:18px">${S.xp>=100?'❤️':'💔'}</span>
           <div style="flex:1">
-            <div style="font-size:13px;font-weight:900;color:#DC2626">No hearts remaining</div>
-            <div style="font-size:12px;color:#B91C1C;font-weight:700;margin-top:2px">Practice to unlock new lessons (+3 hearts), or replay a completed lesson (+1 heart).</div>
+            <div style="font-size:13px;font-weight:900;color:${S.xp>=100?'#065F46':'#DC2626'}">${S.hearts===0?'No hearts left':`${S.hearts}/5 hearts`}</div>
+            <div style="font-size:11px;font-weight:700;color:${S.xp>=100?'#059669':'#EF4444'}">${S.xp>=100?'Refill to 5 for 100 XP':`Need 100 XP — you have ${S.xp}`}</div>
           </div>
-          <button data-action="nav-practice" style="background:#DC2626;color:white;border:none;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0">Practice 🎯</button>
+          ${S.xp>=100?`<button data-action="xp-refill-hearts" style="background:#059669;color:white;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer">Refill ⚡100</button>`:''}
         </div>` : ''}
         ${modeBanner}
         ${S_hasMLVoice === false ? `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
@@ -1751,6 +1857,37 @@ function buildHome() {
 
 // ─── RESULTS ────────────────────────────────────────────────────────
 function buildResults() {
+  const lesson = getLesson();
+  const wasReplay = S.isReplay;
+  const lid = S.lid;
+  const acc = S.stats.lessonAcc[lid];
+
+  // Personal best — only on replay
+  const prevBest = S.stats.bestAcc?.[lid];
+  const currentPct = acc && acc.total > 0 ? Math.round(acc.correct/acc.total*100) : null;
+  const isPersonalBest = wasReplay && currentPct !== null && prevBest !== null && prevBest !== undefined && currentPct > prevBest;
+  const personalBestHTML = isPersonalBest
+    ? `<div class="anim-up" style="background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:14px;padding:10px 20px;margin-top:14px;animation-delay:0.2s">
+        <div style="font-size:14px;font-weight:900;color:#F5A623">🎯 Personal Best! ${currentPct}% vs previous ${prevBest}%</div>
+       </div>` : '';
+
+  // New badges earned this lesson
+  const newBadgeIds = S.newBadges || [];
+  const newBadgesHTML = newBadgeIds.length > 0
+    ? `<div class="anim-up" style="margin-top:14px;animation-delay:0.25s">
+        ${newBadgeIds.map(id => {
+          const b = BADGE_DEFS.find(x => x.id === id);
+          return b ? `<div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:10px 18px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+            <div style="font-size:28px">${b.icon}</div>
+            <div>
+              <div style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.5);letter-spacing:1px">BADGE UNLOCKED</div>
+              <div style="font-size:15px;font-weight:900;color:#F5A623">${b.name}</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:700">${b.desc}</div>
+            </div>
+          </div>` : '';
+        }).join('')}
+       </div>` : '';
+
   return `
     <div style="min-height:100vh;background:linear-gradient(135deg,#0D5C39,#093d27);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center">
       <div class="anim-pop"  style="font-size:78px">🎊</div>
@@ -1760,6 +1897,8 @@ function buildResults() {
         <div style="font-size:54px;font-weight:900;color:#F5A623;line-height:1">+${S.lxp}</div>
         <div style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1.5px">XP EARNED</div>
       </div>
+      ${personalBestHTML}
+      ${newBadgesHTML}
       <div class="anim-up" style="display:flex;gap:14px;margin-top:18px;animation-delay:0.35s">
         <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:13px 20px;border:1px solid rgba(255,255,255,0.1);text-align:center">
           <div style="font-size:22px;font-weight:900;color:#fb923c">🔥${S.streak}</div>
@@ -2193,6 +2332,83 @@ function buildStats() {
   const totalAttempts = Object.values(acc).reduce((s,v)=>s+v.total,0);
   const overallPct = totalAttempts > 0 ? Math.round(totalCorrect/totalAttempts*100) : 0;
 
+  // Letters learned — count from LESSON_TAUGHT for completed lessons
+  const lettersLearned = new Set();
+  for (const lid of S.done) {
+    const ls = LESSON_TAUGHT[lid];
+    if (ls) ls.forEach(c => lettersLearned.add(c));
+  }
+  const totalLetters = Object.keys(ML_STROKES).length; // 53
+
+  // Study time — real tracked seconds
+  const timeByDay = S.stats.timeByDay || {};
+  const now = Date.now();
+  const todayKey = new Date().toDateString();
+  const secsToLabel = s => s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s/60)}m` : `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;
+
+  const todaySecs   = timeByDay[todayKey] || 0;
+  const weeklySecs  = Object.entries(timeByDay)
+    .filter(([k]) => now - new Date(k).getTime() < 7*86400000)
+    .reduce((s,[,v]) => s+v, 0);
+  const monthlySecs = Object.entries(timeByDay)
+    .filter(([k]) => now - new Date(k).getTime() < 30*86400000)
+    .reduce((s,[,v]) => s+v, 0);
+  const totalSecs   = Object.values(timeByDay).reduce((s,v) => s+v, 0);
+
+  // Daily accuracy chart with month selector
+  const accByDay = S.stats.accByDay || {};
+  const allDates = Object.keys(accByDay).sort();
+
+  // Get available months
+  const monthSet = new Set(allDates.map(d => {
+    const dt = new Date(d); return `${dt.getFullYear()}-${dt.getMonth()}`;
+  }));
+  const now2 = new Date();
+  const currentMonthKey = `${now2.getFullYear()}-${now2.getMonth()}`;
+  if (!S.statsMonth || !monthSet.has(S.statsMonth)) S.statsMonth = currentMonthKey;
+  const [selYear, selMonth] = S.statsMonth.split('-').map(Number);
+
+  // Days in selected month
+  const daysInMonth = new Date(selYear, selMonth+1, 0).getDate();
+  const monthDays = Array.from({length: daysInMonth}, (_, i) => {
+    const d = new Date(selYear, selMonth, i+1);
+    return d.toDateString();
+  });
+
+  const dayData = monthDays.map(key => ({
+    key,
+    day: new Date(key).getDate(),
+    acc: accByDay[key] || null,
+    pct: accByDay[key] ? Math.round(accByDay[key].correct / accByDay[key].total * 100) : null
+  }));
+
+  const hasData = dayData.some(d => d.acc);
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthTabs = [...monthSet].sort().map(mk => {
+    const [y, m] = mk.split('-').map(Number);
+    const sel = mk === S.statsMonth;
+    return `<button data-action="stats-month" data-month="${mk}" style="background:${sel?'#0D5C39':'#F7F2EB'};color:${sel?'white':'#78716C'};border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:900;cursor:pointer">${monthNames[m]} ${y !== now2.getFullYear() ? y : ''}</button>`;
+  }).join('');
+
+  const accChart = !hasData
+    ? `<div style="text-align:center;color:#A8A29E;font-size:13px;font-weight:700;padding:16px">No data for this month yet</div>`
+    : (() => {
+        const maxH = 60;
+        const bars = dayData.map(d => {
+          const h = d.pct !== null ? Math.max(4, Math.round(d.pct/100*maxH)) : 0;
+          const col = d.pct === null ? '#E7E5E4' : d.pct >= 80 ? '#059669' : d.pct >= 60 ? '#D97706' : '#DC2626';
+          const isToday = d.key === new Date().toDateString();
+          return `<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:2px">
+            <div style="font-size:8px;font-weight:800;color:${d.pct!==null?col:'transparent'}">${d.pct!==null?d.pct+'%':''}</div>
+            <div style="width:100%;height:${maxH}px;display:flex;align-items:flex-end">
+              <div style="width:100%;height:${h}px;background:${col};border-radius:3px 3px 0 0;${isToday?'outline:2px solid #F5A623':''}"></div>
+            </div>
+            <div style="font-size:8px;font-weight:800;color:${isToday?'#0D5C39':'#A8A29E'}">${d.day}</div>
+          </div>`;
+        }).join('');
+        return `<div style="display:flex;align-items:flex-end;gap:1px">${bars}</div>`;
+      })();
+
   // Weekly XP chart — last 7 days
   const days = Array.from({length:7}).map((_,i) => {
     const d = new Date(Date.now() - (6-i)*86400000);
@@ -2220,23 +2436,6 @@ function buildStats() {
           <span style="background:#FEE2E2;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:900;color:#DC2626">${count} miss${count>1?'es':''}</span>
         </div>`).join('');
 
-  // Lesson accuracy list
-  const lessonRows = LESSONS.filter(l => acc[l.id]).map(l => {
-    const {correct,total} = acc[l.id];
-    const pct = Math.round(correct/total*100);
-    const col = pct>=80?'#059669':pct>=60?'#D97706':'#DC2626';
-    return `<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #F7F2EB">
-      <div style="font-size:18px">${l.emoji}</div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:900;color:#1C1917">${l.title}</div>
-        <div style="height:5px;background:#E7E5E4;border-radius:99px;margin-top:4px;overflow:hidden">
-          <div style="height:100%;background:${col};border-radius:99px;width:${pct}%"></div>
-        </div>
-      </div>
-      <div style="font-size:13px;font-weight:900;color:${col}">${pct}%</div>
-    </div>`;
-  }).join('');
-
   return `
     <div style="min-height:100vh;background:#F7F2EB;padding-bottom:80px">
       <div style="background:linear-gradient(135deg,#0D5C39,#093d27);padding:28px 20px 24px;color:white">
@@ -2254,17 +2453,37 @@ function buildStats() {
       </div>
       <div style="max-width:520px;margin:0 auto;padding:20px 16px 0">
 
-        <!-- Overall accuracy -->
-        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
-          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:12px">OVERALL ACCURACY</div>
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="font-size:42px;font-weight:900;color:${overallPct>=80?'#059669':overallPct>=60?'#D97706':'#DC2626'}">${overallPct}%</div>
-            <div style="flex:1">
-              <div style="height:10px;background:#E7E5E4;border-radius:99px;overflow:hidden">
-                <div style="height:100%;background:${overallPct>=80?'#059669':overallPct>=60?'#D97706':'#DC2626'};border-radius:99px;width:${overallPct}%;transition:width 0.5s"></div>
-              </div>
-              <div style="font-size:12px;color:#78716C;font-weight:700;margin-top:6px">${totalCorrect} correct out of ${totalAttempts} attempts</div>
+        <!-- Letters learned + Study time -->
+        <div style="display:flex;gap:12px;margin-bottom:16px">
+          <div style="flex:1;background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 14px rgba(0,0,0,0.08);text-align:center">
+            <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:8px">LETTERS LEARNED</div>
+            <div style="font-size:36px;font-weight:900;color:#0D5C39">${lettersLearned.size}</div>
+            <div style="font-size:11px;color:#A8A29E;font-weight:700;margin-top:2px">of ${totalLetters} letters</div>
+            <div style="height:5px;background:#E7E5E4;border-radius:99px;margin-top:8px;overflow:hidden">
+              <div style="height:100%;background:#0D5C39;border-radius:99px;width:${Math.round(lettersLearned.size/totalLetters*100)}%"></div>
             </div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 14px rgba(0,0,0,0.08);text-align:center">
+            <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:8px">STUDY TIME</div>
+            <div style="font-size:30px;font-weight:900;color:#0E7490">${secsToLabel(totalSecs)||'—'}</div>
+            <div style="font-size:10px;color:#A8A29E;font-weight:700;margin-top:6px;display:flex;flex-direction:column;gap:2px">
+              <div>Today: ${secsToLabel(todaySecs)||'—'}</div>
+              <div>This week: ${secsToLabel(weeklySecs)||'—'}</div>
+              <div>This month: ${secsToLabel(monthlySecs)||'—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accuracy chart -->
+        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px">DAILY ACCURACY</div>
+            <div style="font-size:22px;font-weight:900;color:${overallPct>=80?'#059669':overallPct>=60?'#D97706':'#DC2626'}">${overallPct}% overall</div>
+          </div>
+          ${monthSet.size > 1 ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${monthTabs}</div>` : ''}
+          ${accChart}
+          <div style="display:flex;gap:12px;margin-top:8px">
+            ${[['#059669','≥80%'],['#D97706','60–79%'],['#DC2626','<60%'],['#E7E5E4','no data']].map(([c,l])=>`<div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:${c}"></div><div style="font-size:10px;font-weight:700;color:#78716C">${l}</div></div>`).join('')}
           </div>
         </div>
 
@@ -2280,17 +2499,38 @@ function buildStats() {
           ${wrongHTML}
         </div>
 
-        <!-- Lesson accuracy -->
-        ${lessonRows.length > 0 ? `
-        <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
-          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:4px">ACCURACY BY LESSON</div>
-          ${lessonRows}
-        </div>` : ''}
+        <!-- Badges -->
+        <div style="background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
+          <div style="font-size:11px;font-weight:900;color:#78716C;letter-spacing:1.5px;margin-bottom:14px">ACHIEVEMENTS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            ${BADGE_DEFS.map(b => {
+              const earned = S.badges.has(b.id);
+              const expanded = S.expandedBadge === b.id;
+              return `<div data-action="expand-badge" data-bid="${b.id}" style="display:flex;flex-direction:column;align-items:center;gap:4px;width:56px;opacity:${earned?1:0.25};filter:${earned?'none':'grayscale(1)'};cursor:pointer">
+                <div style="font-size:28px;background:${expanded?'#D1FAE5':earned?'#F0FDF4':'#F7F2EB'};border-radius:14px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:2px solid ${expanded?'#059669':earned?'#6EE7B7':'#E7E5E4'}">${b.icon}</div>
+                <div style="font-size:9px;font-weight:900;color:${earned?'#0D5C39':'#A8A29E'};text-align:center;line-height:1.2">${b.name}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          ${S.expandedBadge ? (() => {
+            const b = BADGE_DEFS.find(x => x.id === S.expandedBadge);
+            const earned = b && S.badges.has(b.id);
+            return b ? `<div style="margin-top:12px;background:${earned?'#F0FDF4':'#F7F2EB'};border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+              <div style="font-size:22px">${b.icon}</div>
+              <div>
+                <div style="font-size:13px;font-weight:900;color:${earned?'#0D5C39':'#78716C'}">${b.name}</div>
+                <div style="font-size:12px;color:#78716C;font-weight:700;margin-top:2px">${b.desc}</div>
+                ${!earned ? `<div style="font-size:11px;color:#A8A29E;font-weight:700;margin-top:2px">Not yet earned</div>` : ''}
+              </div>
+            </div>` : '';
+          })() : ''}
+          <div style="font-size:11px;color:#A8A29E;font-weight:700;margin-top:12px">${S.badges.size} / ${BADGE_DEFS.length} earned</div>
+        </div>
+
       </div>
     </div>
     ${buildNav('stats')}`;
 }
-
 
 // ─── LEARN TAB ──────────────────────────────────────────────────────
 // Coverage maps: which lessons unlock which sections
@@ -2539,7 +2779,7 @@ function buildPractice() {
             <div style="font-size:18px;font-weight:900">Start Practice Session</div>
             <div style="font-size:13px;opacity:0.75;font-weight:700;margin-top:3px">${itemCount} items · ~3 minutes</div>
           </div>
-          <div style="background:rgba(255,255,255,0.2);border-radius:12px;padding:6px 14px;font-size:13px;font-weight:900">+❤️</div>
+          <div style="background:rgba(255,255,255,0.2);border-radius:12px;padding:6px 14px;font-size:13px;font-weight:900">+3❤️</div>
         </button>` : `
         <div style="background:#fff;border-radius:20px;padding:24px;text-align:center;margin-bottom:20px;box-shadow:0 2px 14px rgba(0,0,0,0.08)">
           <div style="font-size:40px">${totalDone===0?'🔒':'✨'}</div>
@@ -2707,8 +2947,8 @@ document.addEventListener('click', e => {
   const el = e.target.closest('[data-action]');
   if (!el) return;
   const action = el.dataset.action;
-  if (action==='go-home')      { S.screen='home'; render(); }
-  else if (action==='nav-home')     { S.screen='home';      render(); }
+  if (action==='go-home')      { S = {...S, screen:'home', tooltip:null, expandedBadge:null, fb:null}; render(); }
+  else if (action==='nav-home')     { S = {...S, screen:'home', tooltip:null, expandedBadge:null, fb:null}; render(); }
   else if (action==='nav-practice') { S.screen='practice';  render(); }
   else if (action==='nav-learn')    { S.screen='learn';     render(); }
   else if (action==='nav-stats')    { S.screen='stats';     render(); }
@@ -2748,7 +2988,20 @@ document.addEventListener('click', e => {
     saveProgress();
     render();
   }
-  // ── KEEP THIS BLOCK INTACT — easy to accidentally drop when adding actions above ──
+  else if (action==='xp-refill-hearts') {
+    if (S.xp >= 100) {
+      S = {...S, xp: S.xp - 100, hearts: 5};
+      saveProgress(); render();
+    }
+  }
+  else if (action==='stats-month') {
+    S = {...S, statsMonth: el.dataset.month};
+    render();
+  }
+  else if (action==='expand-badge') {
+    S.expandedBadge = S.expandedBadge === el.dataset.bid ? null : el.dataset.bid;
+    render();
+  }
   else if (action==='toggle-mode') {
     S.mode = S.mode === 'full' ? 'language-first' : 'full';
     saveProgress();
